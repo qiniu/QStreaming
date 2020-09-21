@@ -8,8 +8,8 @@
     <name>Stream Project Parent Pom</name>
     <modules>
         <module>stream-utils</module>
-        <module>stream-spark</module>
         <module>stream-spark-connector</module>
+        <module>stream-spark</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
