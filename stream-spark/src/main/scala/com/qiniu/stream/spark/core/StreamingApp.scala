@@ -7,7 +7,7 @@ object StreamingApp {
 
   def main(args: Array[String]): Unit = {
     val params = ParameterTool.fromArgs(args).toMap.asScala.toMap
-    val jobOperator = SparkJobOperator(params)
+    val jobOperator = JobOperator(params)
     try {
       jobOperator.start()
     } finally {
