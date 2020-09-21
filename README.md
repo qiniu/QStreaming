@@ -85,3 +85,5 @@ $SPARK_HOME/bin/spark-submit
 --conf spark.executor.extraClassPath=./ \
 stream-spark-0.0.1.jar
 ```
+
+please change the above settings according to the corresponding configuration based on your environment
