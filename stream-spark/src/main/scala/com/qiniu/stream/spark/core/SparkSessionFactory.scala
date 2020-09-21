@@ -21,14 +21,8 @@ object SparkSessionFactory extends Logging {
       sparkConf
     }
 
-    log.info("init spark session")
-    //set master if possible
     val session = SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate()
-    log.info("register functions.....")
-//    DefaultUdfRegister.register(session.udf)
-//    UdfRegister(session.udf)
 
-    log.info("register streaming listener...")
     UserMetricsSystem.initialize(session.sparkContext)
     session.streams.addListener(new StreamingQueryMetricListener)
     session

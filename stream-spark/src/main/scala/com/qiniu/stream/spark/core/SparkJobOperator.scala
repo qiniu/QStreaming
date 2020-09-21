@@ -52,7 +52,7 @@ case class SparkJobOperator(config: Config,
 
   override protected def parseJob(content: CharStream,
                                   params: Map[String, String]): Job =
-    SparkJob(content, params)
+    Job(content, params)
 }
 
 object SparkJobOperator {
