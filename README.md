@@ -58,7 +58,7 @@ debug = false
 job.file = job.dsl
 ```
 
-##### Run pipeline
+##### Run pipeline on yarn
 
 create a bash file named run.sh as follow
 
@@ -76,10 +76,10 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.spark.core.StreamingApp \
 --master yarn \
 --deploy-mode client \
---num-executors 90 \
+--num-executors 1 \
 --executor-cores 4 \
---executor-memory 5g \
---driver-memory 4g \
+--executor-memory 2g \
+--driver-memory 1g \
 --files "application.conf" \
 --conf spark.driver.extraClassPath=./ \
 --conf spark.executor.extraClassPath=./ \
