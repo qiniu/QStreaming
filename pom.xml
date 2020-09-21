@@ -7,9 +7,9 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>Stream Project Parent Pom</name>
     <modules>
-        <module>core</module>
-        <module>spark</module>
-        <module>utils</module>
+        <module>stream-utils</module>
+        <module>stream-spark</module>
+        <module>stream-spark-connector</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
