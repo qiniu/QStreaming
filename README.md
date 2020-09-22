@@ -1,154 +1,263 @@
-### Introduction
-
-QStreaming is a library that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
+QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
 
 It is based on a simple sql-like configuration file and runs on any Spark cluster.
 
 ### Getting started
 
-#### Build project 
-
-```maven
-mvn clean install 
-```
-
-you will get a jar named "stream-spark-0.0.1.jar " in folder {basedir}/stream-spark/target
-
-#### Run QStreaming 
-
 To run QStreaming you must first define 2 files.
 
-- job.dsl 
+#####  Job DSL
 
-job.dsl is a sql file defines the queries of the ETL pipeline
+A job.dsl is a sql file defines the queries of the ETL pipeline
 
-A streaming process example
+For example a simple  job.dsl (actullay is a sql like file) should be as follow:
 
 ```sql
--- DDL for streaming input
-create stream input table raw_log(name STRING,country STRING,salary INTEGER,eventTime LONG,eventTime as ROWTIME(eventTime,'5 minutes')) using kafka(kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",startingOffsets=earliest, subscribe=salary,"group-id"=test);
+-- DDL for streaming input which connect to a kafka topic
+-- this declares five fields based on the JSON data format.In addition, it use the ROWTIME() to declare a virtual column that generate the event time attribute from existing ts field
+create stream input table user_behavior(
+  user_id LONG,
+  item_id LONG,
+  category_id LONG,
+  behavior STRING,
+  ts TIMESTAMP,
+  eventTime as ROWTIME(ts,'5 minutes')
+) using kafka(
+  kafka.bootstrap.servers="localhost:9091",
+  startingOffsets=earliest,
+  subscribe="user_behavior",
+  "group-id"="user_behavior"
+);
 
--- DDL for streaming output
-create stream output table salary using kafka( kafka.bootstrap.servers="localhost:9091",topic=test) TBLPROPERTIES("update-mode"="update");
+-- DDL for streaming output which connect to a kafka topic
+create stream output table behavior_cnt_per_hour
+using kafka(
+  kafka.bootstrap.servers="localhost:9091",
+  topic="buy_cnt_per_hour"
+)TBLPROPERTIES(
+  "update-mode"="update",
+  checkpointLocation = "buy_cnt_per_hour_cp"
+);
 
--- origin spark sql
-create view salary_view  as select eventTime,country,name,salary  from salary ;
+-- CREATE VIEW count the number of "buy" records in each hour window.
+create view v_behavior_cnt_per_hour as
+SELECT
+   window(eventTime, "60 minutes")) as window,
+   COUNT(*) as behavior_cnt,behavior
+FROM user_behavior
+GROUP BY window(eventTime, "60 minutes")),behavior;
 
--- orgin spark sql
-insert into salary  select to_json(struct( country, avg(salary) avg_salary)) value  from salary_view group by  country;
+--  persist result to kafka
+insert into buy_cnt_per_hour
+select to_json(struct(cast(window.start as long)* 1000 as hour_of_day, behavior_cnt,behavior)) value
+from v_behavior_cnt_per_hour
 ```
 
-Make sure to also check out the full [Spark SQL Language manual](https://docs.databricks.com/spark/latest/spark-sql/index.html#sql-language-manual) for the possible queries
+##### Application configuration properties
 
-- application.conf
+There are only two config options  currently avaliable.
+
+1. debug
+2. job.file
 
 ```properties
+//indicator whether QStreaming is running with DEBUG mode or not
 debug = false
+//file name of job.dsl(default is job.dsl)
 job.file = job.dsl
 ```
 
-And then submit as spark job as bellow:
+#### Run QStreaming
 
-``` bash  
-#!/bin/bash
-export JAVA_HOME={pointToYourJavaHome}
-export HADOOP_HOME={pointToYourHadoopHome}
-export SPARK_HOME={pointToYourSparkHome}
-export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-export YARN_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-export SPARK_CONF_DIR=${SPARK_HOME}/conf
+There are three options to run QStreaming
 
-$SPARK_HOME/bin/spark-submit 
---name {{.dir}} \
+##### Run on a yarn cluster
+
+To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
+
+- get latest JAR file
+
+  There are two options to get QStreaming Jar file
+
+  - clone project and build
+
+  ```bash
+  git clone git@github.com:qbox/QStreaming.git \
+  cd QStreaming && mvn clean install
+  ```
+
+  - download the last released JAR
+
+- Run the following command:
+
+``` bash
+$SPARK_HOME/bin/spark-submit
+--class com.qiniu.stream.spark.core.StreamingApp \
+--master spark://IP:PORT \
+--files "application.conf" \
+stream-spark-x.y.z.jar
+```
+
+##### Run on a standalone cluster
+
+To run on a standalone cluster you must first [start a spark standalone cluster](https://spark.apache.org/docs/latest/spark-standalone.html) , and then  run the  following  command:
+
+```bash
+$SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.spark.core.StreamingApp \
 --master yarn \
 --deploy-mode client \
---num-executors 90 \
---executor-cores 4 \
---executor-memory 5g \
---driver-memory 4g \
 --files "application.conf" \
---conf spark.driver.extraClassPath=./ \
---conf spark.executor.extraClassPath=./ \
-stream-spark-0.0.1.jar
+stream-spark-x.y.z.jar
 ```
 
-please change the above settings according to the corresponding configuration based on your environment
+##### Run as a library
 
+It's also possible to use QStreaming inside your own project
 
+QStreaming library requires scala 2.11
+
+To use it add the dependency to your project
+
+- maven
+
+  ```xml
+  <dependency>
+    <groupId>com.qiniu.stream</groupId>
+    <dependency>stream-spark</dependency>
+    <version>LATEST VERSION</version>
+  </dependency>
+  ```
+
+- gradle
+
+  ```groovy
+  compile group: 'com.qiniu.stream', name: 'stream-spark', version: 'LATEST VERSION'
+  ```
+
+- sbt
+
+        ```scala
+"com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
+        ```
 
 ### Features
 
 #### DDL Support for streaming process
 
-```sql 
-create stream input table raw_log(name STRING,country STRING,salary INTEGER,eventTime LONG,eventTime as ROWTIME(eventTime,'5 minutes')) using kafka(kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",startingOffsets=earliest, subscribe=salary,"group-id"=test);
+```sql
+create stream input table user_behavior(
+  user_id LONG,
+  item_id LONG,
+  category_id LONG,
+  behavior STRING,
+  ts TIMESTAMP,
+  eventTime as ROWTIME(ts,'5 minutes')
+) using kafka(
+  kafka.bootstrap.servers="localhost:9091",
+  startingOffsets=earliest,
+  subscribe="user_behavior",
+  "group-id"="user_behavior"
+);
 ```
 
-Above DDL statement use kafka as streaming input. for detail information about the full syntax ,please check [sql.g4](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4)  
+Above DDL statement define an input which connect to a kafka topic.
+
+For detail information  please refer to [CreateSourceTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L38)  for how to define an input and [CreateSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43) for how to define an output.
 
 #### Watermark support in sql
 
-watermark can be used inside a  ddl statement or a   view statement.
+QStreaming supports watermark which helps a stream processing engine to deal with late data.
 
-- Used inside a DDL statement
+There are two ways to use watermark for a stream processing engine
 
-  ```sql 
-  create stream input table raw_log(name STRING,country STRING,salary INTEGER,eventTime LONG,eventTime as ROWTIME(eventTime,'5 minutes')) using kafka(kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",startingOffsets=earliest, subscribe=salary,"group-id"=test);
-  ```
-
-  For example ***ROWTIME(eventTime,'5 minutes')*** means use `eventTime` as event time field  with 5 minutes sliding window
-
-- Used insde a View statement 
+- Adding ***ROWTIME(eventTimeField,delayThreshold)*** as a schema property in a  ddl statement
 
   ```sql
-  create view viewName with (waterMark="eventTime, 1 hour") as
-  select
-      firstName,
-      lastName,
-      age
-  from employee
+  create stream input table user_behavior(
+    user_id LONG,
+    item_id LONG,
+    category_id LONG,
+    behavior STRING,
+    ts TIMESTAMP,
+    eventTime as ROWTIME(ts,'5 minutes')
+  ) using kafka(
+    kafka.bootstrap.servers="localhost:9091",
+    startingOffsets=earliest,
+    subscribe="user_behavior",
+    "group-id"="user_behavior"
+  );
   ```
 
-For example above statement define a watermark use `eventTime` field with 1 hour slide window
+  Above example  means use `eventTime` as event time field  with 5 minutes delay threshold
 
-#### Dynamic User Defined Function
+- Adding *** waterMark("eventTimeField, delayThreshold") *** as a  view property in  a view statement
+
+  ```sql
+  create view v_behavior_cnt_per_hour as
+  SELECT
+     window(eventTime, "60 minutes")) as window,
+     COUNT(*) as behavior_cnt,
+     behavior
+  FROM user_behavior
+  GROUP BY
+    window(eventTime, "60 minutes")),
+    behavior;
+  ```
+
+Above  example  define a watermark use `eventTime` field with 1 hour threshold
+
+#### Dynamic user define function
 
 ```
--- define UDF named hello 
-def hello(name) = {
+-- define UDF named hello
+def hello(name:String) = {
    s"hello ${name}"
 };
 
 ```
 
-Dynamic User Defined function is same as  scala function definition 
+QStreaming allow to define a dynamic UDF inside job.dsl, for more detail information please refer to [createFunctionStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L16)
+
+Above example define UDF with a string parameter.
 
 #### Multiple sink for streaming application
 
+```sql
+create stream output table output using hbase(
+        quorum = '192.168.0.2:2181,192.168.0.3:2181,192.168.0.4:2181',
+        tableName = 'buy_cnt_per_hour',
+        rowKey = '<hour_of_day>',
+        cf = 'cf',
+        fields = '[{"qualified":"buy_cnt","value":"behavior_cnt","type":"LongType"}]',
+        where = 'behavior="buy"'
+    ),hbase(
+        quorum = 'jjh714:2181,jjh712:2181,jjh713:2181,jjh710:2181,jjh711:2181',
+        tableName = 'order_cnt_per_hour
+        rowKey = '<hour_of_day>',
+        cf = 'cf',
+        fields = '[{"qualified":"order_cnt","value":"behavior_cnt","type":"LongType"}]',
+        where = 'behavior="order"'
+    ) TBLPROPERTIES (outputMode = update,checkpointLocation = "behavior_output");
 ```
-create stream output table sink_table using 
-kafka( kafka.bootstrap.servers="localhost:9091",topic=topic1),
-kafka( kafka.bootstrap.servers="localhost:9091",topic=topic2)
-TBLPROPERTIES (outputMode = update,checkpointLocation = multiple_sink_checkpoint);
+
+QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
+
+Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43)
+
+#### Vairable interpolation
+
+```sql
+create batch input table raw_log
+USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
 ```
 
-You see that above statement define an output table with two kafka sink
+job.dsl file support variable interpolation from command line arguments , this  is  useful  for running QStreaming as a periodic job.
 
-#### Vairable render
-
-```sql 
-create batch input table raw_log USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
-// other sql
-create batch output table summary USING parquet(path="hdfs://cluster2/logs/summary/day=<day>/hour=<hour>") TBLPROPERTIES(saveMode=overwrite);
-```
-
-This  feature is  useful  for batch process scenario that the batch is schedued and you can pass into  runtime  variable to this sql  file .
-
-You can pass `day` and `hour` variables  as follow
+For example you can pass the value for  `theDayThatRunAJob` and `theHourThatRunAJob` from an  [Airflow](http://airflow.apache.org/) DAG
 
 ```bash
-$SPARK_HOME/bin/spark-submit 
+$SPARK_HOME/bin/spark-submit
 --name {{.dir}} \
 --class com.qiniu.stream.spark.core.StreamingApp \
 --master yarn \
@@ -161,17 +270,27 @@ $SPARK_HOME/bin/spark-submit
 --conf spark.driver.extraClassPath=./ \
 --conf spark.executor.extraClassPath=./ \
 stream-spark-0.0.1.jar \
--day 20200920 \
--hour  \
+-day theDayThatRunAJob
+-hour  theHourThatRunAJob\
 ```
 
-#### Kafka lag monitor 
+#### Kafka lag monitor
 
-due to spark  kafka consumer use low level api instead of high level api with subscribe mode ,so you can not get the lag of  topic.
+QStreaming allow to monitor the kafka topic offset lag by  adding the ***"group-id"*** connector property in  ddl statement as below
 
-QStreaming allow to monitor the offset lag by  adding the "group-id" property in your stream ddl statement as below
-
-```sql 
-create stream input table raw_log(name STRING,country STRING,salary INTEGER,eventTime LONG,eventTime as ROWTIME(eventTime,'5 minutes')) using kafka(kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",startingOffsets=earliest, subscribe=salary,"group-id"=test);
+```sql
+create stream input table user_behavior(
+  user_id LONG,
+  item_id LONG,
+  category_id LONG,
+  behavior STRING,
+  ts TIMESTAMP,
+  eventTime as ROWTIME(ts,'5 minutes')
+) using kafka(
+  kafka.bootstrap.servers="localhost:9091",
+  startingOffsets=earliest,
+  subscribe="user_behavior",
+  "group-id"="user_behavior"
+);
 ```
 
