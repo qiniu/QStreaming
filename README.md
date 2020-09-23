@@ -23,7 +23,7 @@ create stream input table user_behavior(
   ts TIMESTAMP,
   eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
+  kafka.bootstrap.servers="localhost:localhost:9091",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"
@@ -162,7 +162,7 @@ create stream input table user_behavior(
   ts TIMESTAMP,
   eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
+  kafka.bootstrap.servers="localhost:9091",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"
@@ -190,7 +190,7 @@ There are two ways to use watermark for a stream processing engine
     ts TIMESTAMP,
     eventTime as ROWTIME(ts,'1 minutes')
   ) using kafka(
-    kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
+    kafka.bootstrap.servers="localhost:9091",
     startingOffsets=earliest,
     subscribe="user_behavior",
     "group-id"="user_behavior"
@@ -295,7 +295,7 @@ create stream input table user_behavior(
   ts TIMESTAMP,
   eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
+  kafka.bootstrap.servers="localhost:9091",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"
