@@ -42,10 +42,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.groupon.dse</groupId>
             <artifactId>spark-metrics</artifactId>
         </dependency>

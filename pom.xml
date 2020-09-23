@@ -16,7 +16,6 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <dep.lombok.version>1.16.4</dep.lombok.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.guava.version>19.0</dep.guava.version>
         <dep.mockito.version>1.10.19</dep.mockito.version>
@@ -27,7 +26,6 @@
         <dep.slf4j.api.version>1.7.30</dep.slf4j.api.version>
         <dep.groupon.spark-metrics.version>1.0</dep.groupon.spark-metrics.version>
         <dep.spark.version>2.4.5</dep.spark.version>
-        <dep.fastjson.version>1.2.73</dep.fastjson.version>
         <dep.hbase.version>2.1.7</dep.hbase.version>
         <dep.phoenix.version>5.0.0-HBase-2.0</dep.phoenix.version>
     </properties>
@@ -63,12 +61,6 @@
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-client</artifactId>
                 <version>${dep.hbase.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${dep.fastjson.version}</version>
             </dependency>
 
             <dependency>
@@ -127,11 +119,7 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.10</version>
             </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${dep.lombok.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>

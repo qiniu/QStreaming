@@ -93,7 +93,8 @@ To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
 ``` bash
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.spark.core.StreamingApp \
---master spark://IP:PORT \
+--master yarn \
+--deploy-mode client \
 --files "application.conf" \
 stream-spark-x.y.z.jar
 ```
@@ -105,8 +106,7 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 ```bash
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.spark.core.StreamingApp \
---master yarn \
---deploy-mode client \
+--master spark://IP:PORT \
 --files "application.conf" \
 stream-spark-x.y.z.jar
 ```
@@ -137,9 +137,9 @@ To use it add the dependency to your project
 
 - sbt
 
-        ```scala
-"com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
-        ```
+  ```scala
+  "com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
+  ```
 
 ### Features
 
