@@ -29,7 +29,7 @@ case class Job(jobContent: CharStream, params: Map[String, String] = Map()) exte
       val interval = new Interval(context.start.getStartIndex, context.stop.getStopIndex)
       context.start.getInputStream.getText(interval)
     }
-    logInfo(s"parsing statement ${statement}")
+    logDebug(s"parsing statement ${statement}")
   }
 
 

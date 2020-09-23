@@ -20,7 +20,7 @@ case class CreateFunctionExecutor(udfStatement: CreateFunctionStatement) extends
       case None => ""
     }
     val func = s"def apply (${params}) = ${udfStatement.funcBody}"
-    log.info(s"parsing udf statement ${func}")
+    log.debug(s"parsing udf statement: \n${func}")
     val (fun, argumentTypes, returnType) = udfStatement.dataType match  {
       case Some(dataType)=>{
         ScalaDynamicUDF(func,toDataType(dataType))

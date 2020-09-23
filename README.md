@@ -21,9 +21,9 @@ create stream input table user_behavior(
   category_id LONG,
   behavior STRING,
   ts TIMESTAMP,
-  eventTime as ROWTIME(ts,'5 minutes')
+  eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:9091",
+  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"
@@ -33,24 +33,32 @@ create stream input table user_behavior(
 create stream output table behavior_cnt_per_hour
 using kafka(
   kafka.bootstrap.servers="localhost:9091",
-  topic="buy_cnt_per_hour"
+  topic="behavior_cnt_per_hour"
 )TBLPROPERTIES(
   "update-mode"="update",
-  checkpointLocation = "buy_cnt_per_hour_cp"
+  checkpointLocation = "behavior_cnt_per_hour"
 );
 
 -- CREATE VIEW count the number of "buy" records in each hour window.
 create view v_behavior_cnt_per_hour as
 SELECT
-   window(eventTime, "60 minutes")) as window,
-   COUNT(*) as behavior_cnt,behavior
+   window(eventTime, "60 minutes") as window,
+   COUNT(*) as behavior_cnt,
+   behavior
 FROM user_behavior
-GROUP BY window(eventTime, "60 minutes")),behavior;
+GROUP BY
+  window(eventTime, "60 minutes"),
+  behavior;
+
 
 --  persist result to kafka
-insert into buy_cnt_per_hour
-select to_json(struct(cast(window.start as long)* 1000 as hour_of_day, behavior_cnt,behavior)) value
-from v_behavior_cnt_per_hour
+insert into behavior_cnt_per_hour
+select
+   from_unixtime(cast(window.start as LONG)/1000,'yyyy-MM-dd HH:mm') as time,
+   behavior_cnt,
+   behavior
+from
+  v_behavior_cnt_per_hour;
 ```
 
 ##### Application configuration properties
@@ -152,9 +160,9 @@ create stream input table user_behavior(
   category_id LONG,
   behavior STRING,
   ts TIMESTAMP,
-  eventTime as ROWTIME(ts,'5 minutes')
+  eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:9091",
+  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"
@@ -180,9 +188,9 @@ There are two ways to use watermark for a stream processing engine
     category_id LONG,
     behavior STRING,
     ts TIMESTAMP,
-    eventTime as ROWTIME(ts,'5 minutes')
+    eventTime as ROWTIME(ts,'1 minutes')
   ) using kafka(
-    kafka.bootstrap.servers="localhost:9091",
+    kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
     startingOffsets=earliest,
     subscribe="user_behavior",
     "group-id"="user_behavior"
@@ -194,14 +202,14 @@ There are two ways to use watermark for a stream processing engine
 - Adding *** waterMark("eventTimeField, delayThreshold") *** as a  view property in  a view statement
 
   ```sql
-  create view v_behavior_cnt_per_hour as
+  create view v_behavior_cnt_per_hour(waterMark = "eventTime, 1 minutes") as
   SELECT
-     window(eventTime, "60 minutes")) as window,
+     window(eventTime, "1 minutes") as window,
      COUNT(*) as behavior_cnt,
      behavior
   FROM user_behavior
   GROUP BY
-    window(eventTime, "60 minutes")),
+    window(eventTime, "1 minutes"),
     behavior;
   ```
 
@@ -224,7 +232,7 @@ Above example define UDF with a string parameter.
 #### Multiple sink for streaming application
 
 ```sql
-create stream output table output using hbase(
+    create stream output table output using hbase(
         quorum = '192.168.0.2:2181,192.168.0.3:2181,192.168.0.4:2181',
         tableName = 'buy_cnt_per_hour',
         rowKey = '<hour_of_day>',
@@ -285,9 +293,9 @@ create stream input table user_behavior(
   category_id LONG,
   behavior STRING,
   ts TIMESTAMP,
-  eventTime as ROWTIME(ts,'5 minutes')
+  eventTime as ROWTIME(ts,'1 minutes')
 ) using kafka(
-  kafka.bootstrap.servers="localhost:9091",
+  kafka.bootstrap.servers="localhost:${actualConfig.kafkaPort}",
   startingOffsets=earliest,
   subscribe="user_behavior",
   "group-id"="user_behavior"

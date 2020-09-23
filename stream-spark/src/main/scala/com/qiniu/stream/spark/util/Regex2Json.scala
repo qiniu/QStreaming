@@ -1,20 +1,18 @@
 package com.qiniu.stream.spark.util
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.alibaba.fastjson.JSONObject
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.qiniu.stream.util.Logging
 
 import scala.util.matching.Regex
 
 object Regex2Json extends Logging {
-
-  val objectMapper = new ObjectMapper()
   //LoadingCache[(pattern,groupNames),RegEx]
   type PatternGroupNames = (String, String)
   val regexCache: LoadingCache[PatternGroupNames, Regex] = CacheBuilder.newBuilder.build(new CacheLoader[PatternGroupNames, Regex] {
     override def load(key: PatternGroupNames): Regex = {
-    val fieldNames = asSchema(key._2).map(_._1).toArray
-    new Regex(key._1, fieldNames: _*)
+      val fieldNames = asSchema(key._2).map(_._1).toArray
+      new Regex(key._1, fieldNames: _*)
     }
   })
 
@@ -30,10 +28,10 @@ object Regex2Json extends Logging {
     val fields = asSchema(valueSchema)
 
     val regex = regexCache.get((patten, valueSchema))
-//    val regex = new Regex(patten, fieldNames: _*)
+    //    val regex = new Regex(patten, fieldNames: _*)
     regex findFirstMatchIn line match {
       case Some(find) =>
-        val node =  objectMapper.createObjectNode();
+        val node = new JSONObject()
         try {
           fields.foreach { kv =>
             kv._2.toLowerCase match {
