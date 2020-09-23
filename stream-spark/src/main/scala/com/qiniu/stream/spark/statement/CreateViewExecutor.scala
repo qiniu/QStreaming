@@ -17,7 +17,7 @@ case class CreateViewExecutor(statement: CreateViewStatement) extends StatementE
 
 
   def execute(jobContext: JobContext, sparkSession: SparkSession): Unit = {
-    log.info(s"parsing query ${statement.sql}")
+    log.debug(s"parsing query: \n${statement.sql}")
     statement.viewType match {
       case ViewType.`tempView` => {
         var table = sparkSession.sql(statement.sql)

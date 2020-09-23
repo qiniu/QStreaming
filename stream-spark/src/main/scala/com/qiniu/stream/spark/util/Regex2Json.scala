@@ -11,8 +11,8 @@ object Regex2Json extends Logging {
   type PatternGroupNames = (String, String)
   val regexCache: LoadingCache[PatternGroupNames, Regex] = CacheBuilder.newBuilder.build(new CacheLoader[PatternGroupNames, Regex] {
     override def load(key: PatternGroupNames): Regex = {
-    val fieldNames = asSchema(key._2).map(_._1).toArray
-    new Regex(key._1, fieldNames: _*)
+      val fieldNames = asSchema(key._2).map(_._1).toArray
+      new Regex(key._1, fieldNames: _*)
     }
   })
 
@@ -28,7 +28,7 @@ object Regex2Json extends Logging {
     val fields = asSchema(valueSchema)
 
     val regex = regexCache.get((patten, valueSchema))
-//    val regex = new Regex(patten, fieldNames: _*)
+    //    val regex = new Regex(patten, fieldNames: _*)
     regex findFirstMatchIn line match {
       case Some(find) =>
         val node = new JSONObject()

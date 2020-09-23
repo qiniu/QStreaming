@@ -10,13 +10,13 @@
         <module>stream-utils</module>
         <module>stream-spark-connector</module>
         <module>stream-spark</module>
+        <module>stream-spark-example</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
         <java.version>1.8</java.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <dep.lombok.version>1.16.4</dep.lombok.version>
         <dep.junit.version>4.12</dep.junit.version>
         <dep.guava.version>19.0</dep.guava.version>
         <dep.mockito.version>1.10.19</dep.mockito.version>
@@ -63,12 +63,6 @@
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-client</artifactId>
                 <version>${dep.hbase.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${dep.fastjson.version}</version>
             </dependency>
 
             <dependency>
@@ -128,32 +122,36 @@
                 <version>3.10</version>
             </dependency>
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${dep.lombok.version}</version>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${dep.fastjson.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>${dep.mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${dep.junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${dep.assertj.version}</version>
-                <scope>test</scope>
-            </dependency>
+
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${dep.antlr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.holdenkarau</groupId>
+                <artifactId>spark-testing-base_2.11</artifactId>
+                <version>2.4.3_0.12.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.manub</groupId>
+                <artifactId>scalatest-embedded-kafka_2.11</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-minicluster</artifactId>
+                <version>2.7.3</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.allegro.tech</groupId>
+                <artifactId>embedded-elasticsearch</artifactId>
+                <version>2.7.0</version>
             </dependency>
 
         </dependencies>

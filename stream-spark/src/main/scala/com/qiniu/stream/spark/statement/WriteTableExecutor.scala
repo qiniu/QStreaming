@@ -10,7 +10,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 case class WriteTableExecutor(insertTable: InsertStatement) extends StatementExecutor with Logging {
 
   override def execute(jobContext: JobContext, sparkSession: SparkSession): Unit = {
-    log.info(s"parsing insert statement ${insertTable.sql}")
+    log.debug(s"parsing insert statement:\n ${insertTable.sql}")
     val dataFrame = sparkSession.sql(insertTable.sql)
     write(insertTable.sinkTable,dataFrame)
   }

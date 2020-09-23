@@ -76,7 +76,6 @@ object ScalaDynamicUDF extends Logging {
     (generateFunction(func, argumentTypes.length), argumentTypes, dataType)
   }
 
-  //获取方法的参数类型及返回类型
   private def getFunctionReturnType(func: String): (Array[DataType], DataType) = {
     val classInfo = ClassCreateUtils(func)
     val method = classInfo.defaultMethod
@@ -84,7 +83,6 @@ object ScalaDynamicUDF extends Logging {
     (method.getParameterTypes.map(JavaTypeInference.inferDataType).map(_._1), dataType)
   }
 
-  //生成22个Function
   def generateFunction(func: String, argumentsNum: Int): AnyRef = {
     lazy val instance = ClassCreateUtils(func).instance
     lazy val method = ClassCreateUtils(func).methods("apply")
