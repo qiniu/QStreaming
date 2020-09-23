@@ -6,7 +6,7 @@ import net.manub.embeddedkafka.EmbeddedKafka.{publishStringMessageToKafka, withR
 import net.manub.embeddedkafka.EmbeddedKafkaConfig
 import org.apache.spark.sql.SparkSession
 
-object KafkaToKafkaExample extends App {
+object KafkaToConsoleExample extends App {
 
   val config = ConfigFactory.load()
 
