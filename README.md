@@ -150,6 +150,25 @@ To use it add the dependency to your project
   "com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
   ```
 
+## Datasources
+
+we support following datasource as input:
+
+- [Kafka](http://kafka.apache.org/) (streaming) with `json/regex/csv/avro`   format
+- HDFS/S3 with `csv/json/text/parquet/avro`   storage format
+- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, sqlserver, oracle)
+- MongoDB
+- [Apache Hbase](http://hbase.apache.org/)
+
+and following datasources as output:
+
+- [Kafka](http://kafka.apache.org/)
+- [elasticsearch](https://www.elastic.co/elasticsearch/)
+- [Apache Hbase](http://hbase.apache.org/)
+- MongoDB
+- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, sqlserver, oracle)
+- HDFS/S3 with `csv/json/text/parquet/avro`   storage format
+
 ## Features
 
 ### DDL Support for streaming process
