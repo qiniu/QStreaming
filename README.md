@@ -310,7 +310,7 @@ Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contribu
 
 ## License
 
-Goc is released under the Apache 2.0 license. See [LICENSE.txt](https://github.com/qiniu/goc/blob/master/LICENSE)
+Goc is released under the Apache 2.0 license. See [LICENSE.txt](https://github.com/qiniu/QStreaming/blob/master/LICENSE)
 
 ## Join QStreaming WeChat Group
 
