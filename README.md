@@ -1,12 +1,13 @@
-QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
+[![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming)
 
+QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
 It is based on a simple sql-like configuration file and runs on any Spark cluster.
 
-### Getting started
+## Getting started
 
 To run QStreaming you must first define 2 files.
 
-#####  Job DSL
+##### Job DSL
 
 A job.dsl is a sql file defines the queries of the ETL pipeline
 
@@ -149,9 +150,9 @@ To use it add the dependency to your project
   "com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
   ```
 
-### Features
+## Features
 
-#### DDL Support for streaming process
+### DDL Support for streaming process
 
 ```sql
 create stream input table user_behavior(
@@ -173,7 +174,7 @@ Above DDL statement define an input which connect to a kafka topic.
 
 For detail information  please refer to [CreateSourceTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L38)  for how to define an input and [CreateSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43) for how to define an output.
 
-#### Watermark support in sql
+### Watermark support in sql
 
 QStreaming supports watermark which helps a stream processing engine to deal with late data.
 
@@ -199,7 +200,7 @@ There are two ways to use watermark for a stream processing engine
 
   Above example  means use `eventTime` as event time field  with 5 minutes delay threshold
 
-- Adding *** waterMark("eventTimeField, delayThreshold") *** as a  view property in  a view statement
+- Adding   ***waterMark("eventTimeField, delayThreshold")***  as a  view property in  a view statement
 
   ```sql
   create view v_behavior_cnt_per_hour(waterMark = "eventTime, 1 minutes") as
@@ -215,7 +216,7 @@ There are two ways to use watermark for a stream processing engine
 
 Above  example  define a watermark use `eventTime` field with 1 hour threshold
 
-#### Dynamic user define function
+### Dynamic user define function
 
 ```
 -- define UDF named hello
@@ -229,7 +230,7 @@ QStreaming allow to define a dynamic UDF inside job.dsl, for more detail informa
 
 Above example define UDF with a string parameter.
 
-#### Multiple sink for streaming application
+### Multiple sink for streaming application
 
 ```sql
     create stream output table output using hbase(
@@ -253,7 +254,7 @@ QStreaming allow you to define multiple output for streaming/batch process engin
 
 Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43)
 
-#### Vairable interpolation
+### Vairable interpolation
 
 ```sql
 create batch input table raw_log
@@ -282,7 +283,7 @@ stream-spark-0.0.1.jar \
 -hour  theHourThatRunAJob\
 ```
 
-#### Kafka lag monitor
+### Kafka lag monitor
 
 QStreaming allow to monitor the kafka topic offset lag by  adding the ***"group-id"*** connector property in  ddl statement as below
 
@@ -302,3 +303,15 @@ create stream input table user_behavior(
 );
 ```
 
+## Contributing
+We welcome all kinds of contribution, including bug reports, feature requests, documentation improvements, UI refinements, etc.
+
+Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!
+
+## License
+
+Goc is released under the Apache 2.0 license. See [LICENSE.txt](https://github.com/qiniu/goc/blob/master/LICENSE)
+
+## Join goc WeChat Group
+
+![image-20200924173745117](docs/image/wechat.png)
