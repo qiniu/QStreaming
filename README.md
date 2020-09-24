@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming)
+[![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
 It is based on a simple sql-like configuration file and runs on any Spark cluster.
@@ -308,9 +308,7 @@ We welcome all kinds of contribution, including bug reports, feature requests, d
 
 Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!
 
-## License
 
-Goc is released under the Apache 2.0 license. See [LICENSE.txt](https://github.com/qiniu/QStreaming/blob/master/LICENSE)
 
 ## Join QStreaming WeChat Group
 
