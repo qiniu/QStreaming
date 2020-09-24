@@ -214,7 +214,7 @@ There are two ways to use watermark for a stream processing engine
     behavior;
   ```
 
-Above  example  define a watermark use `eventTime` field with 1 hour threshold
+Above  example  define a watermark use `eventTime` field with 1 minute threshold
 
 ### Dynamic user define function
 
