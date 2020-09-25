@@ -1,8 +1,6 @@
 package org.apache.spark.sql.execution.streaming.hbase
 
 
-import java.io.File
-
 import com.alibaba.fastjson.{JSON, JSONObject}
 import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.client.Put
@@ -16,8 +14,6 @@ import org.apache.spark.sql.types.{DataType, DataTypes, StructType}
 import org.apache.spark.sql.{DataFrame, Row}
 import org.joda.time.DateTime
 import org.stringtemplate.v4.ST
-
-import scala.util.matching.Regex
 
 import scala.util.matching.Regex
 
