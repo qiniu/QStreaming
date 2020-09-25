@@ -95,7 +95,7 @@ To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
   cd QStreaming && mvn clean install
   ```
 
-  - download the last released JAR
+  - Download the last released JAR from [here](https://packagecloud.io/qiniu/release)
 
 - Run the following command:
 
@@ -105,7 +105,7 @@ $SPARK_HOME/bin/spark-submit
 --master yarn \
 --deploy-mode client \
 --files "application.conf" \
-stream-spark-x.y.z.jar
+stream-spark-0.0.1.jar
 ```
 
 ##### Run on a standalone cluster
@@ -130,25 +130,61 @@ To use it add the dependency to your project
 
 - maven
 
+  add repository below  
+
+  ~~~xml
+  <repositories>
+    <repository>
+      <id>chaojunz-release</id>
+      <url>https://packagecloud.io/qiniu/release/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  ~~~
+
+  and dependency as follow 
+
   ```xml
   <dependency>
     <groupId>com.qiniu.stream</groupId>
     <dependency>stream-spark</dependency>
-    <version>LATEST VERSION</version>
+    <version>0.0.1</version>
   </dependency>
   ```
 
 - gradle
 
   ```groovy
-  compile group: 'com.qiniu.stream', name: 'stream-spark', version: 'LATEST VERSION'
+  repositories {
+      maven {
+          url "https://packagecloud.io/qiniu/release/maven2"
+      }
+  }
+  ```
+
+  ```groovy
+  compile 'com.qiniu.stream:stream-spark-example:0.0.1'
   ```
 
 - sbt
 
-  ```scala
-  "com.qiuniu.stream" % "stream-spark" % "LATEST VERSION"
+  For SNAPSHOT support (needs SBT 0.13.8 or above), create or append the following to a `project/maven.sbt` file in your project:
+  
   ```
+  addMavenResolverPlugin
+  ```
+  
+  Then, add this entry anywhere in your `build.sbt` file:
+  
+  ~~~scala
+  resolvers += "qiniu-release" at "https://packagecloud.io/qiniu/release/maven2"
+  libraryDependencies += "com.qiniu.stream" % "stream-spark-example" % "0.0.1"
+  ~~~
 
 ## Datasources
 

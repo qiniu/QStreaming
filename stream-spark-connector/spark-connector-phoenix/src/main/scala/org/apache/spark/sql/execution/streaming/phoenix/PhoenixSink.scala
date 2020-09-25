@@ -58,7 +58,6 @@ class PhoenixSink(parameters:Map[String,String], outputMode :OutputMode) extends
       case Success(c) ⇒
         try {
           import scala.collection.convert.wrapAsScala._
-          import org.apache.spark.sql.execution.streaming._
           SchemaUtil.generateColumnInfo(c, tableName.toUpperCase, null, true).map(column ⇒ {
             (parseColumn(column.getColumnName), column.toDataType)
           }).toMap
@@ -93,8 +92,8 @@ class PhoenixSink(parameters:Map[String,String], outputMode :OutputMode) extends
 
   }
 
-  import org.apache.spark.sql._
   import org.apache.phoenix.spark._
+  import org.apache.spark.sql._
   override def addBatch(batchId: Long, data: DataFrame): Unit = {
     val schema = data.schema
     if(!checkedSchema) {

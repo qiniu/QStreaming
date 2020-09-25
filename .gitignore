@@ -6,3 +6,5 @@ metastore_db/
 derby.log
 target/
 **/target
+*.versionsBackup
+**/*.versionsBackup

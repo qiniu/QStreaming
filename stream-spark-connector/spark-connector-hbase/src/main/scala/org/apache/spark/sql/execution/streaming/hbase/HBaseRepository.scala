@@ -1,21 +1,5 @@
-/*
- * Copyright 2020 Qiniu Cloud (qiniu.com)
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.spark.sql.execution.streaming.hbase
+
 
 import com.alibaba.fastjson.{JSON, JSONObject}
 import org.apache.hadoop.hbase.HBaseConfiguration
@@ -61,58 +45,58 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
           case DataTypes.DoubleType ⇒ st.add(field, row.getDouble(row.fieldIndex(field)))
           case DataTypes.BooleanType ⇒ st.add(field, row.getBoolean(row.fieldIndex(field)))
           case DataTypes.IntegerType ⇒ st.add(field, row.getInt(row.fieldIndex(field)))
-          case DataTypes.DateType ⇒ st.add(field,new DateTime(row.getDate(row.fieldIndex(field))).getMillis)
-          case DataTypes.TimestampType ⇒ st.add(field,Bytes.toBytes(new DateTime(row.getTimestamp(row.fieldIndex(field))).getMillis))
-          case DataTypes.BinaryType ⇒ st.add(field,row.getAs[Array[Byte]](row.fieldIndex(field)))
+          case DataTypes.DateType ⇒ st.add(field, new DateTime(row.getDate(row.fieldIndex(field))).getMillis)
+          case DataTypes.TimestampType ⇒ st.add(field, Bytes.toBytes(new DateTime(row.getTimestamp(row.fieldIndex(field))).getMillis))
+          case DataTypes.BinaryType ⇒ st.add(field, row.getAs[Array[Byte]](row.fieldIndex(field)))
           case _ ⇒ st.add(field, row.getString(row.fieldIndex(field)))
         }
     }
     st.render()
   }
 
-  private def parse(row: Row, valueName: String, dataType: DataType,valueType:Map[String,DataType]): Array[Byte] = {
+  private def parse(row: Row, valueName: String, dataType: DataType, valueType: Map[String, DataType]): Array[Byte] = {
     valueType(valueName) match {
       case DataTypes.FloatType ⇒
-          if(dataType == DataTypes.FloatType) {
-            Bytes.toBytes(row.getFloat(row.fieldIndex(valueName)))
-          }else{
-            cast(row.getFloat(row.fieldIndex(valueName)).toString,dataType)
-          }
+        if (dataType == DataTypes.FloatType) {
+          Bytes.toBytes(row.getFloat(row.fieldIndex(valueName)))
+        } else {
+          cast(row.getFloat(row.fieldIndex(valueName)).toString, dataType)
+        }
       case DataTypes.DoubleType ⇒
-          if(dataType == DataTypes.DoubleType) {
-            Bytes.toBytes(row.getDouble(row.fieldIndex(valueName)))
-          }else{
-            cast(row.getDouble(row.fieldIndex(valueName)).toString,dataType)
-          }
+        if (dataType == DataTypes.DoubleType) {
+          Bytes.toBytes(row.getDouble(row.fieldIndex(valueName)))
+        } else {
+          cast(row.getDouble(row.fieldIndex(valueName)).toString, dataType)
+        }
       case DataTypes.LongType ⇒
-          if(dataType == DataTypes.LongType) {
-            Bytes.toBytes(row.getLong(row.fieldIndex(valueName)))
-          }else{
-            cast(row.getLong(row.fieldIndex(valueName)).toString,dataType)
-          }
+        if (dataType == DataTypes.LongType) {
+          Bytes.toBytes(row.getLong(row.fieldIndex(valueName)))
+        } else {
+          cast(row.getLong(row.fieldIndex(valueName)).toString, dataType)
+        }
       case DataTypes.IntegerType ⇒
-          if(dataType == DataTypes.IntegerType){
-            Bytes.toBytes(row.getInt(row.fieldIndex(valueName)))
-          }else{
-            cast(row.getInt(row.fieldIndex(valueName)).toString,dataType)
-          }
+        if (dataType == DataTypes.IntegerType) {
+          Bytes.toBytes(row.getInt(row.fieldIndex(valueName)))
+        } else {
+          cast(row.getInt(row.fieldIndex(valueName)).toString, dataType)
+        }
       case DataTypes.BooleanType ⇒
-          if(dataType == DataTypes.BooleanType){
-            Bytes.toBytes(row.getBoolean(row.fieldIndex(valueName)))
-          }else{
-            cast(row.getBoolean(row.fieldIndex(valueName)).toString,dataType)
-          }
+        if (dataType == DataTypes.BooleanType) {
+          Bytes.toBytes(row.getBoolean(row.fieldIndex(valueName)))
+        } else {
+          cast(row.getBoolean(row.fieldIndex(valueName)).toString, dataType)
+        }
       case DataTypes.DateType ⇒
-          if(dataType == DataTypes.DateType){
-            Bytes.toBytes(new DateTime(row.getDate(row.fieldIndex(valueName))).getMillis)
-          }else{
-            cast(new DateTime(row.getDate(row.fieldIndex(valueName))).getMillis.toString,dataType)
-          }
+        if (dataType == DataTypes.DateType) {
+          Bytes.toBytes(new DateTime(row.getDate(row.fieldIndex(valueName))).getMillis)
+        } else {
+          cast(new DateTime(row.getDate(row.fieldIndex(valueName))).getMillis.toString, dataType)
+        }
       case DataTypes.TimestampType ⇒
-        if(dataType == DataTypes.DateType){
+        if (dataType == DataTypes.DateType) {
           Bytes.toBytes(new DateTime(row.getTimestamp(row.fieldIndex(valueName))).getMillis)
-        }else{
-          cast(new DateTime(row.getTimestamp(row.fieldIndex(valueName))).getMillis.toString,dataType)
+        } else {
+          cast(new DateTime(row.getTimestamp(row.fieldIndex(valueName))).getMillis.toString, dataType)
         }
       case DataTypes.BinaryType ⇒ row.getAs[Array[Byte]](row.fieldIndex(valueName))
       case _ ⇒ Bytes.toBytes(row.getString(row.fieldIndex(valueName)))
@@ -130,23 +114,23 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
     }
   }
 
-  private def convertToPut(schema:StructType, row: Row): (ImmutableBytesWritable, Put) = {
+  private def convertToPut(schema: StructType, row: Row): (ImmutableBytesWritable, Put) = {
     def resolve(field: JSONObject, valueType: Map[String, DataType]): FieldSchema = {
       val qualified = field.getString("qualified")
-      val (value,valueDataType) = field.getString("value") match {
+      val (value, valueDataType) = field.getString("value") match {
         case pattern(v) ⇒
-          (Right(v),valueType.getOrElse(v,DataTypes.StringType))
+          (Right(v), valueType.getOrElse(v, DataTypes.StringType))
         case _ ⇒
-          (Left(new ST(field.getString("value"))),DataTypes.StringType)
+          (Left(new ST(field.getString("value"))), DataTypes.StringType)
       }
 
-      (new ST(qualified) with Serializable,value, Option.apply(field.getString("type")).map{
+      (new ST(qualified) with Serializable, value, Option.apply(field.getString("type")).map {
         case "StringType" ⇒ DataTypes.StringType
         case "LongType" ⇒ DataTypes.LongType
         case "FloatType" ⇒ DataTypes.FloatType
         case "DoubleType" ⇒ DataTypes.DoubleType
         case "BooleanType" ⇒ DataTypes.BooleanType
-        case "IntegerType" ⇒  DataTypes.IntegerType
+        case "IntegerType" ⇒ DataTypes.IntegerType
       }.getOrElse(valueDataType))
     }
 
@@ -157,9 +141,10 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
             cast(parse(value, row, valueType), dataType))
         case (qualified, Right(value), dataType) ⇒
           (parse(qualified, row, valueType).getBytes,
-            parse(row, value, dataType,valueType))
+            parse(row, value, dataType, valueType))
       }
     }
+
     val valueType = schema.toArray.map(st => (st.name, st.dataType)).toMap
     val put = new Put(Bytes.toBytes(parse(new ST(rowKey), row, valueType)))
     import scala.collection.convert.wrapAsScala._
@@ -167,8 +152,8 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
       .foreach {
         case (k, v) ⇒
           timeStamp match {
-            case Some(ts) ⇒  put.addColumn(Bytes.toBytes(family), k, row.getLong(row.fieldIndex(ts)),v)
-            case None ⇒   put.addColumn(Bytes.toBytes(family), k, v)
+            case Some(ts) ⇒ put.addColumn(Bytes.toBytes(family), k, row.getLong(row.fieldIndex(ts)), v)
+            case None ⇒ put.addColumn(Bytes.toBytes(family), k, v)
           }
       }
     (new ImmutableBytesWritable, put)
@@ -178,8 +163,8 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
     val hbaseConf = HBaseConfiguration.create()
 
     hbaseConf.set("hbase.zookeeper.quorum", conf.getOrElse("quorum", "127.0.0.1:2181"))
-    for ((key,value)<- conf; if key.startsWith("hbase.")){
-      hbaseConf.set(key,value)
+    for ((key, value) <- conf; if key.startsWith("hbase.")) {
+      hbaseConf.set(key, value)
     }
 
     hbaseConf.set(TableOutputFormat.OUTPUT_TABLE, outputTableName)
@@ -192,7 +177,7 @@ case class HBaseRepository(conf: Map[String, String]) extends Logging {
       val converter = CatalystTypeConverters.createToScalaConverter(schema)
       rows.map(converter(_).asInstanceOf[Row])
     }
-    rdd.map(convertToPut(schema,_)).saveAsNewAPIHadoopDataset(job.getConfiguration)
+    rdd.map(convertToPut(schema, _)).saveAsNewAPIHadoopDataset(job.getConfiguration)
   }
 
 }

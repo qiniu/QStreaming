@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://cwiki.apache.org/confluence/display/INFRA/.asf.yaml+features+for+git+repositories
 language: scala
 
 jdk:
@@ -22,3 +21,15 @@ jdk:
 
 script:
   - mvn clean install
+
+cache:
+  directories:
+    - "$HOME/.cache"
+    - "$HOME/.m2"
+
+deploy:
+  provider: script
+  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
+  skip_cleanup: true
+  on:
+    tags: true

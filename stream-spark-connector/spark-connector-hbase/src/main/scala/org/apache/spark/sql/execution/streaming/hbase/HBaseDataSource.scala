@@ -15,32 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.spark.sql.execution.streaming.phoenix
+package org.apache.spark.sql.execution.streaming.hbase
 
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.sql.{DataFrame, SQLContext}
 import org.apache.spark.sql.execution.streaming.Sink
-import org.apache.spark.sql.sources.{BaseRelation, DataSourceRegister, StreamSinkProvider}
+import org.apache.spark.sql.sources.{DataSourceRegister, StreamSinkProvider}
 import org.apache.spark.sql.streaming.OutputMode
 
 
-class PhoenixDataSource extends DefaultSource with DataSourceRegister with StreamSinkProvider {
-  override def shortName(): String = "phoenix"
+class HBaseDataSource extends DefaultSource with DataSourceRegister with StreamSinkProvider {
 
   override def createSink(sqlContext: SQLContext,
                           parameters: Map[String, String],
-                          partitionColumns: Seq[String],
-                          outputMode: OutputMode): Sink = {
-    new PhoenixSink(parameters, outputMode)
+                          partitionColumns: Seq[String], outputMode: OutputMode): Sink = {
+    new HBaseSink(parameters, outputMode)
   }
 
-  override def createRelation(sqlContext: SQLContext,
-                              mode: SaveMode,
-                              parameters: Map[String, String],
-                              data: DataFrame): BaseRelation = {
-    require(!(parameters.contains("include-columns") && parameters.contains("exclude-columns")),
-      s"phoenix sink can not defined include-columns and exclude-columns parameters at the same time")
+  override def shortName: String = "hbase"
+}
 
-
-    super.createRelation(sqlContext, mode, parameters, data)
+class HBaseSink(options: Map[String, String],
+                outputMode: OutputMode) extends Sink {
+  override def addBatch(batchId: Long,
+                        data: DataFrame): Unit = {
+    val relation = HBaseRepository(options)
+    relation.writer(data, OutputMode.Update() == outputMode)
   }
 }
