@@ -25,6 +25,7 @@ script:
 cache:
   directories:
     - "$HOME/.cache"
+    - "$HOME/.m2"
 
 deploy:
   provider: script
