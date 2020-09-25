@@ -23,7 +23,7 @@
     <parent>
         <artifactId>stream-parent</artifactId>
         <groupId>com.qiniu.stream</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <artifactId>stream-spark</artifactId>
     <packaging>jar</packaging>
@@ -39,11 +39,6 @@
         <dependency>
             <groupId>com.qiniu.stream</groupId>
             <artifactId>stream-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qiniu.stream</groupId>
-            <artifactId>stream-spark-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

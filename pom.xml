@@ -21,15 +21,13 @@
     <groupId>com.qiniu.stream</groupId>
     <artifactId>stream-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Stream Project Parent Pom</name>
     <modules>
         <module>stream-utils</module>
         <module>stream-spark-connector</module>
         <module>stream-spark</module>
         <module>stream-spark-example</module>
-        <module>stream-spark-connector/spark-connector-hbase</module>
-        <module>stream-spark-connector/spark-connector-phoenix</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
