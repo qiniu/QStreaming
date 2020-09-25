@@ -15,30 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.spark.sql.execution.streaming.hbase
+package org.apache.spark.sql.execution.streaming.phoenix
 
 import org.apache.spark.sql.execution.streaming.Sink
-import org.apache.spark.sql.sources.{DataSourceRegister, StreamSinkProvider}
+import org.apache.spark.sql.sources.{BaseRelation, DataSourceRegister, StreamSinkProvider}
 import org.apache.spark.sql.streaming.OutputMode
-import org.apache.spark.sql.{DataFrame, SQLContext}
+import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
 
-class HBaseDataSource extends DefaultSource with DataSourceRegister with StreamSinkProvider {
+class PhoenixDataSource extends DefaultSource with DataSourceRegister with StreamSinkProvider {
+  override def shortName(): String = "phoenix"
 
   override def createSink(sqlContext: SQLContext,
                           parameters: Map[String, String],
-                          partitionColumns: Seq[String], outputMode: OutputMode): Sink = {
-    new HBaseSink(parameters, outputMode)
+                          partitionColumns: Seq[String],
+                          outputMode: OutputMode): Sink = {
+    new PhoenixSink(parameters, outputMode)
   }
 
-  override def shortName: String = "hbase"
-}
+  override def createRelation(sqlContext: SQLContext,
+                              mode: SaveMode,
+                              parameters: Map[String, String],
+                              data: DataFrame): BaseRelation = {
+    require(!(parameters.contains("include-columns") && parameters.contains("exclude-columns")),
+      s"phoenix sink can not defined include-columns and exclude-columns parameters at the same time")
 
-class HBaseSink(options: Map[String, String],
-                outputMode: OutputMode) extends Sink {
-  override def addBatch(batchId: Long,
-                        data: DataFrame): Unit = {
-    val relation = HBaseRepository(options)
-    relation.writer(data, OutputMode.Update() == outputMode)
+
+    super.createRelation(sqlContext, mode, parameters, data)
   }
 }

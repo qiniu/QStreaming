@@ -17,10 +17,9 @@
  */
 package org.apache.spark.sql.execution.streaming.hbase
 
-
-import org.apache.spark.sql.sources._
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.sql.sources.{BaseRelation, CreatableRelationProvider, InsertableRelation, RelationProvider}
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
 class DefaultSource extends RelationProvider with CreatableRelationProvider {
 
@@ -56,7 +55,6 @@ case class HBaseRelation(
   extends BaseRelation {
 
   override def schema: StructType = {
-    import org.apache.spark.sql.types._
     StructType(
       Array(
         StructField("rowkey", StringType, false),

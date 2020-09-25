@@ -20,10 +20,9 @@ package org.apache.spark.sql.execution.streaming.phoenix
 import com.qiniu.stream.util.Logging
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.HBaseConfiguration
-import org.apache.phoenix.spark.PhoenixRelation
+import org.apache.phoenix.spark.{PhoenixRelation, _}
 import org.apache.spark.sql.sources.{BaseRelation, CreatableRelationProvider, RelationProvider}
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
-import org.apache.phoenix.spark._
 
 class DefaultSource extends RelationProvider with CreatableRelationProvider with Logging {
 
