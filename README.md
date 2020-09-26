@@ -2,8 +2,9 @@
 [![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/).
-It is based on a simple sql-like configuration file and runs on any Spark cluster.
+QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/)
+
+It is based on a simple sql-like configuration file and runs on any Spark cluster
 
 ## Getting started
 
