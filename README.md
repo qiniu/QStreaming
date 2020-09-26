@@ -359,10 +359,15 @@ create stream input table user_behavior(
 );
 ```
 
-## Contributing
+## [Contributing](https://github.com/qiniu/QStreaming/CONTRIBUTING.md)
 We welcome all kinds of contribution, including bug reports, feature requests, documentation improvements, UI refinements, etc.
 
 Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!
+
+
+## License
+See the LICENSE file for license rights and limitations (MIT).
+
 
 
 ## Join QStreaming WeChat Group
