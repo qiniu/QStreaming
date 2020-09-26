@@ -366,10 +366,13 @@ Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contribu
 
 
 ## License
-See the LICENSE file for license rights and limitations (Apache License).
+See the [LICENSE file](https://github.com/qiniu/QStreaming/LICENSE) for license rights and limitations (Apache License).
 
 
 
 ## Join QStreaming WeChat Group
 
+Join [Gitter room](https://gitter.im/qiniu-streaming/community)
+
+Join We-Chat Group
 ![image-20200924173745117](docs/image/wechat.png)
