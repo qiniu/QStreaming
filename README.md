@@ -366,7 +366,7 @@ Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contribu
 
 
 ## License
-See the LICENSE file for license rights and limitations (MIT).
+See the LICENSE file for license rights and limitations (Apache License).
 
 
 
