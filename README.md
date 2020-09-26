@@ -14,7 +14,7 @@ To run QStreaming you must first define 2 files.
 
 A job.dsl is a sql file defines the queries of the ETL pipeline
 
-For example a simple  job.dsl (actullay is a sql like file) should be as follow:
+For example a simple  job.dsl (actually is a sql like file) should be as follows:
 
 ```sql
 -- DDL for streaming input which connect to a kafka topic
@@ -46,12 +46,12 @@ using kafka(
 -- CREATE VIEW count the number of "buy" records in each hour window.
 create view v_behavior_cnt_per_hour as
 SELECT
-   window(eventTime, "60 minutes") as window,
+   window(eventTime, "1 minutes") as window,
    COUNT(*) as behavior_cnt,
    behavior
 FROM user_behavior
 GROUP BY
-  window(eventTime, "60 minutes"),
+  window(eventTime, "1 minutes"),
   behavior;
 
 
@@ -73,10 +73,8 @@ There are only two config options  currently avaliable.
 2. job.file
 
 ```properties
-//indicator whether QStreaming is running with DEBUG mode or not
-debug = false
-//file name of job.dsl(default is job.dsl)
-job.file = job.dsl
+debug = false //indicator whether QStreaming is running with DEBUG mode or not
+job.file = job.dsl //file name of job.dsl(default is job.dsl)
 ```
 
 #### Run QStreaming
@@ -87,9 +85,9 @@ There are three options to run QStreaming
 
 To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
 
-- get latest JAR file
+- get the latest JAR file
 
-  There are two options to get QStreaming Jar file
+  There are two options to get QStreaming Jar files
 
   - clone project and build
 
@@ -129,7 +127,7 @@ It's also possible to use QStreaming inside your own project
 
 QStreaming library requires scala 2.11
 
-To use it add the dependency to your project
+To use it adds the dependency to your project
 
 - maven
 
@@ -205,7 +203,7 @@ and following datasources as output:
 - [elasticsearch](https://www.elastic.co/elasticsearch/)
 - [Apache Hbase](http://hbase.apache.org/)
 - MongoDB
-- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, sqlserver, oracle)
+- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, oracle)
 - HDFS/S3 with `csv/json/text/parquet/avro`   storage format
 
 ## Features
@@ -256,7 +254,7 @@ There are two ways to use watermark for a stream processing engine
   );
   ```
 
-  Above example  means use `eventTime` as event time field  with 5 minutes delay threshold
+  Above example  means use `eventTime` as event time field  with 5 minutes delay thresholds
 
 - Adding   ***waterMark("eventTimeField, delayThreshold")***  as a  view property in  a view statement
 
@@ -288,7 +286,7 @@ QStreaming allow to define a dynamic UDF inside job.dsl, for more detail informa
 
 Above example define UDF with a string parameter.
 
-### Multiple sink for streaming application
+### The multiple sink for streaming application
 
 ```sql
     create stream output table output using hbase(
@@ -312,7 +310,7 @@ QStreaming allow you to define multiple output for streaming/batch process engin
 
 Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43)
 
-### Vairable interpolation
+### Variable interpolation
 
 ```sql
 create batch input table raw_log
@@ -321,7 +319,7 @@ USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
 
 job.dsl file support variable interpolation from command line arguments , this  is  useful  for running QStreaming as a periodic job.
 
-For example you can pass the value for  `theDayThatRunAJob` and `theHourThatRunAJob` from an  [Airflow](http://airflow.apache.org/) DAG
+For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRunAJob` from an  [Airflow](http://airflow.apache.org/) DAG
 
 ```bash
 $SPARK_HOME/bin/spark-submit
@@ -365,7 +363,6 @@ create stream input table user_behavior(
 We welcome all kinds of contribution, including bug reports, feature requests, documentation improvements, UI refinements, etc.
 
 Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!
-
 
 
 ## Join QStreaming WeChat Group
