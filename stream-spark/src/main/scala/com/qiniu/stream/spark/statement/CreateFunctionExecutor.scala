@@ -18,7 +18,7 @@
 package com.qiniu.stream.spark.statement
 
 import com.qiniu.stream.spark.config.{BooleanDataType, ByteDataType, CreateFunctionStatement, DateDataType, DoubleDataType, FloatDataType, IntDataType, LongDataType, ShortDataType, SmallIntDataType, SqlStructType, StringDataType, TimeStampDataType, TinyIntDataType}
-import com.qiniu.stream.spark.core.JobContext
+import com.qiniu.stream.spark.core.PipelineContext
 import com.qiniu.stream.spark.source.WaterMarker
 import com.qiniu.stream.spark.udf.ScalaDynamicUDF
 import com.qiniu.stream.util.Logging
@@ -30,7 +30,7 @@ import org.apache.spark.sql.types.{DataType, DataTypes, StructField, StructType}
 import scala.util.Try
 
 case class CreateFunctionExecutor(udfStatement: CreateFunctionStatement) extends StatementExecutor with WaterMarker with Logging {
-  override def execute(jobContext :JobContext, sparkSession: SparkSession): Unit = {
+  override def execute(jobContext :PipelineContext, sparkSession: SparkSession): Unit = {
 
     val params = udfStatement.funcParam match {
       case Some(params) => params

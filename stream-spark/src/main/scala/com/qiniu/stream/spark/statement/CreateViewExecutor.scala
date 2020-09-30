@@ -19,7 +19,7 @@ package com.qiniu.stream.spark.statement
 
 import com.qiniu.stream.spark.config
 import com.qiniu.stream.spark.config.{CreateViewStatement, RowTime, ViewType}
-import com.qiniu.stream.spark.core.JobContext
+import com.qiniu.stream.spark.core.PipelineContext
 import com.qiniu.stream.spark.source.WaterMarker
 import com.qiniu.stream.spark.util.DatasetUtils
 import com.qiniu.stream.util.Logging
@@ -33,7 +33,7 @@ case class CreateViewExecutor(statement: CreateViewStatement) extends StatementE
   }
 
 
-  def execute(jobContext: JobContext, sparkSession: SparkSession): Unit = {
+  def execute(jobContext: PipelineContext, sparkSession: SparkSession): Unit = {
     log.debug(s"parsing query: \n${statement.sql}")
     statement.viewType match {
       case ViewType.`tempView` => {

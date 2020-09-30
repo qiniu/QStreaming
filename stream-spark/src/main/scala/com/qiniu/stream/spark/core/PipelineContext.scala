@@ -19,18 +19,20 @@ package com.qiniu.stream.spark.core
 
 import com.typesafe.config.Config
 
-case class JobContext(job: Job, config: Config, params: collection.mutable.Map[String, String] = collection.mutable.HashMap()) {
+case class PipelineContext(job: Pipeline, config: Config, params: collection.mutable.Map[String, String] = collection.mutable.HashMap()) {
+
+  private val DEBUG_MODE = "debug"
 
   def set(key: String, value: String): Unit = {
     params + (key -> value)
   }
 
   def setDebug(value: Boolean) = {
-    set("debug", "true")
+    set(DEBUG_MODE, "true")
   }
 
   def isDebugMode: Boolean = {
-    params.get("debug") match {
+    params.get(DEBUG_MODE) match {
       case Some(value) if (value.equalsIgnoreCase("true")) => true
       case _ => false
     }

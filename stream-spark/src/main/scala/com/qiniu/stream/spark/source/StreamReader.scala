@@ -25,30 +25,6 @@ import com.qiniu.stream.util.Logging
 import org.apache.spark.sql.types.DataTypes
 import org.apache.spark.sql.{DataFrame, SparkSession, functions => F}
 
-/**
-  *
-  * df.printSchema() reveals the schema of our DataFrame.
-  * before convert
-  * root
-  * |-- key: binary (nullable = true)
-  * |-- value: binary (nullable = true)
-  * |-- topic: string (nullable = true)
-  * |-- partition: integer (nullable = true)
-  * |-- offset: long (nullable = true)
-  * |-- timestamp: timestamp (nullable = true)
-  * |-- timestampType: integer (nullable = true)
-  *
-  * after convert
-  * kafka (原始的kafka结构)
-  * |-- key: binary (nullable = true)
-  * |-- topic: string (nullable = true)
-  * |-- partition: integer (nullable = true)
-  * |-- offset: long (nullable = true)
-  * |-- timestamp: timestamp (nullable = true)
-  * |-- timestampType: integer (nullable = true)
-  * data (是json打散后的)
-  *
-  */
 class StreamReader extends Reader with WaterMarker with Logging {
 
 
@@ -63,7 +39,7 @@ class StreamReader extends Reader with WaterMarker with Logging {
   private def avroTable(avroFormat: RowFormat, table: DataFrame) = {
     import org.apache.spark.sql.avro._
     val kafkaFields = table.schema.fieldNames.filterNot(_ == "value")
-    require(avroFormat.props.get("jsonSchema").isDefined, "jsonSchema is required for avro row format")
+    require(avroFormat.props.contains("jsonSchema"), "jsonSchema is required for avro row format")
     val jsonSchema = avroFormat.props("jsonSchema")
     table.withColumn("value", from_avro(table.col("value"), jsonSchema)).select("value.*", kafkaFields: _*)
 

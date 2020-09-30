@@ -18,7 +18,7 @@ package com.qiniu.stream.spark.core
 
 import java.io.File
 
-import com.qiniu.stream.spark.core.JobConfig.RichConfig
+import com.qiniu.stream.spark.core.PipelineConfig.RichConfig
 import com.qiniu.stream.util.Logging
 import com.typesafe.config.{Config, ConfigFactory}
 import org.antlr.v4.runtime.{CharStream, CharStreams}
@@ -27,23 +27,19 @@ import org.stringtemplate.v4.ST
 
 import scala.util.{Failure, Success, Try}
 
-/**
- * Default implementation of Spark Job Operator
- *
- */
-case class JobOperator(config: Config,
-                       params: Map[String, String] = Map(),
-                       session: Option[SparkSession] = None,
-                       jobString: Option[CharStream] = None
-                           )   extends Logging {
+case class PipelineRunner(config: Config,
+                          params: Map[String, String] = Map(),
+                          session: Option[SparkSession] = None,
+                          jobString: Option[CharStream] = None
+                         ) extends Logging {
 
   private val sparkSession = session.getOrElse(SparkSessionFactory.load(config))
 
   sys.addShutdownHook(stop())
 
   def start(): Unit = {
-    val job = Job(jobContent, params)
-    val jobContext = JobContext(job, config)
+    val job = Pipeline(jobContent, params)
+    val jobContext = PipelineContext(job, config)
 
     def awaitTermination() {
       if (sparkSession.streams.active.nonEmpty) {
@@ -70,7 +66,6 @@ case class JobOperator(config: Config,
   }
 
 
-
   private val jobContent = {
     jobString.getOrElse {
       val source = config.source
@@ -95,31 +90,34 @@ case class JobOperator(config: Config,
   def isDebugEnable: Boolean = config.isDebugEnable
 }
 
-object JobOperator {
+object PipelineRunner {
 
-  def apply(params: Map[String, String]): JobOperator = {
+  private val PIPELINE_CONF = "pipeline.conf"
+  private val PIPELINE_DSL = "pipeline.dsl"
 
-    val config = params.get("config.file") match {
+  def apply(params: Map[String, String]): PipelineRunner = {
+
+    val config = params.get(PIPELINE_CONF) match {
       case Some(file) => ConfigFactory.parseFile(new File(file))
       case None => ConfigFactory.load()
     }
 
-    val jobDsl = params.get("sql.file") match {
+    val jobDsl = params.get(PIPELINE_DSL) match {
       case Some(file) => Some(CharStreams.fromFileName(file))
       case None => None
     }
 
-    val newParams = params - ("config.file", "sql.file")
+    val newParams = params - (PIPELINE_CONF, PIPELINE_DSL)
 
-    JobOperator(config, newParams, None, jobDsl)
+    PipelineRunner(config, newParams, None, jobDsl)
 
   }
 
-  def apply(config: Config, session: SparkSession, jobString: String): JobOperator = {
+  def apply(config: Config, session: SparkSession, jobString: String): PipelineRunner = {
     require(config != null)
     require(session != null)
     require(jobString != null)
-    JobOperator(config, Map(), Some(session), Some(CharStreams.fromString(jobString)))
+    PipelineRunner(config, Map(), Some(session), Some(CharStreams.fromString(jobString)))
   }
 
 }

@@ -18,12 +18,12 @@
 package com.qiniu.stream.spark.statement
 
 import com.qiniu.stream.spark.config.SqlStatement
-import com.qiniu.stream.spark.core.JobContext
+import com.qiniu.stream.spark.core.PipelineContext
 import com.qiniu.stream.util.Logging
 import org.apache.spark.sql.SparkSession
 
 case class SparkSqlExecutor(sqlStatement:SqlStatement) extends StatementExecutor with Logging{
-  override def execute(jobContext :JobContext, sparkSession: SparkSession): Unit = {
+  override def execute(jobContext :PipelineContext, sparkSession: SparkSession): Unit = {
     logDebug(s"execute spark sql:\n ${sqlStatement.sql}")
     sparkSession.sql(sqlStatement.sql)
   }

@@ -27,7 +27,7 @@ object SparkSessionFactory extends Logging {
   def load(config: Config) = {
     val sparkConf: SparkConf = {
       val sparkConf = new SparkConf()
-      if (config.hasPath("spark")){
+      if (config.hasPath("spark")) {
         import scala.collection.JavaConversions._
         config.getConfig("spark").entrySet().foreach(e => {
           sparkConf.set(e.getKey, config.getString("spark." + e.getKey))
@@ -36,9 +36,5 @@ object SparkSessionFactory extends Logging {
       sparkConf
     }
     SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate()
-
-
   }
-
-
 }

@@ -28,7 +28,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import scala.collection.mutable.ArrayBuffer
 
 
-case class Job(jobContent: CharStream, params: Map[String, String] = Map()) extends SqlBaseListener  with Logging {
+case class Pipeline(jobContent: CharStream, params: Map[String, String] = Map()) extends SqlBaseListener  with Logging {
 
   val statements: ArrayBuffer[Statement] = new ArrayBuffer[Statement]()
 

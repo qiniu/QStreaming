@@ -24,7 +24,7 @@ import scala.io.Source
 /**
  * Enrich the typesafe Config
  */
-object JobConfig {
+object PipelineConfig {
   private val TEMPLATE_START_CHAR = "st.start.char"
   private val TEMPLATE_STOP_CHAR = "st.stop.char"
   private val TEMPLATE_DISABLE = "st.disable"

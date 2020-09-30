@@ -17,7 +17,7 @@
  */
 package com.qiniu.stream.spark.example
 
-import com.qiniu.stream.spark.core.JobOperator
+import com.qiniu.stream.spark.core.PipelineRunner
 import com.typesafe.config.ConfigFactory
 import net.manub.embeddedkafka.EmbeddedKafka.{publishStringMessageToKafka, withRunningKafkaOnFoundPort}
 import net.manub.embeddedkafka.EmbeddedKafkaConfig
@@ -35,7 +35,7 @@ object KafkaToConsoleExample extends App {
 
   withRunningKafkaOnFoundPort(userDefinedConfig) { implicit actualConfig =>
 
-    val jobContent =
+    val pipelineDsl =
       s"""
           create stream input table user_behavior(
          |  user_id LONG,
@@ -106,11 +106,8 @@ object KafkaToConsoleExample extends App {
          |	"ts":${(time+1000)}
          |}""".stripMargin)
 
-    val jobOperator = JobOperator(config, spark, jobContent)
-
-    jobOperator.start()
-
-
+    val pipelineRunner = PipelineRunner(config, spark, pipelineDsl)
+    pipelineRunner.start()
 
   }
 

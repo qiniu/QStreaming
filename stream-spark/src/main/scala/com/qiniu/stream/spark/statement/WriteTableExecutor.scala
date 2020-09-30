@@ -18,7 +18,7 @@
 package com.qiniu.stream.spark.statement
 
 import com.qiniu.stream.spark.config.{InsertStatement, SinkTable}
-import com.qiniu.stream.spark.core.JobContext
+import com.qiniu.stream.spark.core.PipelineContext
 import com.qiniu.stream.spark.sink.{BatchWriter, StreamWriter}
 import com.qiniu.stream.spark.util.DatasetUtils
 import com.qiniu.stream.util.Logging
@@ -26,7 +26,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 case class WriteTableExecutor(insertTable: InsertStatement) extends StatementExecutor with Logging {
 
-  override def execute(jobContext: JobContext, sparkSession: SparkSession): Unit = {
+  override def execute(jobContext: PipelineContext, sparkSession: SparkSession): Unit = {
     log.debug(s"parsing insert statement:\n ${insertTable.sql}")
     val dataFrame = sparkSession.sql(insertTable.sql)
     write(insertTable.sinkTable,dataFrame)
