@@ -39,7 +39,7 @@
             <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.qiniu.stream</groupId>
+            <groupId>com.qiniu</groupId>
             <artifactId>stream-spark</artifactId>
             <version>${project.version}</version>
         </dependency>
