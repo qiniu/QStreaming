@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>stream-parent</artifactId>
-        <groupId>com.qiniu.stream</groupId>
+        <groupId>com.qiniu</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>stream-spark</artifactId>
@@ -106,6 +106,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${dep.antlr.version}</version>
                 <executions>
                     <execution>
                         <goals>
