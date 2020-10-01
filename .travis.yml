@@ -22,7 +22,7 @@ env:
   - secure: mSPGH3KWMKqA3xHyOVWGk7BQUXaFhUft7GnLYwP+dgNvrnbG2OYOT4kQ5Mctj6oLDD1dB6gjG+XhisuE6/InN8x9nmbfh9hVWlWB5A62fvVLOUbVoVsjRVf1lhI59aDBVRi6f8C50ispcDleY/T24R49+DzdTpkrK8kFYbMsXnlO2u8ImjMbRP7h2cA3vwovNhYXwsH0Q2Kmt0u/ti0SQK1LgtwiAhHmpNOCLzLn8bF+WrInUF3+Y1QQXqMDxKG5zTxcErDYp9jm1JsHhYf6R+WPZCVKZ2CbwuFldPXP9zbmbCDrnHc01oikp3ns4o+fINIWjevnupJVLQfZbGZM7CdVqinkM8IOnQlsDU2cLkdM/sqwQvgrT+WmLbQtQ+Or+V1ZVvK48323Mh791jMvdfFArn8FfkSQXYUqk3mqt2kQoP6bFxGc+PGd7UcjIE8h2Rq3Kl0JxvsE+Kejze/OW5RtQY7AEx7m1Mu9yVyALFgtVIobY7beT6p67W8ViSAWpKRvVggSBUSnonsjkFBcT7cKGzKrDddp5FLXSP/fOASIQCsxDZ5g0ZL+uJuE5+DU7+uJMvOvZH3DtcSkYyj4NOf/mUbZHB8/HEp3CUORi9HsZJKVa/AjSHlYetjHKDYeHrSQIZHXdvrUo7pDt42Vg6JV/pG69uPIjjKm+bpmHPM=
 before_install:
 - openssl aes-256-cbc -K $encrypted_4f0d00631887_key -iv $encrypted_4f0d00631887_iv
-  -in ./travis/private-key.gpg.enc -out .travis/private-key.gpg -d
+  -in .travis/private-key.gpg.enc -out .travis/private-key.gpg -d
 
 
 after_success:
