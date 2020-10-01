@@ -1,17 +1,29 @@
 language: scala
 jdk:
 - openjdk8
+
 script: make build
 cache:
   directories:
   - "$HOME/.cache"
   - "$HOME/.m2"
+
 deploy:
   provider: script
   script: make travis-deploy
   skip_cleanup: true
   on:
     tags: true
+
+env:
+  global:
+  - secure: e0zq1eEWutBurlKx5ZzDabc28+suyWJKWi1k18a9FABCuyh0T0DlxZ6FxTz78arFsvQTB+JFdBboUDzxjPDitl+bWay13nTOm8+Mwf7WC4LB5+GVNp8IFBVpCmm5uSGwYILSApyjpBDiYUaaRkozegHJl7I48wYtWFyVmyAyItIZx3k+F/8TSVROyW4B2vc+o7Jcpg89Qdlw52hGt5rZNR3yMORD5xInVbYJyAui2v4uo0S3QxcNXD/0sWcVWfelvCS9ajJKFFoFVsNcaBRqZMwlRVUpLo+ISALyL7qTkS7TlBQx4c5oWpoqjVNP7Sr8jJgbQX2md1hX7qCCHx2JLu4Xakahvaxu3XqcqjPgVmPab40ILQxVPUmFwD0u6+A6xX8BHnP8UNRHSE76A4ny173xoz/ffCXXCNkWJoAh4fg6Ubxt0bmrwux1SwDoGgkoG+N+U1NlJM4f/IsdhVa4EAwISeqc5Sa2EyGVb9jIQLVda2WO34WXYKbB7Fucn1kYp4Ut0WXHYfR+xZ+IEA7slUouzKcPDazwP8AvbB6HKFGF/+vMLa8F3rWbTv4xzOunP/GUVaSAY3YWzkcF8niby5rE2ep7jEbeq49UxRVoXyYSc0+hUZaOeNEEAFkw+m8uE25yBmLoe7yM69PO1xierl3LjZkIDp8H1oZU5dX0++E=
+  - secure: MgVBM2oKdvWSD/m1rGIbacC0l5a9i3j/tewDYT43GvPu1DDicOavlKE2KOz3Rh7xBK/i+Gd6f1eaFt7YbGKSYZY9Y38LbMOHm4tV1AC0W69TqPmVqMH4/cOkwSPMNpIye6I9gThOoza+dtPUm4vWV5sG17GHAwaaSr/xS1nvRozgTMvmtq80z4YizpcqA4od8UtfQFWx5lTa3FXzSzdcqFrNlkF3tdhsP4knNm/MTAulavvbqGZFFZ8Y/V4ZfyhGb9OEEMcKFJTzZsNRC1OC8XassIpi/9WDcIBLg86xPCQ836AoO53AGQWc+4ehuYu4JRi0gu9kbzfi07tCt0n9341IzZxysfC2XnL3RSAlEcsywTWbaEw3dBHmT40LrYcwJcbOQfjesdzn+qUUjNT6SYsfN23t3W1JjT8N8gc5Nw1psoxvvo/lpZ/uXcgYoFMLeRqjdjh8gVM+hm0j0lXe39ulgTF1dqqhBoimbSZhgrwBn9O1mp9mD0BBiCPt/rgFmuBRhUFOoXG4VP/DhR02NeDyKUkCT7aH4CTi92jx+cY/+VN272kxMCrXvDh+G60EwK003Hp3+y+7OfhdyKVBdC2xYM/ZqVG0NXEHWcTmjvLUDXq7qUpAip2YKMNVRnrLqna4uvFBaY8u56ubVkUz3FJD9KjNELonvHlcBunsiAA=
+  - secure: mSPGH3KWMKqA3xHyOVWGk7BQUXaFhUft7GnLYwP+dgNvrnbG2OYOT4kQ5Mctj6oLDD1dB6gjG+XhisuE6/InN8x9nmbfh9hVWlWB5A62fvVLOUbVoVsjRVf1lhI59aDBVRi6f8C50ispcDleY/T24R49+DzdTpkrK8kFYbMsXnlO2u8ImjMbRP7h2cA3vwovNhYXwsH0Q2Kmt0u/ti0SQK1LgtwiAhHmpNOCLzLn8bF+WrInUF3+Y1QQXqMDxKG5zTxcErDYp9jm1JsHhYf6R+WPZCVKZ2CbwuFldPXP9zbmbCDrnHc01oikp3ns4o+fINIWjevnupJVLQfZbGZM7CdVqinkM8IOnQlsDU2cLkdM/sqwQvgrT+WmLbQtQ+Or+V1ZVvK48323Mh791jMvdfFArn8FfkSQXYUqk3mqt2kQoP6bFxGc+PGd7UcjIE8h2Rq3Kl0JxvsE+Kejze/OW5RtQY7AEx7m1Mu9yVyALFgtVIobY7beT6p67W8ViSAWpKRvVggSBUSnonsjkFBcT7cKGzKrDddp5FLXSP/fOASIQCsxDZ5g0ZL+uJuE5+DU7+uJMvOvZH3DtcSkYyj4NOf/mUbZHB8/HEp3CUORi9HsZJKVa/AjSHlYetjHKDYeHrSQIZHXdvrUo7pDt42Vg6JV/pG69uPIjjKm+bpmHPM=
+before_install:
+- openssl aes-256-cbc -K $encrypted_4f0d00631887_key -iv $encrypted_4f0d00631887_iv
+  -in private-key.gpg.enc -out .travis/private-key.gpg -d
+
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

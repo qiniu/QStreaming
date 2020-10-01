@@ -9,14 +9,16 @@
     <profiles>
         <profile>
             <id>ossrh</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
-                <gpg.keyname>71BEDC465FB7ED77C9F78E5C6C1A319EE4B1B651</gpg.keyname>
+                <gpg.keyname>05B373A7D49F556A058699B6790EFE28E41F892A</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+                <gpg.passphraseServerId>${gpg.keyname}</gpg.passphraseServerId>
+                <gpg.defaultKeyring>false</gpg.defaultKeyring>
             </properties>
         </profile>
     </profiles>
+    <activeProfiles>
+        <activeProfile>ossrh</activeProfile>
+    </activeProfiles>
 </settings>

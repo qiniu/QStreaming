@@ -21,7 +21,7 @@
     <groupId>com.qiniu</groupId>
     <artifactId>stream-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>Stream Project Parent Pom</name>
     <description>
         QStreaming is a framework that simplifies writing and executing ETLs on top of Apache Spark
@@ -52,9 +52,10 @@
     </scm>
     <modules>
         <module>stream-utils</module>
-        <module>stream-spark-connector</module>
-        <module>stream-spark</module>
-        <module>stream-spark-example</module>
+        <module>stream-core</module>
+        <module>stream-connector</module>
+        <module>stream-example</module>
+        <module>stream-assembly</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
@@ -354,6 +355,16 @@
                     </plugin>
                 </plugins>
             </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 
