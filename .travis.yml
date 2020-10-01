@@ -14,7 +14,7 @@ deploy:
     tags: true
 before_install:
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/pubring.gpg.enc -out $GPG_DIR/pubring.gpg -d
-- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc-out $GPG_DIR/secring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc -out $GPG_DIR/secring.gpg -d
 
 # SONATYPE_USERNAME SONATYPE_PASSWORD GPG_KEY_NAME GPG_PASSPHRASE ENCRYPTION_PASSWORD CODECOV_TOKEN
 env:
