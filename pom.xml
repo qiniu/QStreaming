@@ -266,6 +266,12 @@
                             <goal>testCompile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>doc-jar</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
@@ -292,6 +298,7 @@
                     <check />
                 </configuration>
             </plugin>
+
         </plugins>
 
     </build>
@@ -301,6 +308,68 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/main/scala</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>add-test-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-test-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/test/scala</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>4.4.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>doc-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <scalaVersion>${scala.version}</scalaVersion>
+                            <args>
+                                <arg>-unchecked</arg>
+                                <arg>-deprecation</arg>
+                                <arg>-explaintypes</arg>
+                            </args>
+                            <jvmArgs>
+                                <jvmArg>-Xms512m</jvmArg>
+                                <jvmArg>-Xmx1024m</jvmArg>
+                            </jvmArgs>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
                         <version>2.2.1</version>

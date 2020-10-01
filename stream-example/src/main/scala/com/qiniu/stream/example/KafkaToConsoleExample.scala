@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.qiniu.stream.core.example
+package com.qiniu.stream.example
 
 import com.qiniu.stream.core.PipelineRunner
 import com.typesafe.config.ConfigFactory
