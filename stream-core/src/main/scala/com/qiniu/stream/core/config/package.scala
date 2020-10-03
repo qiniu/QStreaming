@@ -1,4 +1,5 @@
 /*
+ * Copyright 2020 Qiniu Cloud (qiniu.com)
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,27 +17,12 @@
  */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.Pipeline
-import com.qiniu.stream.util.Logging
+import com.qiniu.stream.core.config.Settings.Key
 
-case class PipelineRunner(pipelineContext: PipelineContext) extends Logging {
-
-  def run(pipeline: Pipeline): Unit = {
-    val sparkSession = pipelineContext.sparkSession
-
-    def awaitTermination() {
-      if (sparkSession.streams.active.nonEmpty) {
-        if (pipelineContext.debug) {
-          sparkSession.streams.active.foreach(_.processAllAvailable())
-        } else {
-          sparkSession.streams.awaitAnyTermination()
-        }
-      }
-    }
-    pipeline.statements.foreach(_.execute(pipelineContext))
-    awaitTermination()
-  }
-
+package object config {
+  val DebugEnabled: Key[Boolean] = Key("stream.debug.enable").boolean
+  val JobDSL: Key[String] = Key("stream.job.dsl").string
+  val JobTemplateEnable: Key[Boolean] = Key("stream.template.enable").boolean
+  val JobTemplateStartChar: Key[Char] = Key("stream.template.startChar").char
+  val JobTemplateStopChar: Key[Char] = Key("stream.template.stopChar").char
 }
-
-

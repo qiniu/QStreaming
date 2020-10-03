@@ -107,7 +107,7 @@ object KafkaToConsoleExample extends App {
          |}""".stripMargin)
 
     val pipelineRunner = PipelineRunner(config, spark, pipelineDsl)
-    pipelineRunner.start()
+    pipelineRunner.run()
 
   }
 

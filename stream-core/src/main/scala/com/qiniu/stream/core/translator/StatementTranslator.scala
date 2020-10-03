@@ -1,4 +1,5 @@
 /*
+ * Copyright 2020 Qiniu Cloud (qiniu.com)
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,29 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.qiniu.stream.core
+package com.qiniu.stream.core.translator
 
-import com.qiniu.stream.core.config.Pipeline
+import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.util.Logging
 
-case class PipelineRunner(pipelineContext: PipelineContext) extends Logging {
-
-  def run(pipeline: Pipeline): Unit = {
-    val sparkSession = pipelineContext.sparkSession
-
-    def awaitTermination() {
-      if (sparkSession.streams.active.nonEmpty) {
-        if (pipelineContext.debug) {
-          sparkSession.streams.active.foreach(_.processAllAvailable())
-        } else {
-          sparkSession.streams.awaitAnyTermination()
-        }
-      }
-    }
-    pipeline.statements.foreach(_.execute(pipelineContext))
-    awaitTermination()
-  }
-
+trait StatementTranslator extends Logging {
+  def translate(pipelineContext: PipelineContext)
 }
-
 

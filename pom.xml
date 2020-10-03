@@ -54,8 +54,9 @@
         <module>stream-utils</module>
         <module>stream-core</module>
         <module>stream-connector</module>
+        <module>stream-standalone</module>
         <module>stream-example</module>
-        <module>stream-assembly</module>
+        <module>stream-docker</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
@@ -82,6 +83,7 @@
         <dep.spark-testing-base_2.11.version>2.4.3_0.12.0</dep.spark-testing-base_2.11.version>
         <dep.scalatest-embedded-kafka_2.11.version>2.0.0</dep.scalatest-embedded-kafka_2.11.version>
         <dep.commons-lang3.version>3.10</dep.commons-lang3.version>
+        <dep.scopt.version>3.3.0</dep.scopt.version>
         <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>
     </properties>
 
@@ -206,6 +208,11 @@
                 <groupId>com.amazon.deequ</groupId>
                 <artifactId>deequ</artifactId>
                 <version>${dep.deequ.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.scopt</groupId>
+                <artifactId>scopt_2.11</artifactId>
+                <version>${dep.scopt.version}</version>
             </dependency>
 
         </dependencies>
