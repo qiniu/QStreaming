@@ -17,7 +17,6 @@
  */
 package com.qiniu.stream.core.source
 
-import com.qiniu.stream.core.config.RichSchema._
 import com.qiniu.stream.core.config.{RowFormat, RowTime, SourceTable}
 import com.qiniu.stream.core.listener.KafkaLagListener
 import com.qiniu.stream.core.util.Regex2Json

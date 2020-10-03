@@ -24,6 +24,7 @@ import com.qiniu.stream.core.parser.SqlStructType
 import com.qiniu.stream.core.translator.{CreateFunctionTranslator, CreateViewTranslator, InsertStatementTranslator, SinkTableTranslator, SourceTableTranslator, SparkSqlTranslator, StatementTranslator}
 import com.qiniu.stream.util.Logging
 
+
 trait Statement extends Logging {
 
   def debug: Boolean = showSchema || showTable
@@ -50,7 +51,7 @@ trait Statement extends Logging {
  * @param sql
  */
 case class SqlStatement(sql: String) extends Statement {
-  override val options = Map()
+  override def options = Map()
 
   override protected def translator = SparkSqlTranslator(this)
 }
@@ -71,7 +72,7 @@ case class CreateViewStatement(sql: String, viewName: String, options: Map[Strin
 }
 
 case class InsertStatement(sql: String, sinkTable: SinkTable) extends DSLStatement {
-  override val options = Map()
+  override def options = Map()
 
   override lazy val debug: Boolean = sinkTable.showSchema || sinkTable.showTable
 
@@ -79,7 +80,7 @@ case class InsertStatement(sql: String, sinkTable: SinkTable) extends DSLStateme
 }
 
 case class CreateFunctionStatement(dataType: Option[SqlStructType] = None, funcName: String, funcParam: Option[String], funcBody: String) extends DSLStatement {
-  override val options = Map()
+  override def options = Map()
 
   override protected def translator: StatementTranslator = CreateFunctionTranslator(this)
 }

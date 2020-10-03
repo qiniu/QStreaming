@@ -17,7 +17,6 @@
  */
 package com.qiniu.stream.core.source
 
-import com.qiniu.stream.core.config.RichSchema._
 import com.qiniu.stream.core.config.SourceTable
 import com.qiniu.stream.util.Logging
 import org.apache.spark.sql.{DataFrame, DataFrameReader, SparkSession}
