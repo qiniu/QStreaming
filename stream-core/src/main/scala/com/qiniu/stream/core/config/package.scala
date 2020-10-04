@@ -20,8 +20,6 @@ package com.qiniu.stream.core
 import com.qiniu.stream.core.config.Settings.Key
 
 package object config {
-  val DebugEnabled: Key[Boolean] = Key("stream.debug.enable").boolean
-  val JobDSL: Key[String] = Key("stream.job.dsl").string
   val JobTemplateEnable: Key[Boolean] = Key("stream.template.enable").boolean
   val JobTemplateStartChar: Key[Char] = Key("stream.template.startChar").char
   val JobTemplateStopChar: Key[Char] = Key("stream.template.stopChar").char

@@ -71,7 +71,6 @@ class PipelineVisitor extends SqlBaseVisitor[Pipeline] with Logging {
       } else if (ctx.K_PERSISTED() != null) {
         ViewType.persistedView
       } else {
-        //为了兼容0.1.0的create view用法，0.1.0都是tempView
         ViewType.tempView
       }
     }

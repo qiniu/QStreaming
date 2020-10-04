@@ -24,7 +24,7 @@ import org.apache.spark.sql.streaming.{DataStreamWriter, StreamingQuery, Trigger
 import org.apache.spark.sql.{DataFrame, Dataset, Row}
 import org.apache.spark.storage.StorageLevel
 
-class StreamWriter() extends Writer with Logging {
+class StreamWriter extends Writer with Logging {
 
 
   override def write(dataFrame: DataFrame,sinkTable: SinkTable): Unit = {
@@ -37,7 +37,6 @@ class StreamWriter() extends Writer with Logging {
   }
 
   private def startMultipleStreamQuery(dataFrame: DataFrame, connectors: Seq[Connector],sinkTable: SinkTable): StreamingQuery = {
-    require(!connectors.exists(_.isKafka), "kafka is not support for multiple stream query")
     val writer: DataStreamWriter[Row] = newStreamWriter(dataFrame,sinkTable)
     writer.foreachBatch((dataSet, batchId) => {
       val storageLevel = sinkTable.option("storageLevel").map(StorageLevel.fromString).getOrElse(StorageLevel.MEMORY_ONLY)

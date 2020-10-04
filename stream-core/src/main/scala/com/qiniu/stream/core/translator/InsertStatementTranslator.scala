@@ -29,24 +29,16 @@ case class InsertStatementTranslator(insertStatement: InsertStatement) extends S
   override def translate(context: PipelineContext): Unit = {
     log.debug(s"parsing insert statement:\n ${insertStatement.sql}")
     val dataFrame = context.sparkSession.sql(insertStatement.sql)
-    write(insertStatement.sinkTable,dataFrame)
+    write(insertStatement.sinkTable, dataFrame)
   }
 
-  private def write(table:SinkTable, dataFrame: DataFrame) = {
-    if (table.showTable || table.showSchema) {
-      if (table.showSchema) {
-        dataFrame.printSchema()
-      }
-      if (table.showTable) {
-        DatasetUtils.showTable(dataFrame)
-      }
-    }else{
-      val writer = if (table.streaming)
-        new StreamWriter
-      else
-        new BatchWriter
-      writer.write(dataFrame, table)
-    }
+  private def write(table: SinkTable, dataFrame: DataFrame) = {
+    val writer = if (table.streaming)
+      new StreamWriter
+    else
+      new BatchWriter
+    writer.write(dataFrame, table)
+
   }
 
 }

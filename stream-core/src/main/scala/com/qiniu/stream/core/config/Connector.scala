@@ -19,13 +19,7 @@ package com.qiniu.stream.core.config
 
 case class Connector(name: String, options: Map[String, String] = Map()) {
 
-  def isKafka: Boolean = name.toLowerCase == "kafka"
-
   def isConsole: Boolean = name.toLowerCase == "console"
-
-  def isMemory: Boolean = name.toLowerCase() == "memory"
-
-  def isHBase: Boolean = name.toLowerCase() == "hbase"
 
   def isCustom: Boolean = name.toLowerCase() == "custom"
 

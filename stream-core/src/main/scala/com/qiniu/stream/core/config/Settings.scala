@@ -19,16 +19,16 @@ package com.qiniu.stream.core.config
 
 import java.util.concurrent.TimeUnit
 
-import com.qiniu.stream.core.config.Settings.{Key, VARIABLE_KEY_PREFIX}
+import com.qiniu.stream.core.config.Settings.Key
 import com.qiniu.stream.core.exceptions.SettingsValidationException
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 
 import scala.concurrent.duration._
-import scala.util.{Success, Try}
 import scala.util.control.NonFatal
+import scala.util.{Success, Try}
 
 class Settings(val config: Config) {
-  def apply[T](key: Key[T]): T = (key validator (key get config)).recover {
+  def apply[T](key: Key[T]): T = key.validator(key.get(config)).recover {
     case NonFatal(cause) =>
       throw SettingsValidationException(
         s"Configured value of settings key ${key.name} didn't pass validation: ${cause.getMessage}",
@@ -36,15 +36,6 @@ class Settings(val config: Config) {
       )
   }.get
 
-  def withVariable(key: String, value: String): Settings = {
-    withValue(s"$VARIABLE_KEY_PREFIX.$key",value)
-  }
-
-  def templateVariables: Map[String, String] = {
-    val templateVariables = config.atKey(VARIABLE_KEY_PREFIX)
-    import scala.collection.JavaConverters._
-    templateVariables.root().keySet().asScala.map(key=> key-> templateVariables.getString(key)).toMap
-  }
 
   def withValue(key: String, value: AnyRef): Settings =
     Settings(config.withValue(key, ConfigValueFactory.fromAnyRef(value)))
@@ -54,8 +45,6 @@ class Settings(val config: Config) {
 }
 
 object Settings {
-
-  val VARIABLE_KEY_PREFIX = "stream.var"
 
   case class Key[T](name: String, get: Config => T, validator: T => Try[T] = Success(_: T)) {
     def validate(validator: T => Try[T]): Key[T] = copy(validator = validator)
@@ -118,13 +107,10 @@ object Settings {
       .withFallback(first +: rest map ConfigFactory.parseResources reduce {
         _ withFallback _
       })
-      // Then follows the reference configuration file
-      .withFallback(ConfigFactory.parseResources("spear-reference.conf"))
       // Configurations of all other components (like Akka)
       .withFallback(ConfigFactory.load())
       .resolve()
   )
 
-  def load(): Settings = load("job.conf")
 }
 

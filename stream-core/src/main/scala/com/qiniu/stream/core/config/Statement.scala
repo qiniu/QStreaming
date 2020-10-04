@@ -18,30 +18,18 @@
 package com.qiniu.stream.core.config
 
 import com.qiniu.stream.core.PipelineContext
-import com.qiniu.stream.core.config.Statement.{OPT_SHOW_SCHEMA, OPT_SHOW_TABLE}
 import com.qiniu.stream.core.config.ViewType.ViewType
 import com.qiniu.stream.core.parser.SqlStructType
-import com.qiniu.stream.core.translator.{CreateFunctionTranslator, CreateViewTranslator, InsertStatementTranslator, SinkTableTranslator, SourceTableTranslator, SparkSqlTranslator, StatementTranslator}
+import com.qiniu.stream.core.translator._
 import com.qiniu.stream.util.Logging
 
 
 trait Statement extends Logging {
 
-  def debug: Boolean = showSchema || showTable
-
   protected def translator: StatementTranslator
 
-  def options: Map[String, String]
-
-  def showSchema: Boolean = options.get(OPT_SHOW_SCHEMA).exists(_.toBoolean)
-
-  def showTable: Boolean = options.get(OPT_SHOW_TABLE).exists(_.toBoolean)
-
   def execute(context: PipelineContext): Unit = {
-    if (!context.debug) {
-      translator.translate(context)
-    }
-    context.withDebug(debug)
+    translator.translate(context)
   }
 }
 
@@ -51,9 +39,7 @@ trait Statement extends Logging {
  * @param sql
  */
 case class SqlStatement(sql: String) extends Statement {
-  override def options = Map()
-
-  override protected def translator = SparkSqlTranslator(this)
+  override protected def translator: StatementTranslator = SparkSqlTranslator(this)
 }
 
 /**
@@ -72,16 +58,11 @@ case class CreateViewStatement(sql: String, viewName: String, options: Map[Strin
 }
 
 case class InsertStatement(sql: String, sinkTable: SinkTable) extends DSLStatement {
-  override def options = Map()
-
-  override lazy val debug: Boolean = sinkTable.showSchema || sinkTable.showTable
 
   override def translator: StatementTranslator = InsertStatementTranslator(this)
 }
 
 case class CreateFunctionStatement(dataType: Option[SqlStructType] = None, funcName: String, funcParam: Option[String], funcBody: String) extends DSLStatement {
-  override def options = Map()
-
   override protected def translator: StatementTranslator = CreateFunctionTranslator(this)
 }
 
@@ -91,8 +72,6 @@ sealed abstract class Table(props: Map[String, String] = Map()) extends Statemen
   def option(key: String): Option[String] = props.get(key)
 
   val updateMode: Option[String] = props.get("outputMode").orElse(props.get("saveMode")).orElse(props.get("update-mode")).orElse(props.get("updateMode"))
-
-  override def options: Map[String, String] = props
 
 }
 
@@ -121,7 +100,3 @@ case class SinkTable(streaming: Boolean = true, name: String,
   override protected def translator: StatementTranslator = SinkTableTranslator(this)
 }
 
-object Statement {
-  val OPT_SHOW_SCHEMA = "showSchema"
-  val OPT_SHOW_TABLE = "showTable"
-}

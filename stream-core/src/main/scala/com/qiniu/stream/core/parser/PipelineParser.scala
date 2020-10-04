@@ -17,38 +17,57 @@
  */
 package com.qiniu.stream.core.parser
 
-import com.qiniu.stream.core.config.{JobDSL, JobTemplateEnable, JobTemplateStartChar, JobTemplateStopChar, Pipeline}
-import com.qiniu.stream.core.PipelineContext
+import com.qiniu.stream.core.config._
 import org.antlr.v4.runtime.{CharStream, CharStreams, CommonTokenStream}
 import org.stringtemplate.v4.ST
 
 import scala.io.Source
 
-class PipelineParser(context: PipelineContext) {
-
-  def parse(): Pipeline = {
-    parseFromFile(context.settings(JobDSL))
-  }
+class PipelineParser(settings: Settings) {
 
   def parseFromString(string: String): Pipeline = {
-    val charStream = CharStreams.fromString(string)
+    val charStream = CharStreams.fromString(template(string))
     parse(charStream)
   }
 
   def parseFromFile(file: String): Pipeline = {
     val dslFile = Source.fromFile(file)
     try {
-      parseFromString(template(dslFile.mkString))
+      parseFromString(dslFile.mkString)
     } finally {
       dslFile.close()
     }
   }
 
+  private def parse(charStream: CharStream): Pipeline = {
+    val parser = new SqlParser(new CommonTokenStream(new SqlLexer(charStream)))
+    new PipelineVisitor().visit(parser.sql())
+  }
+
+
   private def template(template: String) = {
-    if (context.settings(JobTemplateEnable)) {
-      val (startChar, stopChar) = (context.settings(JobTemplateStartChar), context.settings(JobTemplateStopChar))
-      val stTemplate = new ST(template, startChar, stopChar)
-      context.settings.templateVariables.foreach {
+    def templateVariables: Map[String, String] = {
+      val variableKey = "stream.template.vars"
+      if (settings.config.hasPath(variableKey)) {
+        val templateVariables = settings.config.atKey(variableKey)
+        import scala.collection.JavaConverters._
+        templateVariables.root().keySet().asScala.map(key => key -> templateVariables.getString(key)).toMap
+      } else Map()
+    }
+
+    def isJobTemplateEnable = {
+      settings.config.hasPath(JobTemplateEnable.name) && settings(JobTemplateEnable)
+    }
+
+    def templateChar = {
+      if (!settings.config.hasPath(JobTemplateStartChar.name) || !settings.config.hasPath(JobTemplateStopChar.name) ){
+        ('[',']')
+      }else (settings(JobTemplateStartChar), settings(JobTemplateStopChar))
+    }
+
+    if (isJobTemplateEnable) {
+      val stTemplate = new ST(template, templateChar._1, templateChar._2)
+      templateVariables.foreach {
         case (k, v) => stTemplate.add(k, v)
       }
       stTemplate.render()
@@ -57,11 +76,6 @@ class PipelineParser(context: PipelineContext) {
     }
   }
 
-
-  def parse(charStream: CharStream): Pipeline = {
-    val parser = new SqlParser(new CommonTokenStream(new SqlLexer(charStream)))
-    new PipelineVisitor().visit(parser.sql())
-  }
 }
 
 

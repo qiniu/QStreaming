@@ -20,7 +20,6 @@ package com.qiniu.stream.core.translator
 import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.core.config.SourceTable
 import com.qiniu.stream.core.source.{BatchReader, Reader, StreamReader}
-import com.qiniu.stream.core.util.DatasetUtils
 
 case class SourceTableTranslator(table:SourceTable) extends StatementTranslator {
   override def translate(context: PipelineContext): Unit = {
@@ -36,12 +35,5 @@ case class SourceTableTranslator(table:SourceTable) extends StatementTranslator 
     }
     val dataFrame = reader.read(context.sparkSession, table)
     dataFrame.createOrReplaceTempView(table.name)
-    if (table.showSchema) {
-      dataFrame.printSchema()
-    }
-    if (table.showTable ) {
-      DatasetUtils.showTable(dataFrame)
-    }
-    context.withDebug(table.debug)
   }
 }

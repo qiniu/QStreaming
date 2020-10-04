@@ -1,6 +1,6 @@
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.{DebugEnabled, Settings}
+import com.qiniu.stream.core.config.Settings
 import com.qiniu.stream.util.Logging
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -31,9 +31,5 @@ case class PipelineContext(settings: Settings) extends Logging {
       case Failure(e) => logError("unexpected error while shutdown", e)
     }
   }
-
-  def debug: Boolean = settings(DebugEnabled)
-
-  def withDebug(debug: Boolean): Settings = settings.withValue(DebugEnabled, debug)
 
 }

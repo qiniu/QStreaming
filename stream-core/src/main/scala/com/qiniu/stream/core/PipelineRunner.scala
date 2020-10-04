@@ -16,15 +16,31 @@
  */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.Pipeline
+import com.qiniu.stream.core.config.{Pipeline, Settings}
+import com.qiniu.stream.core.parser.PipelineParser
 import com.qiniu.stream.util.Logging
 
-case class PipelineRunner(pipelineContext: PipelineContext) extends Logging {
+case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
+
+  val settings: Settings = {
+    val value = Settings.load(pipelineConfig.jobConfig)
+    //args will take highest order
+    pipelineConfig.args.foreach {
+      case (k, v) => value.withValue(k, v)
+    }
+    value
+  }
+
+  lazy val pipelineContext: PipelineContext = PipelineContext(settings)
+
+  def run(): Unit = {
+    val pipeline = new PipelineParser(settings).parseFromFile(pipelineConfig.jobDsl)
+    run(pipeline)
+  }
 
   def run(pipeline: Pipeline): Unit = {
-    val sparkSession = pipelineContext.sparkSession
-
     def awaitTermination() {
+      val sparkSession = pipelineContext.sparkSession
       if (sparkSession.streams.active.nonEmpty) {
         if (pipelineContext.debug) {
           sparkSession.streams.active.foreach(_.processAllAvailable())

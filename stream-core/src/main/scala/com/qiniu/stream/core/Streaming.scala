@@ -1,45 +1,48 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.Settings
-import com.qiniu.stream.core.parser.PipelineParser
 import scopt.OptionParser
+
+case class PipelineConfig(jobConfig: String = "job.conf", jobDsl: String = "job.dsl", args: Map[String, String] = Map())
 
 object Streaming extends App {
 
-  case class StreamingConfig(jobFile: Option[String] = None, templateVariables: Map[String, String] = Map()) {
-    def asSettings: Settings = {
-      val settings = jobFile.map(Settings load _).getOrElse(Settings load())
-      templateVariables.foreach {
-        case (k, v) => settings.withValue(k, v)
-      }
-      settings
-    }
-  }
-
-
-  val cliParser: OptionParser[StreamingConfig] = new OptionParser[StreamingConfig]("QStreaming") {
+  val cliParser: OptionParser[PipelineConfig] = new OptionParser[PipelineConfig]("QStreaming") {
     head("QStreaming")
 
-    opt[String]('c', "config")
-      .text("Path to the job dsl file")
-      .action((file, c) => c.copy(jobFile = Option(file)))
+    opt[String]( 'c',"config")
+      .required()
+      .text("Path to the pipeline config file")
+      .action((file, c) => c.copy(jobConfig = file))
 
-    opt[Map[String, String]]("vars").valueName("k1=v1, k2=v2...")
-      .action((vars, c) => c.copy(templateVariables = vars))
-      .text("template variables")
+    opt[String]('j', "job")
+      .required()
+      .text("Path to the pipeline dsl file")
+      .action((file, c) => c.copy(jobDsl = file))
+
+    opt[Map[String, String]]("conf").valueName("k1=v1, k2=v2...")
+      .optional()
+      .action((vars, c) => c.copy(args = vars))
+      .text("variables of pipeline dsl file")
 
     help("help") text "use command line arguments to specify the configuration file path or content"
   }
 
-  def run(streamConfig: StreamingConfig): Unit = {
-    val pipelineContext = PipelineContext(streamConfig.asSettings)
-    val pipeline = new PipelineParser(pipelineContext).parse()
-    PipelineRunner(pipelineContext).run(pipeline)
-  }
-
-  cliParser.parse(args, StreamingConfig()) match {
-    case Some(config) => run(config)
-    case None => run(StreamingConfig())
-  }
-
+  val config = cliParser.parse(args, PipelineConfig()).getOrElse(PipelineConfig())
+  PipelineRunner(config).run()
 }
