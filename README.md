@@ -91,13 +91,7 @@ from
 
 There are only two config options  currently avaliable.
 
-1. debug
-2. job.file
 
-```properties
-debug = false //indicator whether QStreaming is running with DEBUG mode or not
-job.file = job.dsl //file name of pipeline dsl(default is job.dsl)
-```
 
 #### Run QStreaming
 
@@ -124,11 +118,11 @@ To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
 
 ``` bash
 $SPARK_HOME/bin/spark-submit
---class com.qiniu.stream.spark.core.StreamingApp \
+--class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
 --files "application.conf" \
-stream-spark-0.0.1.jar
+stream-standalone-0.0.1.jar
 ```
 
 ##### Run on a standalone cluster
@@ -137,10 +131,10 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 
 ```bash
 $SPARK_HOME/bin/spark-submit
---class com.qiniu.stream.spark.core.StreamingApp \
+--class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 --files "application.conf" \
-stream-spark-0.0.1.jar
+stream-standalone-0.0.1.jar
 ```
 
 ##### Run as a library
@@ -154,7 +148,7 @@ To use it adds the dependency to your project
   ```xml
 <dependency>
     <groupId>com.qiniu.stream</groupId>
-    <dependency>stream-spark</dependency>
+    <dependency>stream-standalone</dependency>
     <version>0.0.1</version>
   </dependency>
   ```
@@ -162,13 +156,13 @@ To use it adds the dependency to your project
 - gradle
 
   ```groovy
-  compile 'com.qiniu.stream:stream-spark:0.0.1'
+  compile 'com.qiniu.stream:stream-standalone:0.0.1'
   ```
   
 - sbt
 
   ~~~scala
-  libraryDependencies += "com.qiniu.stream" % "stream-spark" % "0.0.1"
+  libraryDependencies += "com.qiniu.stream" % "stream-standalone" % "0.0.1"
   ~~~
 
 ## Datasources
