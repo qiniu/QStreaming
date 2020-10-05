@@ -52,15 +52,7 @@ case class CreateViewTranslator(statement: CreateViewStatement) extends Statemen
         sparkSession.sql(s"create view ${statement.viewName} as ${statement.sql}")
       }
     }
-    //for debug purpose
-    if (statement.showSchema) {
-      sparkSession.table(statement.viewName).printSchema()
-    }
-    //for debug purpose
-    if (statement.showTable) {
-      val table = sparkSession.table(statement.viewName)
-      DatasetUtils.showTable(table)
-    }
+
   }
 
 

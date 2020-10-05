@@ -18,17 +18,12 @@ package com.qiniu.stream.core
 
 import scopt.OptionParser
 
-case class PipelineConfig(jobConfig: String = "job.conf", jobDsl: String = "job.dsl", args: Map[String, String] = Map())
+case class PipelineConfig(jobDsl: String = "job.dsl", args: Map[String, String] = Map())
 
 object Streaming extends App {
 
   val cliParser: OptionParser[PipelineConfig] = new OptionParser[PipelineConfig]("QStreaming") {
     head("QStreaming")
-
-    opt[String]( 'c',"config")
-      .required()
-      .text("Path to the pipeline config file")
-      .action((file, c) => c.copy(jobConfig = file))
 
     opt[String]('j', "job")
       .required()

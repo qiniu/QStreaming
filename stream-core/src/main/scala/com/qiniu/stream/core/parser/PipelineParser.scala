@@ -18,6 +18,7 @@
 package com.qiniu.stream.core.parser
 
 import com.qiniu.stream.core.config._
+import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.{CharStream, CharStreams, CommonTokenStream}
 import org.stringtemplate.v4.ST
 
@@ -41,7 +42,9 @@ class PipelineParser(settings: Settings) {
 
   private def parse(charStream: CharStream): Pipeline = {
     val parser = new SqlParser(new CommonTokenStream(new SqlLexer(charStream)))
-    new PipelineVisitor().visit(parser.sql())
+    val listener = new PipelineListener
+    ParseTreeWalker.DEFAULT.walk(listener, parser.sql())
+    listener.pipeline
   }
 
 

@@ -23,14 +23,20 @@ import com.qiniu.stream.core.parser.SqlStructType
 import com.qiniu.stream.core.translator._
 import com.qiniu.stream.util.Logging
 
+import scala.collection.mutable.ArrayBuffer
+
 
 trait Statement extends Logging {
+  def execute(context: PipelineContext)
+}
 
-  protected def translator: StatementTranslator
+class Pipeline extends Statement {
 
-  def execute(context: PipelineContext): Unit = {
-    translator.translate(context)
-  }
+  var statements: ArrayBuffer[Statement] = ArrayBuffer()
+
+  def sinkTable(tableName: String): Option[SinkTable] = statements.filter(_.isInstanceOf[SinkTable]).map(_.asInstanceOf[SinkTable]).find(_.name == tableName)
+
+  override def execute(context: PipelineContext): Unit = statements.foreach(_.execute(context))
 }
 
 /**
@@ -39,7 +45,7 @@ trait Statement extends Logging {
  * @param sql
  */
 case class SqlStatement(sql: String) extends Statement {
-  override protected def translator: StatementTranslator = SparkSqlTranslator(this)
+  override def execute(context: PipelineContext): Unit = SparkSqlTranslator(this).translate(context)
 }
 
 /**
@@ -54,16 +60,16 @@ object ViewType extends Enumeration {
 
 case class CreateViewStatement(sql: String, viewName: String, options: Map[String, String] = Map(), viewType: ViewType = ViewType.tempView) extends DSLStatement {
 
-  override protected def translator: StatementTranslator = CreateViewTranslator(this)
+  override def execute(context: PipelineContext): Unit = CreateViewTranslator(this).translate(context)
 }
 
 case class InsertStatement(sql: String, sinkTable: SinkTable) extends DSLStatement {
 
-  override def translator: StatementTranslator = InsertStatementTranslator(this)
+  override def execute(context: PipelineContext): Unit = InsertStatementTranslator(this).translate(context)
 }
 
 case class CreateFunctionStatement(dataType: Option[SqlStructType] = None, funcName: String, funcParam: Option[String], funcBody: String) extends DSLStatement {
-  override protected def translator: StatementTranslator = CreateFunctionTranslator(this)
+  override def execute(context: PipelineContext): Unit = CreateFunctionTranslator(this).translate(context)
 }
 
 
@@ -82,7 +88,8 @@ case class SourceTable(streaming: Boolean = true, name: String,
                        format: RowFormat,
                        props: Map[String, String] = Map())
   extends Table(props) with Serializable {
-  override protected def translator: StatementTranslator = SourceTableTranslator(this)
+
+  override def execute(context: PipelineContext): Unit = SourceTableTranslator(this).translate(context)
 }
 
 
@@ -97,6 +104,6 @@ case class SinkTable(streaming: Boolean = true, name: String,
                      props: Map[String, String] = Map())
   extends Table(props) with Serializable {
 
-  override protected def translator: StatementTranslator = SinkTableTranslator(this)
+  override def execute(context: PipelineContext): Unit = SinkTableTranslator(this).translate(context)
 }
 

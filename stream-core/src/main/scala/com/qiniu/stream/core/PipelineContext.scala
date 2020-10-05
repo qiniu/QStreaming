@@ -1,6 +1,6 @@
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.Settings
+import com.qiniu.stream.core.config.{HiveEnable, Settings}
 import com.qiniu.stream.util.Logging
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -20,7 +20,9 @@ case class PipelineContext(settings: Settings) extends Logging {
       }
       sparkConf
     }
-    SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate()
+    val builder = SparkSession.builder().config(sparkConf)
+    if (settings.config.hasPath(HiveEnable.name) && settings(HiveEnable)) builder.enableHiveSupport()
+    builder.getOrCreate()
   }
 
   def stop = {

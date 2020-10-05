@@ -23,9 +23,9 @@ import com.qiniu.stream.util.Logging
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
 
-class PipelineVisitor extends SqlBaseVisitor[Pipeline] with Logging {
+class PipelineListener extends SqlBaseListener with Logging {
 
-  private val pipeline = new Pipeline
+  val pipeline = new Pipeline
 
   private def printStatement(context: ParserRuleContext): Unit = {
     val statement = {
@@ -35,31 +35,28 @@ class PipelineVisitor extends SqlBaseVisitor[Pipeline] with Logging {
     logDebug(s"parsing statement ${statement}")
   }
 
-  override def visitSqlStatement(ctx: SqlParser.SqlStatementContext): Pipeline = {
+  override def enterSqlStatement(ctx: SqlParser.SqlStatementContext): Unit = {
     printStatement(ctx)
     val statement = {
       val interval = new Interval(ctx.start.getStartIndex, ctx.stop.getStopIndex)
       ctx.start.getInputStream.getText(interval)
     }
     pipeline.statements += SqlStatement(statement)
-    pipeline
   }
 
 
-  override def visitCreateSourceTableStatement(ctx: SqlParser.CreateSourceTableStatementContext): Pipeline = {
+  override def enterCreateSourceTableStatement(ctx: SqlParser.CreateSourceTableStatementContext): Unit = {
     printStatement(ctx)
     pipeline.statements += TableParser.parseSourceTable(ctx)
-    pipeline
   }
 
-  override def visitCreateSinkTableStatement(ctx: SqlParser.CreateSinkTableStatementContext): Pipeline = {
+  override def enterCreateSinkTableStatement(ctx: SqlParser.CreateSinkTableStatementContext): Unit = {
     printStatement(ctx)
     pipeline.statements += TableParser.parseSinkTable(ctx)
-    pipeline
   }
 
 
-  override def visitCreateViewStatement(ctx: SqlParser.CreateViewStatementContext): Pipeline = {
+  override def enterCreateViewStatement(ctx: SqlParser.CreateViewStatementContext): Unit = {
     printStatement(ctx)
     import scala.collection.convert.wrapAsScala._
     val options = ctx.property().map(ParserHelper.parseProperty).toMap
@@ -75,29 +72,11 @@ class PipelineVisitor extends SqlBaseVisitor[Pipeline] with Logging {
       }
     }
 
-    val statement = CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ctx.tableName().getText, options, viewType)
-    pipeline.statements += statement
-
-    pipeline
+    pipeline.statements += CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ctx.tableName().getText, options, viewType)
   }
 
 
-  override def visitInsertStatement(ctx: SqlParser.InsertStatementContext): Pipeline = {
-    printStatement(ctx)
-    val sql = ParserHelper.parseSql(ctx.selectStatement())
-    val tableName = ctx.tableName().getText
-    val sinkTableOption = pipeline.sinkTable(tableName)
-    sinkTableOption match {
-      case Some(sinkTable) => {
-        pipeline.statements += InsertStatement(sql, sinkTable)
-      }
-      case None =>
-        pipeline.statements += SqlStatement(s"insert into ${tableName} ${sql}")
-    }
-    pipeline
-  }
-
-  override def visitCreateFunctionStatement(ctx: SqlParser.CreateFunctionStatementContext): Pipeline = {
+  override def enterCreateFunctionStatement(ctx: SqlParser.CreateFunctionStatementContext): Unit = {
     printStatement(ctx)
     import scala.collection.JavaConverters._
     val funcBody = {
@@ -117,15 +96,27 @@ class PipelineVisitor extends SqlBaseVisitor[Pipeline] with Logging {
     }
     val funcParams = Option(ctx.funcParam()).map(_.asScala.map(_.getText).mkString(","))
     pipeline.statements += CreateFunctionStatement(dataType, ctx.funcName.getText, funcParams, funcBody)
-    pipeline
   }
-
 
 
   def parseSql(selectStatementContext: SelectStatementContext): String = {
     val interval = new Interval(selectStatementContext.start.getStartIndex, selectStatementContext.stop.getStopIndex)
     selectStatementContext.getStart.getInputStream.getText(interval)
 
+  }
+
+  override def enterInsertStatement(ctx: SqlParser.InsertStatementContext): Unit = {
+    printStatement(ctx)
+    val sql = ParserHelper.parseSql(ctx.selectStatement())
+    val tableName = ctx.tableName().getText
+    val sinkTableOption = pipeline.sinkTable(tableName)
+    sinkTableOption match {
+      case Some(sinkTable) => {
+        pipeline.statements += InsertStatement(sql, sinkTable)
+      }
+      case None =>
+        pipeline.statements += SqlStatement(s"insert into ${tableName} ${sql}")
+    }
   }
 
 }

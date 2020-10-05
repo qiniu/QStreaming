@@ -13,8 +13,11 @@ services:
   spark-submit:
     image: qiniu/streaming
     container_name: spark-submit
+    ports:
+      - 7777:7777
     environment:
-      - SUBMIT_COMMAND=spark-submit --class com.qiniu.stream.core.Streaming /app/stream-standalone.jar -c /app/dsl/k2k.dsl
+      - SUBMIT_COMMAND=spark-submit  --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --class com.qiniu.stream.core.Streaming /app/stream-standalone.jar -j /app/dsl/k2k.dsl
+      - stream.debug=true
     entrypoint:
       - /scripts/entrypoint-submit.sh
     depends_on:
@@ -50,5 +53,5 @@ services:
     command: /scripts/consumer_test.sh
     environment:
       TOPIC: behavior_cnt_per_hour
-      NUMBER_OF_EXPECTED_MESSAGES: 5
-      MOCK_OUTPUT: /mocks/behavior_cnt_per_hour.jsonl
+      NUMBER_OF_EXPECTED_MESSAGES: 4
+      MOCK_OUTPUT: /mocks/behavior_cnt.jsonl

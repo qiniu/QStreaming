@@ -66,7 +66,7 @@
         <dep.guava.version>19.0</dep.guava.version>
         <dep.mockito.version>1.10.19</dep.mockito.version>
         <dep.assertj.version>3.6.2</dep.assertj.version>
-        <dep.antlr.version>4.8</dep.antlr.version>
+        <dep.antlr.version>4.7</dep.antlr.version>
         <dep.typesafe_config.version>1.4.0</dep.typesafe_config.version>
         <dep.antlr.stringtemplate.version>4.0.2</dep.antlr.stringtemplate.version>
         <dep.slf4j.api.version>1.7.30</dep.slf4j.api.version>
@@ -212,7 +212,11 @@
                 <artifactId>scopt_2.11</artifactId>
                 <version>${dep.scopt.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest_2.11</artifactId>
+                <version>3.2.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -16,14 +16,14 @@
  */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.{Pipeline, Settings}
+import com.qiniu.stream.core.config.{DebugEnable, Pipeline, Settings}
 import com.qiniu.stream.core.parser.PipelineParser
 import com.qiniu.stream.util.Logging
 
 case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
 
   val settings: Settings = {
-    val value = Settings.load(pipelineConfig.jobConfig)
+    val value = Settings.load()
     //args will take highest order
     pipelineConfig.args.foreach {
       case (k, v) => value.withValue(k, v)
@@ -42,14 +42,15 @@ case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
     def awaitTermination() {
       val sparkSession = pipelineContext.sparkSession
       if (sparkSession.streams.active.nonEmpty) {
-        if (pipelineContext.debug) {
+        val debug = settings.config.hasPath(DebugEnable.name) && settings(DebugEnable)
+        if (debug) {
           sparkSession.streams.active.foreach(_.processAllAvailable())
         } else {
           sparkSession.streams.awaitAnyTermination()
         }
       }
     }
-    pipeline.statements.foreach(_.execute(pipelineContext))
+    pipeline.execute(pipelineContext)
     awaitTermination()
   }
 
