@@ -1,50 +1,47 @@
 language: scala
 services:
-  - docker
+- docker
 os: linux
 dist: bionic
 jdk:
-  - openjdk8
+- openjdk8
 cache:
   directories:
   - "$HOME/.cache"
   - "$HOME/.m2"
 branches:
   only:
-    - master
-    - /^v[\d\.]+$/
+  - master
+  - "/^v[\\d\\.]+$/"
 before_install:
-  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/pubring.gpg.enc
-    -out $GPG_DIR/pubring.gpg -d
-  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc
-    -out $GPG_DIR/secring.gpg -d
-
-# SONATYPE_USERNAME SONATYPE_PASSWORD GPG_KEY_NAME GPG_PASSPHRASE ENCRYPTION_PASSWORD CODECOV_TOKEN
-env:
-  global:
-    - SPARK_VERSION=2.4.5
-    - HADOOP_VERSION=2.9.2
-    - HIVE_VERSION=2.3.3
-    - GPP_DIR="`pwd`/.travis"
-    - secure: FFH+YYcVKX1ebbu3J1bKYQwxEfGTBLPxsx3htQyow/ui4ROjwrMHd7i2ooy0PdtV68yGWHDhDrL2EkdekiHoYsvlMfLq0cbCtHWhIZcbFX9kcd6mZeV1ua5zFYyx+Qh0t8+056KvKwOK5Klp9CUp9Fpky9hGhElRphh84XZYQdkda9bGI2UZdyKOlAgivwN9Shs5Vb1XDu7ITIHC3E1McqGeeMOXlBvdSoD8zSNPxDKioOI33GGJFALNsr9jNb8M1cgAIpqGSgl0AAJgE78VZG2Z7mHjKJwDVPs/3awkjQoY0XKLs9qG/jV0cfSOG6YEEThCH3sZxD8jRZNC2m16Cr6sr2RJt1DQTGJpNmAzCiu3JFxaQRFxFXYitCZPEp6dB2lTYqYQ+em+Um7Q554Y8B29q+Owy336tLg5QzO48pdbnxtCXBVjeQ1sZqHch4zsjXZQr8Pk88KRU22cfsWe8M5wVZbb3SaWb2EW8J7UVQLE9tOlDa1Z3PMfnR4YcJQ33BsZS8e9GGo5ZgJp2J9ijuC1BbBQ3Wc6dOjQdQo4Zpg01jjW4XSpMaeJpWdzeafoWyyToTS1y/XybTyepy0B1GAOLshZKW6AmTut0HEWDRSgo89SzArgakMy1scuAtGQhXEk4pMEIUJx6wTlS7T+qurMyFW2Rdc8B5WsuKJmwjw=
-    - secure: D9ENseheYQ7DDWRveKeH5/ToBIHdS5VU5EAx2LTX5yqu1LO602+XF+rHGcLNfnYGvRUbX2WYIC5BrxdNtoIyBWwdSvJ+zy8C4JT0LcvFGlh2XMSZo84CvfkJxkCMSsikEDn62gagnDn+4VVkvxsvqq1XSfPNoAYf8N6+t8ccowb1h7Ojw0zxEE8oASdBc/tSqzRpiRjxv+cGTYUiES7W47/jci+NCroxtoq/bM7lhvs8FevJE2KPQgzZCkJDc8MoFpbr7ALOYotahRRn76AP4EXv+KGilK15XktbsMFOVgyQAEpfohAxf5CTWYtam8GrEnWWjKl3hkotggZB2wyAepGABZAZRhj30izfQz89H0XkSBwLyMWNl6JmCiHJ2Syfi5Qi23cxKMgTWcSdluXkSi0p4rSCro015452oJO+X5SaukYIXPiczf8dhanwES+ReT4f0B2L8Ay9E+rgvTFgm8pdQXMkxzpbec/MUgzKMRFWRSunySjZEKE1LJ13DfhZgw1t+M60XWQ976Tg+ItXXxcYWxeDJ19m2X2sDUjILGqwK/O4sfKpDTofhe8I6A2n/3SuggSRtom2Au0rCOk5cevhu4VchDdmNj8maXQMvCTRsbS1W8v7mJ8wlwMuEB83nKS9LlIWvUE8cu2gSc2MKWVXT00gzG/X9h9XNxTZ1is=
-    - secure: Xnt2rsF+IJCMdwSYrQ1FlKXm+p+5097Oh9BDofDBlIrUDk1xRJjFKyiP+Enj9TyL9E2hX9ERJCyItkxwKeGvUZyZ9n36u93oj/m/uodxDFzMoOdf5mtAVCKdwSyUic/kZlGMkRa3MMgxqJAa3RiIZAvz4PnXjhZFq7M6sg/nj2V1SnngHQl8PjMC039tcDCuVKpcr8i0mMZ/Idh/BW11XBFR19cs6BZFceQu6fnPalnr64Rjxw1gQNSczAmS6CT3XQKCxiOKtkSPkvUqOhm+JIZPv0fAUOfTzLFGy5K8EmJKHywPcnl2MpT1B+9R6BtIRdbOm2N1CyB3oC6wcFslhSQHrJ3h5CO19XTFJ26J/tUsTQ7yI9pkVPnRVk+ejV1DogWzZNJXM8+e9TNSx9oYqIDFQbIL0SNjSlR3OsBcrEsT6Xx9OW+pHMJQMgHm8KX3z4K2pRGZtNR9TR/EUdNTgUVm3N6nB/IBAKPDPwTQwXscE+wuB8x8kjAqK3mzuDxdUsm0Kp1+44uKLf3pn9BHYieMYlLyqeX9OQEjDdVRXkGTkNiefHz2ktgPLYm7ILZoet/GPQWZkhSCTODcpoylKZ9eILKNYyCWILTo25UvbCP0a+ZRSkQnbndIBbTL3Pn6HaNae/LMa/Nedyra+mKgLBIswvNzveFiK2EL0EaX+e4=
-    - secure: KKxhC0Mtxys+zt5W8/86OtioQcZNaHSlNgj8R4KDWoQLoBpLygU9XQmqa9YF2rV6+6SZ1/ZjlAyfNL8km0NidH2XCZQT+fiiZVptlRH3CsQrqvg1s3R+XKIfXjtCZTP32e1S5RPcCKR5uSVP6adKp+E9wbWyc/Hm+HG6l6HpE1bAfzV51QEECV5FFaHnBhXjX/ORvWBsIe5JgfMb7UyWj5ybiHyisghwk7jhrpYoW1ZQP09ku2Q2fDXofdxuA/RK/Qou2XVoKxvQGuzgAu7NPGNZk5JBVBaCsWg3SGq9w17J0JIqe5ZLkmeuFv+igovplU8TvZJlQgpkg/b/JT8FmVkoBmBkh6O7fHqNUlvcGaJyLblH2rYCjXvxJtdG2AEBIBdpYBrwE4nnrUCEfUy2xjQzD9pRMZxw7lhWT6NBcrMnDekXvGkwIv7+pW0QGpb1wrKuvdC/CLSmtDRoRl5JQ7q+18/QVF/Ig/aRrSfeVJyICq08Hgk7XZjs8wvSFmZUp+gDExZ0dHL7jaU1sYq0oUWXWzrgVPutsXrm3yAxFAOW26cZcAH2mfa2tWlGDq/fRNxh+Iml7Ts+s7734WLVXWZm+/NXvN14sCdOrRFux9rwxweCZvr8gzoC7/2U2/pnOvG5mBca7ccekaltP46M9Oh4L8OuVEY/ivCliGulTtM=
-    - secure: Ji9ndh8KYevNWclQR0zYWTJoJpTwySi5oH7Izb8dN94Kju34GsljXO8+2SkwUOzxMJ4BZdh5BshSvYpFfE4391nrvUEN+zfj9oLQvebvBl+boSODZxphJjRwi3qaraoZ40fyfWJN/Gjdt2+dPCO3tA9QEubdwfH1zmkqEIQCkf31hfcJydpepyYCgKZhkOECFcrOakoRdKu/TLWGivryKf8AfOahunlt6Z+Rzcg4GwlvwhAFgwCUXRFtqeNfYxDV4utPuAvJuM9Bdbj1DVM5EAAxgKee7G6n5+ZyijHYBY0Dp96xtc2X/tW8i5jz4NXsyRhrWqRMI5mUTYQh97LR6BBLBRRg4ZhWT4suXFKwiixXKj5JaNKNHLk90aetUhkM2fFLqmUlxBQqFUTetDxuS3fMMqaBmL/xNJxTz9wIOkSZJtaHzHfSRx6rcpp6JQAdCktNbQVy3Y+ySicCYXngeuHAXMB428BfWqLm07e5sDjxPQUOcalQDkUmsyw0RelhrOP3du9ip+vwikZusVz/fBmTcK6gAvKVBLPnyLDgYVC1lswJBcgbAyvRBSM5dT+SIanmHLIjICmpQK0zKnK0g2RfrsCVNVQtDFR634Ijk1Ctz7LtxKxLacsUIarRiT2J536I70d1y3AVZTBtTKKJO6iAKXShUxJz7GcQLEngtUg=
-    - secure: V0a/KdPtT302rsg7MFcjhZrpyhKSWfueeWKHmG6Ltrnq4JydQnxFS4jB12SdDX/Q5D4Rdp92tNuCi95gqk2ANLbHc64v/XageiyW8HrPP8PH8qfKYDs/LsB16neNpoxkJSwRer3YfALOKYVyyyBnUz0ir1BxBEC3Wvpbp8HaaNMaS+rgoab/AbRfzDfof0iFn46W5yfSFemh830I9JSRr1dU2B/51XKE4Yxw/ewIZkuzsomNVv3EVrQYg1FVH3SUV3955HwPWYNTjeuoyfZpHifv6mmWXQ/5Bmd6ZXtqsvAwAaRrI/lFWnTrU7UcCNDAjGJGr137lhSirx2BVGRRa6WCtnWYHpwYLopy9247bW9eQ0z0M3H5o2QxwHyBhKNGEgANDxBnF9KBuMO/2STKU1vCNUnDq4qOM8YZ/GttPeIOAxy3X3WDHNK3FsXYpb9xYEO+Sl9epAiIBrnUG64jZExbROvME12OT78F0v/kqi8C2VAypL4ah8L+flxGOo5S+gEywDs2H+prhfAHBAtBNGGgDe2E9RQB4TqcfnZ0QqUxUWyUBG+jyMBFqOwTjnG6AKr2nOsCyoNW9tH5Q0vp/kpKUVdJ8FXxMEKlWRJjUnNov24oZUN+UFR9LehL7RYM/Bilfj+16VGOpIAOu6O2/RpYhryOBhzO86u4kguq6rs=
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/pubring.gpg.enc
+  -out $GPG_DIR/pubring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc
+  -out $GPG_DIR/secring.gpg -d
 jobs:
   include:
-    - stage: build
-      script: .travis/scripts/build.sh
-    - stage: test
-      before_script: .travis/scripts/docker.sh
-      script: .travis/scripts/test.sh
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
-    - stage: deploy
-      deploy:
-        provider: script
-        script: .travis/scripts/deploy.sh
-        skip_cleanup: true
-        on:
-          tags: true
+  - stage: build
+    script: ".travis/scripts/build.sh"
+  - stage: test
+    before_script: ".travis/scripts/docker.sh"
+    script: ".travis/scripts/test.sh"
+    after_success:
+    - bash <(curl -s https://codecov.io/bash)
+  - stage: deploy
+    deploy:
+      provider: script
+      script: ".travis/scripts/deploy.sh"
+      skip_cleanup: true
+      on:
+        tags: true
+env:
+  global:
+  - SPARK_VERSION=2.4.5
+  - HADOOP_VERSION=2.9.2
+  - HIVE_VERSION=2.3.3
+  - GPP_DIR="`pwd`/.travis"
+  - secure: nzSANbaWkGIkWceRR9HZ79NiIZHMd09477c31vq9rx5q/EN8q2o8lHBgrNhJ6RpToFPiGM2cKkoCaeABbbEEz4S037CG/JLVaFaaMIwgsxMOQifySWrHY1hzK++s4w58MFWoFf16Xsn6alOrtPc6kka/EeN/SCudkom2JW398q0W4izmRL2sM/TfDwHvHPqOuhXhhqzlwU3oXcOGzw6wIdDamFbYDq9664Qodvbsd6DUcqpwVlhDUA3X0oUSNmYcFOSRPPt1qDdXPmPajiGQ36+b763gsVyyhz/bNuUG76fdR1yrC9wYBYaj39hO+NjQS+/l+3NmBNsT0m0koZyTmv/WdteKGVOLoAqwN20Jtt7Zp/qluTJ56P+Ti6qaB/UPKf9HzlDH7tPoXAX1nqWgfrYi50a6gNxw4X4Xs1kI/llO48UTivJy5DHPGDXP0bsmwE2tbrygob2ylFRfdVfUJwOnzB9E4ifIUfkJPIw8FCfa59UmlcHrMQ2cH4gNz1opj5cEaDWdEeN5TZ54Vl2UNKV7TmoFvG5vyq9nwQR2eGeCrd1WcXd1TDLEWD0ei0jnXdCoS5vLwMRawTMYYNKLvrXgrMlEn0VwwY+8b4E6z6DJYXXzkn2luLU0jh/gAOlYQbSFyC3FyWwrS3MpP/DCQUW7z/s1KX7PY84G2C7InXY=
+  - secure: T86344mWKCq2lRBi5Fol9e2HbJxz5Wqk+5tNjUyF8aWXRPBc2uUDx1CEvsbBqkIu8TCHwVW5G1GJsVn3gjDi5bZfEj5ckyB4MdBB+Pqo1lyGuVTqXMtfuJZYOI0wj2JVSoCTixBFQi87RdQ8ZMzkI2a/CpnkP6TvenOwnpLNJOIL8gaaz50LNLYFPg0ha01M5io6LEFxlgFmY3yyopJ6h9DQUb9DK7pz7GyA+S2BLvnoNFQWBd93HWZLFbqryrkZ7Lpj2bmuyNxfAjfXFFKcdkxSHVXGrcJs72xgnrPO6IpgBgkadiQqA8FcjuPHYaW3DRcCUrPvVNJ12CQ1Nb2ikl1RKYkafIM4A7+Ij4PgpuzM5Z/TPinzbkmw3bleFFBFAtla5BONKKZ3ClpH/3l+TebkB1bMMh5Pg5AV8ugsl3dtamNSoUomLYcZEDTCZ5mTS8fULESGjZ/0HZxUc+tJvkmLAgAT+phORt8qNAIfERxswzkMr39pvJ5fPk/rVdtxDTq7RfTnz70qqH6q+oX8qPvyuAPRGrmJ98ABnjLk6yxH+jInqTklKEmwT1MeXa6sgMiSK+3bRGvG3LQ8hfznukEBq5bvISrEy4ekPeH2ItdIqPTiYhqy4OecdJ3GMu496/FkSU4uIIYLYYmnjckHDU5+D0k0ZlSV2g9Rcs/KvtE=
+  - secure: kYFRpuh2m3IxKuVJF7lwxTJi6FNJxdF1Hq9vuofTpS5Kb0QDCBqsB7qQVsfy39bUkD5rT5miw3u4NgY2g6dPR6ugoP3/T49YnLuucW4hF4VE8LQqeG5S+p8d9hio2oBnKdZwbnvFU3ZCun/n9jHXviSM3W6bF9/iYS3GxvUyELMVJJZyynJ1jSUHwmQYkLs4WnvxgEg2qqLBkIrEYiIKWrSLDGupmsRQXk3l650vDjsq7Ff5Cqh9wQ/9NgKci32YINOHv6xEm2ja3g6CywMCZ3ZwFqk7a21YMkgMJSiQO8ddQdM1WwWxBXqIyWoey2YggWiP1Jx+klyYxRrvrOigYPaEmw/iV8qvJfE9JHbj8RmvCnHloJu972b/35smzK1/dG+kgjWHvzrDh4dYkYPjCVx3rTbvvhis5VdLRlOyG9X+c7BJw+3LGbUT7ToWiRl1bD5jZv39nRA9gN4xnTlO4VwMTX2syhRXSs0Y6Wu2QbfU9w6pt4JVQpmayZBYwLtndmZu4ITByiRXA8sryIwRWx5xlErI6GoWv15JihWWfMRZRYAF/nJlRCVJDjP+3AhC36tmgUn7K0BozTjzkKimqf3IGd8FcbUBkdZkL540IwLssWw7RyhO9pN7SsmPphJTd0o67G36GAm7ZLKW/EUnIjB+2P4DSyHB9jh5powIuOE=
+  - secure: VIBMcoM/TRgM+Lg792sz3Ct/gvMQOyFb0Xx0l4HW6k1XipopzTirXczg+OBdGGfjMneb2UNrTHbpdg97XsBnxCJWTHPvFFSPPRWlGO9z4jPQMkSFHaWaJas1WVlr297FJ9EqYPKVQrfu0KrR1ZgrzTJhMRojcukPGhR3nNMlgW7kTPS1dClgi0mziZM0DX/TVyjTtcMA1UaV+s+HRfXoYCX/8vMmqjZsqdQxZWy85JgIth7TLq4OGj3pyHLkAjQ7SUPupqdblOaVdZs+suLSdk1WaTM/TzmkSxZPQ/vVYw7RfYa7NneuBMMg3AI23SMDYPm5lfZ9HEPPQ2gcnOeWNlj0gNyQouTpDOuJNjveihDBIL35NwXUVOxzTzUhiyzM3NbWgSb6/PudG+25MuVf5fT0rgjUY/SQaXGiY2xh8dvtMBsLWiLykPz10GhkimEIeVppc5WejMDUdOgpS7UhMBRCpKqpK5SQUW/2AdSHq0FU3hGkSt7meJPiZDjmMKgVNbw5ipYtH7EEgCe394PrdwR/riOXfpU3tILmcHo3e9KQPjUkeX//Bj7B8I6Uv6ifmxu1xYLqzRavAg6P7cm5CToSKQRke0ck9H6AtTYazG2OyCDTkDbAqzYfi6w4AsSysLJQqzb3JVXdkO5v0yFKSO2ldEiaOtAhug5d9pF0GKY=
+  - secure: aTt9lIBxPbm1FOamqqF3XbDx7w2ssw6xbvdMLxDI4/359CDLaycgoBL27Rv53Tw/vVlkLtL8qk6YMis2nphaaPRP1O1MQ4jWuJCm9sPIsnV4LxkQrSzI8y6OhQURhEWTFUOugBpi8p4eL6FRSABOnQaP+SsnpEfYIqWqhWixTw6ck5EEOJ0jJgs2+iVqzr0PyyM7IT6AOl/1/QPD55CGwqXlQ2qGIQQm6h5SMdUn3xe/f4S/LvIGdVgqj5+xPyDWQC74/88cdjyJi/bd/+qh+qC6Zr/2zYrFkSHGWsOrmGFFMqBjftRIX9FrPlEy92sfJFN+GQecxo7BqUfW6C6NWO2EWyQV+vMED8vuyCswFbJzmXZEdlA9vnaIk4yYohiDxUZfdue9ly7u6DxvIu5NXcP2I8gAt+mF/fTFM7szTfParr4u/vd+Kb5zK6mxdilLQuKbe+iBS+/SwcTvM4ZVxu8Pa/X9UpnsVJNec4b14Jrj/FEy7bRwJ37zKXoTojX6hc4/vLsJlGtyQGdZvBBPo2+pCjO+9GOjqU+0YXVQw9SWtQlt6zXNQUKNiNSlMwhfI5bTeb7lykUfUcd+hd3gt5VC8eGSKr1M0nYf0J2aHjh5CtRyKVExde6mA2Ich1AZ92TQu2Cu0w+FNyEHJ2A5u1QnqnD0wVk0Yq99ricL6Jo=
