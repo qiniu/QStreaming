@@ -11,23 +11,15 @@ branches:
   only:
   - master
   - "/^v[\\d\\.]+$/"
-script: skip
-jobs:
-  include:
-  - stage: build
-    script: ".travis/scripts/build.sh"
-  - stage: test
-    before_script: ".travis/scripts/docker.sh"
-    script: ".travis/scripts/test.sh"
-    after_success:
-    - bash <(curl -s https://codecov.io/bash)
-  - stage: deploy
-    deploy:
-      provider: script
-      script: ".travis/scripts/deploy.sh"
-      skip_cleanup: true
-      on:
-        tags: true
+script: make build
+deploy:
+  provider: script
+  script: make deploy
+  skip_cleanup: true
+  on:
+    tags: true
+after_success:
+- bash <(curl -s https://codecov.io/bash)
 env:
   global:
   - SPARK_VERSION=2.4.5
@@ -37,11 +29,10 @@ env:
   - secure: T86344mWKCq2lRBi5Fol9e2HbJxz5Wqk+5tNjUyF8aWXRPBc2uUDx1CEvsbBqkIu8TCHwVW5G1GJsVn3gjDi5bZfEj5ckyB4MdBB+Pqo1lyGuVTqXMtfuJZYOI0wj2JVSoCTixBFQi87RdQ8ZMzkI2a/CpnkP6TvenOwnpLNJOIL8gaaz50LNLYFPg0ha01M5io6LEFxlgFmY3yyopJ6h9DQUb9DK7pz7GyA+S2BLvnoNFQWBd93HWZLFbqryrkZ7Lpj2bmuyNxfAjfXFFKcdkxSHVXGrcJs72xgnrPO6IpgBgkadiQqA8FcjuPHYaW3DRcCUrPvVNJ12CQ1Nb2ikl1RKYkafIM4A7+Ij4PgpuzM5Z/TPinzbkmw3bleFFBFAtla5BONKKZ3ClpH/3l+TebkB1bMMh5Pg5AV8ugsl3dtamNSoUomLYcZEDTCZ5mTS8fULESGjZ/0HZxUc+tJvkmLAgAT+phORt8qNAIfERxswzkMr39pvJ5fPk/rVdtxDTq7RfTnz70qqH6q+oX8qPvyuAPRGrmJ98ABnjLk6yxH+jInqTklKEmwT1MeXa6sgMiSK+3bRGvG3LQ8hfznukEBq5bvISrEy4ekPeH2ItdIqPTiYhqy4OecdJ3GMu496/FkSU4uIIYLYYmnjckHDU5+D0k0ZlSV2g9Rcs/KvtE=
   - secure: kYFRpuh2m3IxKuVJF7lwxTJi6FNJxdF1Hq9vuofTpS5Kb0QDCBqsB7qQVsfy39bUkD5rT5miw3u4NgY2g6dPR6ugoP3/T49YnLuucW4hF4VE8LQqeG5S+p8d9hio2oBnKdZwbnvFU3ZCun/n9jHXviSM3W6bF9/iYS3GxvUyELMVJJZyynJ1jSUHwmQYkLs4WnvxgEg2qqLBkIrEYiIKWrSLDGupmsRQXk3l650vDjsq7Ff5Cqh9wQ/9NgKci32YINOHv6xEm2ja3g6CywMCZ3ZwFqk7a21YMkgMJSiQO8ddQdM1WwWxBXqIyWoey2YggWiP1Jx+klyYxRrvrOigYPaEmw/iV8qvJfE9JHbj8RmvCnHloJu972b/35smzK1/dG+kgjWHvzrDh4dYkYPjCVx3rTbvvhis5VdLRlOyG9X+c7BJw+3LGbUT7ToWiRl1bD5jZv39nRA9gN4xnTlO4VwMTX2syhRXSs0Y6Wu2QbfU9w6pt4JVQpmayZBYwLtndmZu4ITByiRXA8sryIwRWx5xlErI6GoWv15JihWWfMRZRYAF/nJlRCVJDjP+3AhC36tmgUn7K0BozTjzkKimqf3IGd8FcbUBkdZkL540IwLssWw7RyhO9pN7SsmPphJTd0o67G36GAm7ZLKW/EUnIjB+2P4DSyHB9jh5powIuOE=
   - secure: VIBMcoM/TRgM+Lg792sz3Ct/gvMQOyFb0Xx0l4HW6k1XipopzTirXczg+OBdGGfjMneb2UNrTHbpdg97XsBnxCJWTHPvFFSPPRWlGO9z4jPQMkSFHaWaJas1WVlr297FJ9EqYPKVQrfu0KrR1ZgrzTJhMRojcukPGhR3nNMlgW7kTPS1dClgi0mziZM0DX/TVyjTtcMA1UaV+s+HRfXoYCX/8vMmqjZsqdQxZWy85JgIth7TLq4OGj3pyHLkAjQ7SUPupqdblOaVdZs+suLSdk1WaTM/TzmkSxZPQ/vVYw7RfYa7NneuBMMg3AI23SMDYPm5lfZ9HEPPQ2gcnOeWNlj0gNyQouTpDOuJNjveihDBIL35NwXUVOxzTzUhiyzM3NbWgSb6/PudG+25MuVf5fT0rgjUY/SQaXGiY2xh8dvtMBsLWiLykPz10GhkimEIeVppc5WejMDUdOgpS7UhMBRCpKqpK5SQUW/2AdSHq0FU3hGkSt7meJPiZDjmMKgVNbw5ipYtH7EEgCe394PrdwR/riOXfpU3tILmcHo3e9KQPjUkeX//Bj7B8I6Uv6ifmxu1xYLqzRavAg6P7cm5CToSKQRke0ck9H6AtTYazG2OyCDTkDbAqzYfi6w4AsSysLJQqzb3JVXdkO5v0yFKSO2ldEiaOtAhug5d9pF0GKY=
-  - secure: ekhpTXR/+I0WyQ42koJHIrs2OOSqr0u3dms35/EotHoMLi39C+9tzeel6T+HtVU9L6jHPxRybwfNsAFO31zg4oEHgD3JvAIJ06egSamlq+WlkTttBvWsgOhQEs8pjRVlEv3+HJkuOBS1spp5poZA654NysyBR0iVpKoqSr3SnQL5Xi2q6jmA+90kPV9nrUOUJhaKrsSqGHjogEZ2bLQpYEoWfLdtYPTkZx4NRVUK6Sku9qiNWFs3EbftIt1NDiP48qAgbTk6/H1/Pn53EXnM5CAtAYchKhjV0FXLPIBDQuFHXGQL/yB/gbpF4C8tMn/Hrv4uX2Lif+RbbRVOv6cyrItW6dbtJn4kIAG6YNYPiV3N04e2JcGz11wq2tMoFeTPQ1kq2xogaNasT3XO8pJuG9i1vNp1l0r1oG90A7FEw6dzSQkaDEsEhuR5gA/k53czlO66YgeRyoo6TdFX14yvQewXwchKt1+5UlJu1dRb7Vt4GM9q5onlb5iIroiROzZjtitmZzhJjD1AJycG9dJ7ccjZmdvNiXQ3+hcQi4YnEOKaUOsbfODy1wStsqefRoajVXlOpurgrshBb/ccpNVJIJ9X8G6QCI+LyNy6vn6WVZMH4ERgOtTrXjtmHGisV0L46+yrkWR6ttrglJd2ealbQEgFvgE7nCCFzqKGIUbd6Cw=
+  - secure: eHiUgSTCZstIV0tj8A7Iq0rb9xhphBEVjKQf5vFqZ6aKO4Ejg8zKlQTDwn9CZ5cvxjZMtQtqKtWnQCveynYb+lfGS/49XvQLNrDrKqw8j/XiinROORsthC8XhgHcGiEVPbHfTrundCZehFw0mYEqw0HcRcFon17c3SHsVA+TFWHopRSC4PXVm9qDUs17Z+S3Mz5g7iUOP6oSnIJhCOJGuVFUCJxiTPpJPNewyggf+bKOxrEIoWHYR9XsyKXjgRYdCKt5O2hGdQ5cgDpf57ilV/NeAwPKq8mdUCgYQIhEZI4UBZ+Wea86OUa4BqCUMcj6//WAbC79MbRxTqy03yYJseIDn+yqmnEPNejKuQTFzw3JG9jhhs6GHhZSb88QSPz0HzZ68nvh57YUPBCfm7ZR+xGW9Y2/bmBQDpG6FUavHPsFKmt0v7xnz9xQHoqUwUI/NLxG++jFglL4N5vPH+SUMSjhW645MPa55A/y4aeAhQFZXrl4ynDMerg7ppZQg8jkz7WtBMnKk0NSgCos2CVePn4UURTFSaSUcIKwKcELpU6FxpynEQEOHVj5FKkVH/vREyLdJDGkZHTakY/vw1bEZLBxFRFsDxpAPNAOxzVKa3K4f/viqm5k5YqKlNQb0Focvzk7E/H+UUc8Ftm7B5AWEBVKa9wqk9kfv4cieWqIs78=
 before_install:
 - openssl aes-256-cbc -k "$ENCRYPTION_PASSWORD" -in .travis/pubring.gpg.enc -out .travis/pubring.gpg
   -d
 - openssl aes-256-cbc -k "$ENCRYPTION_PASSWORD" -in .travis/secring.gpg.enc -out .travis/secring.gpg
   -d
 - chmod +x e2e/**/*.sh
-- chmod +x .travis/scripts/*.sh
