@@ -11,6 +11,7 @@ branches:
   only:
   - master
   - "/^v[\\d\\.]+$/"
+script: skip
 jobs:
   include:
   - stage: build

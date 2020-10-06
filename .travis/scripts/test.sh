@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd e2e/kafka && ./test.sh
+cd e2e/k2k && ./test.sh
