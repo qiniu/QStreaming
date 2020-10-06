@@ -1,7 +1,6 @@
 language: scala
 services:
 - docker
-os: osx
 jdk:
 - openjdk8
 cache:
