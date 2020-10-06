@@ -17,7 +17,8 @@ deploy:
   script: make deploy
   skip_cleanup: true
   on:
-    branch: /^v[\\d\\.]+$/
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^v.*
     tags: true
 after_success:
 - bash <(curl -s https://codecov.io/bash)
