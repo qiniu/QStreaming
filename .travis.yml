@@ -19,7 +19,6 @@ deploy:
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH =~ ^v.*
-    tags: true
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 env:
