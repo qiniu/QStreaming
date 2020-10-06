@@ -42,3 +42,5 @@ before_install:
   -d
 - openssl aes-256-cbc -k "$ENCRYPTION_PASSWORD" -in .travis/secring.gpg.enc -out .travis/secring.gpg
   -d
+- chmod +x e2e/**/*.sh
+- chmod +x .travis/scripts/*.sh
