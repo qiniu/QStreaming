@@ -121,8 +121,8 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
---files "application.conf" \
-stream-standalone-0.0.1.jar
+stream-standalone-0.0.2.jar \
+-j pipeline.dsl
 ```
 
 ##### Run on a standalone cluster
@@ -133,8 +133,8 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
---files "application.conf" \
-stream-standalone-0.0.2.jar
+stream-standalone-0.0.2.jar \
+-j pipeline.dsl
 ```
 
 ##### Run as a library
@@ -152,13 +152,13 @@ To use it adds the dependency to your project
     <version>0.0.2</version>
   </dependency>
   ```
-  
+
 - gradle
 
   ```
-  compile 'com.qiniu.stream:stream-standalone:0.0.2'  
+  compile 'com.qiniu.stream:stream-standalone:0.0.2'
   ```
-  
+
 - sbt
 
   ```
@@ -171,7 +171,7 @@ we support following datasource as input:
 
 - [Kafka](http://kafka.apache.org/) (streaming) with `json/regex/csv/avro`   format
 - HDFS/S3 with `csv/json/text/parquet/avro`   storage format
-- [Jdbc datasource](https://en.wikipedia.org/wiki/Java_Database_Connectivity) 
+- [Jdbc datasource](https://en.wikipedia.org/wiki/Java_Database_Connectivity)
 - MongoDB
 - [Apache Hbase](http://hbase.apache.org/)
 
@@ -302,19 +302,14 @@ For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRun
 ```bash
 $SPARK_HOME/bin/spark-submit
 --name {{.dir}} \
---class com.qiniu.stream.spark.core.StreamingApp \
+--class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
---num-executors 90 \
---executor-cores 4 \
---executor-memory 5g \
---driver-memory 4g \
---files "application.conf" \
---conf spark.driver.extraClassPath=./ \
 --conf spark.executor.extraClassPath=./ \
-stream-spark-0.0.1.jar \
--day theDayThatRunAJob
--hour  theHourThatRunAJob\
+stream-standalone-0.0.2.jar \
+-j pipeline.dsl \
+-c stream.template.vars.day=theDayThatRunAJob \
+-c stream.template.vars.hour=theHourThatRunAJob
 ```
 
 ### Kafka lag monitor
