@@ -147,7 +147,7 @@ To use it adds the dependency to your project
 
   ```
   <dependency>
-    <groupId>com.qiniu.stream</groupId>
+    <groupId>com.qiniu</groupId>
     <dependency>stream-standalone</dependency>
     <version>0.0.2</version>
   </dependency>
@@ -156,13 +156,13 @@ To use it adds the dependency to your project
 - gradle
 
   ```
-  compile 'com.qiniu.stream:stream-standalone:0.0.2'
+  compile 'com.qiniu:stream-standalone:0.0.2'
   ```
 
 - sbt
 
   ```
-  libraryDependencies += "com.qiniu.stream" % "stream-standalone" % "0.0.2"
+  libraryDependencies += "com.qiniu" % "stream-standalone" % "0.0.2"
   ```
 
 ## Datasources
