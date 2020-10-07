@@ -5,8 +5,7 @@ jdk:
 - openjdk8
 cache:
   directories:
-  - "$HOME/.cache"
-  - "$HOME/.m2"
+  - ~/.m2/repository
 branches:
   only:
   - master
