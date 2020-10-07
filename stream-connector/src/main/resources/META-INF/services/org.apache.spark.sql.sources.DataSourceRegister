@@ -1,0 +1,2 @@
+org.apache.spark.sql.execution.streaming.hbase.HBaseDataSource
+org.apache.spark.sql.execution.streaming.phoenix.PhoenixDataSource

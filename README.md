@@ -1,6 +1,4 @@
-[![Gitter](https://badges.gitter.im/qiniu-streaming/community.svg)](https://gitter.im/qiniu-streaming/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/qiniu/QStreaming.svg?branch=master)](https://travis-ci.org/qiniu/QStreaming) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Gitter](https://badges.gitter.im/qiniu-streaming/community.svg)](https://gitter.im/qiniu-streaming/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 QStreaming is a framework that simplifies writing and executing ETLs on top of [Apache Spark](http://spark.apache.org/)
 
@@ -14,11 +12,11 @@ QStreaming is built on top of [Apache Spark](http://spark.apache.org/) and is ma
 
 - **Pipeline DSL**
 
-  A file  describe how the pipeline  are  made of by the input tables, metric statement, data quality checks and output tables  
+  A configuration file defines the queries of the ETL Pipeline, it's  made of by the input tables, metric statements, data quality check rules (optional ) and output tables
 
 - **Pipeline DSL Parser**
 
-  A parser  parsing the **Pipeline DSL**  using  [Antlr](https://www.antlr.org/) parser generator and generate a pipeline domain model
+  A parser  parsing the **Pipeline DSL**  using  [Antlr](https://www.antlr.org/) parser generator and build the pipeline domain models
 
 - **Pipeline translater**
 
@@ -38,9 +36,7 @@ To run QStreaming you must first define 2 files.
 
 ##### Pipeline DSL
 
-A job.dsl is a sql file defines the queries of the ETL pipeline
-
-For example a simple  job.dsl (actually is a sql like file) should be as follows:
+For example a simple  pipeline dsl file  should be as follows:
 
 ```sql
 -- DDL for streaming input which connect to a kafka topic
@@ -95,13 +91,7 @@ from
 
 There are only two config options  currently avaliable.
 
-1. debug
-2. job.file
 
-```properties
-debug = false //indicator whether QStreaming is running with DEBUG mode or not
-job.file = job.dsl //file name of job.dsl(default is job.dsl)
-```
 
 #### Run QStreaming
 
@@ -128,11 +118,11 @@ To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
 
 ``` bash
 $SPARK_HOME/bin/spark-submit
---class com.qiniu.stream.spark.core.StreamingApp \
+--class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
 --files "application.conf" \
-stream-spark-0.0.1.jar
+stream-standalone-0.0.1.jar
 ```
 
 ##### Run on a standalone cluster
@@ -141,76 +131,38 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 
 ```bash
 $SPARK_HOME/bin/spark-submit
---class com.qiniu.stream.spark.core.StreamingApp \
+--class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 --files "application.conf" \
-stream-spark-x.y.z.jar
+stream-standalone-0.0.1.jar
 ```
 
 ##### Run as a library
 
 It's also possible to use QStreaming inside your own project
 
-QStreaming library requires scala 2.11
-
 To use it adds the dependency to your project
 
 - maven
 
-  add repository below  
-
-  ~~~xml
-  <repositories>
-    <repository>
-      <id>chaojunz-release</id>
-      <url>https://packagecloud.io/qiniu/release/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  ~~~
-
-  and dependency as follow 
-
   ```xml
-  <dependency>
+<dependency>
     <groupId>com.qiniu.stream</groupId>
-    <dependency>stream-spark</dependency>
+    <dependency>stream-standalone</dependency>
     <version>0.0.1</version>
   </dependency>
   ```
-
+  
 - gradle
 
   ```groovy
-  repositories {
-      maven {
-          url "https://packagecloud.io/qiniu/release/maven2"
-      }
-  }
+  compile 'com.qiniu.stream:stream-standalone:0.0.1'
   ```
-
-  ```groovy
-  compile 'com.qiniu.stream:stream-spark-example:0.0.1'
-  ```
-
+  
 - sbt
 
-  For SNAPSHOT support (needs SBT 0.13.8 or above), create or append the following to a `project/maven.sbt` file in your project:
-  
-  ```
-  addMavenResolverPlugin
-  ```
-  
-  Then, add this entry anywhere in your `build.sbt` file:
-  
   ~~~scala
-  resolvers += "qiniu-release" at "https://packagecloud.io/qiniu/release/maven2"
-  libraryDependencies += "com.qiniu.stream" % "stream-spark-example" % "0.0.1"
+  libraryDependencies += "com.qiniu.stream" % "stream-standalone" % "0.0.1"
   ~~~
 
 ## Datasources
@@ -219,17 +171,17 @@ we support following datasource as input:
 
 - [Kafka](http://kafka.apache.org/) (streaming) with `json/regex/csv/avro`   format
 - HDFS/S3 with `csv/json/text/parquet/avro`   storage format
-- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, sqlserver, oracle)
+- [Jdbc datasource](https://en.wikipedia.org/wiki/Java_Database_Connectivity) 
 - MongoDB
 - [Apache Hbase](http://hbase.apache.org/)
 
 and following datasources as output:
 
 - [Kafka](http://kafka.apache.org/)
-- [elasticsearch](https://www.elastic.co/elasticsearch/)
+- [Elasticsearch](https://www.elastic.co/elasticsearch/)
 - [Apache Hbase](http://hbase.apache.org/)
 - MongoDB
-- [Jdbc](https://en.wikipedia.org/wiki/Java_Database_Connectivity)(e.g. mysql, oracle)
+- [Jdbc datasource](https://en.wikipedia.org/wiki/Java_Database_Connectivity)
 - HDFS/S3 with `csv/json/text/parquet/avro`   storage format
 
 ## Features

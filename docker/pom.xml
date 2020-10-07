@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>stream-parent</artifactId>
+        <groupId>com.qiniu</groupId>
+        <version>0.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>stream-docker</artifactId>
+
+    <properties>
+        <stream-standalone.jar>stream-standalone-${project.version}-jar-with-dependencies.jar</stream-standalone.jar>
+    </properties>
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-stream-standalone</id>
+                                <phase>install</phase>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.basedir}/../stream-standalone/target/${stream-standalone.jar}"
+                                              tofile="${project.build.directory}/docker/qiniu/streaming/build/stream-standalone.jar"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>qiniu/spark</name>
+                                    <alias>qiniu-spark</alias>
+                                    <build>
+                                        <tags>
+                                            <tag>latest</tag>
+                                        </tags>
+                                        <contextDir>${project.basedir}/spark</contextDir>
+                                    </build>
+                                </image>
+                                <image>
+                                    <name>qiniu/streaming</name>
+                                    <alias>qiniu-streaming</alias>
+                                    <build>
+                                        <tags>
+                                            <tag>latest</tag>
+                                        </tags>
+                                        <contextDir>${project.basedir}/streaming</contextDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+</project>

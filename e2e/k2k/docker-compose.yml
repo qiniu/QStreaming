@@ -1,0 +1,57 @@
+version: '3'
+services:
+  spark-master:
+    image: qiniu/streaming
+    container_name: spark-master
+    entrypoint:
+      - /scripts/entrypoint-master.sh
+  spark-worker:
+    image: qiniu/streaming
+    container_name: spark-worker
+    entrypoint:
+      - /scripts/entrypoint-worker.sh
+  spark-submit:
+    image: qiniu/streaming
+    container_name: spark-submit
+    ports:
+      - 7777:7777
+    environment:
+      - SUBMIT_COMMAND=spark-submit  --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --class com.qiniu.stream.core.Streaming /app/stream-standalone.jar -j /app/dsl/k2k.dsl
+      - stream.debug=true
+    entrypoint:
+      - /scripts/entrypoint-submit.sh
+    depends_on:
+      - spark-master
+      - spark-worker
+    volumes:
+      - ./dsl:/app/dsl
+  zookeeper:
+    image: wurstmeister/zookeeper
+  kafka:
+    image: wurstmeister/kafka
+    environment:
+      KAFKA_CREATE_TOPICS: "user_behavior:1:1,behavior_cnt_per_hour:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+  kafka-seed:
+    image: wurstmeister/kafka
+    volumes:
+      - ./scripts:/scripts
+      - ./input:/mocks
+    command: /scripts/kafka_seed.sh
+    environment:
+      TOPIC: user_behavior
+      SEED_FILE: /mocks/user_behavior.jsonl
+  kafka-consume:
+    image: wurstmeister/kafka
+    volumes:
+      - ./scripts:/scripts
+      - ./output:/mocks
+    command: /scripts/consumer_test.sh
+    environment:
+      TOPIC: behavior_cnt_per_hour
+      NUMBER_OF_EXPECTED_MESSAGES: 4
+      MOCK_OUTPUT: /mocks/behavior_cnt.jsonl
