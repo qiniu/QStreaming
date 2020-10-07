@@ -145,20 +145,20 @@ To use it adds the dependency to your project
 
 - maven
 
-  ```xml
+  ~~~xml
 <dependency>
     <groupId>com.qiniu.stream</groupId>
     <dependency>stream-standalone</dependency>
     <version>0.0.2</version>
   </dependency>
   
-  ```
+  ~~~
   
 - gradle
 
-  ```groovy
-  compile 'com.qiniu.stream:stream-standalone:0.0.2'
-  ```
+  ~~~groovy
+  compile 'com.qiniu.stream:stream-standalone:0.0.2'  
+  ~~~
   
 - sbt
 
