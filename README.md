@@ -308,8 +308,7 @@ $SPARK_HOME/bin/spark-submit
 --conf spark.executor.extraClassPath=./ \
 stream-standalone-0.0.2.jar \
 -j pipeline.dsl
--stream.vars.day theDayThatRunAJob
--stream.vars.hour  theHourThatRunAJob\
+-conf stream.template.vars.day=theDayThatRunAJob,stream.template.vars.hour=theHourThatRunAJob\
 ```
 
 ### Kafka lag monitor
