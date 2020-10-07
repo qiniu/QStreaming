@@ -134,7 +134,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 --files "application.conf" \
-stream-standalone-0.0.1.jar
+stream-standalone-0.0.2.jar
 ```
 
 ##### Run as a library
