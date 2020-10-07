@@ -30,7 +30,7 @@ object Streaming extends App {
       .text("Path to the pipeline dsl file")
       .action((file, c) => c.copy(jobDsl = file))
 
-    opt[Map[String, String]]("conf").valueName("k1=v1, k2=v2...")
+    opt[Map[String, String]]('c',"conf").valueName("k1=v1, k2=v2...")
       .optional()
       .action((vars, c) => c.copy(args = vars))
       .text("variables of pipeline dsl file")
