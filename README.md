@@ -145,8 +145,8 @@ To use it adds the dependency to your project
 
 - maven
 
-  ```xml
-<dependency>
+  ```
+  <dependency>
     <groupId>com.qiniu.stream</groupId>
     <dependency>stream-standalone</dependency>
     <version>0.0.1</version>
@@ -155,15 +155,15 @@ To use it adds the dependency to your project
   
 - gradle
 
-  ```groovy
+  ```
   compile 'com.qiniu.stream:stream-standalone:0.0.1'
   ```
   
 - sbt
 
-  ~~~scala
+  ```
   libraryDependencies += "com.qiniu.stream" % "stream-standalone" % "0.0.1"
-  ~~~
+  ```
 
 ## Datasources
 
