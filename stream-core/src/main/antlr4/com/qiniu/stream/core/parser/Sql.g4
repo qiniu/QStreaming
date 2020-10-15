@@ -63,11 +63,12 @@ dslStatement
     ;
 
 createTestStatement
-    : K_CREATE K_TEST testName=identifier '(' output=tableIdentifier ')'  K_ON testDataset=tableIdentifier K_WITH  assertion+
+    : K_CREATE K_TEST testName=identifier ('(' testOptions ')')?  K_ON testDataset=tableIdentifier K_WITH  constraint (K_AND constraint)*
     ;
 
-assertion
-    : K_CHECK '(' constraint (K_AND constraint)* ')'
+testOptions
+    : 'output' K_EQ testOutput=tableIdentifier
+    | 'level' K_EQ testLevel=('Warning'|'Error')
     ;
 
 constraint
@@ -90,7 +91,7 @@ uniqueConstaint
     :  'isUnique'  '(' column=identifier (',' column=identifier)* ')'
     ;
 satisfyConstraint
-    :  'satisfy' '(' predicate=STRING ')'
+    :  'satisfy' '(' predicate=STRING ',' desc=STRING ')'
     ;
 
 dataTypeConstraint
@@ -121,7 +122,8 @@ operator
     ;
 
 approxValueContraint
-    : kind=('hasApproxQuantile' |'hasApproxCountDistinct') '(' operator value = DECIMAL_VALUE ')'
+    :  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ',' operator value = DECIMAL_VALUE ')'#approxQuantile
+    |  'hasApproxCountDistinct' '(' column=identifier ','  operator value = DECIMAL_VALUE ')'                      #approxCountDistinct
     ;
 
 createFunctionStatement

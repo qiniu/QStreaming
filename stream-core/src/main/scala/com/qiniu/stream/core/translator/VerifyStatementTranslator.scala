@@ -17,13 +17,13 @@ case class VerifyStatementTranslator(verify: VerifyStatement) extends StatementT
   override def translate(pipelineContext: PipelineContext): Unit = {
     log.info(executingVerificationsMsg.format(verify.input))
     val dataset = pipelineContext.sparkSession.table(verify.input)
-    val verificationCheckResult = VerificationSuite().onData(dataset).addChecks(verify.dqChecks).run()
+    val verificationCheckResult = VerificationSuite().onData(dataset).addCheck(verify.toCheck).run()
 
     logCheckResult(verificationCheckResult)
 
-    val checkResult = checkResultsAsDataFrame(pipelineContext.sparkSession,verificationCheckResult)
+    val checkResult = checkResultsAsDataFrame(pipelineContext.sparkSession, verificationCheckResult)
 
-    saveCheckResult(verify.output, checkResult)
+    verify.output.foreach(saveCheckResult(_, checkResult))
 
     if (verificationCheckResult.status == CheckStatus.Error) {
       throw DataQualityVerificationException(validationsFailedExceptionMsg.format(verify.input))
@@ -47,7 +47,6 @@ case class VerifyStatementTranslator(verify: VerifyStatement) extends StatementT
     writer.write(dataFrame, table)
 
   }
-
 
 
 }

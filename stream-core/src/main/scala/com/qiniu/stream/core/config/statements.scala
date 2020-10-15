@@ -111,13 +111,10 @@ case class SinkTable(streaming: Boolean = true, name: String,
   override def execute(context: PipelineContext): Unit = SinkTableTranslator(this).translate(context)
 }
 
-case class VerifyStatement(input: String, output: SinkTable, assertions: Seq[Assertion]){
-  def dqChecks = assertions.map(_.toCheck)
-}
+case class VerifyStatement(name:String,input: String, output: Option[SinkTable],checkLevel: String, constraints: Seq[AssertConstraint]) extends Statement {
+  def toCheck = new Check(CheckLevel.withName(checkLevel), name, constraints map (_ toConstraint))
 
-case class Assertion(assertLevel: String, description: String, constraints: Seq[AssertConstraint]) {
-
-  def toCheck = new Check(CheckLevel.withName(assertLevel), description, constraints map (_ toConstraint))
+  override def execute(context: PipelineContext): Unit = VerifyStatementTranslator(this).translate(context)
 }
 
 sealed trait AssertConstraint {
@@ -187,7 +184,7 @@ case class PatternValueConstraint(column: String, pattern: String) extends Value
   override def toConstraint: Constraint = patternMatchConstraint(column, pattern.r, Check.IsOne)
 }
 
-case class ApproxQuantileConstraint(column: String, op: String, quantile: Double) extends ValueConstraint {
+case class ApproxQuantileConstraint(column: String,  quantile: Double,op: String,value:Double) extends ValueConstraint {
   override def toConstraint: Constraint = approxQuantileConstraint(column, quantile, Assertion(op, quantile))
 }
 
