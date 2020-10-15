@@ -5,15 +5,15 @@
   behavior STRING
 ) using kafka(
   kafka.bootstrap.servers="kafka:9092",
-  startingOffsets=earliest,
+  startingOffsets="earliest",
   subscribe="user_behavior",
   "group-id"="user_behavior"
 );
 
 create stream output table behavior_cnt_per_hour using kafka(
    kafka.bootstrap.servers="kafka:9092",
-   topic=behavior_cnt_per_hour
- ) TBLPROPERTIES(outputMode=update, checkpointLocation="/tmp/checkpoint/behavior_cnt_per_hour");
+   topic="behavior_cnt_per_hour"
+ ) TBLPROPERTIES(outputMode="update", checkpointLocation="/tmp/checkpoint/behavior_cnt_per_hour");
 
 
 create view v_user_behavior with (waterMark="proc_time, 1 seconds") as

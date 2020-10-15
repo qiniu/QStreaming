@@ -17,7 +17,7 @@
  */
 package com.qiniu.stream.core.parser
 
-import com.qiniu.stream.core.parser.SqlParser.{PropertyContext, SelectStatementContext}
+import com.qiniu.stream.core.parser.SqlParser.{PropertyContext, SelectStatementContext, TableIdentifierContext}
 import org.antlr.v4.runtime.misc.Interval
 
 object ParserHelper {
@@ -32,6 +32,13 @@ object ParserHelper {
     val interval = new Interval(selectStatementContext.start.getStartIndex, selectStatementContext.stop.getStopIndex)
     selectStatementContext.getStart.getInputStream.getText(interval)
 
+  }
+
+  def parseTableIdentifier(tableIdentifierContext: TableIdentifierContext) = {
+    if (tableIdentifierContext.db!= null)
+      cleanQuote(tableIdentifierContext.db.getText )+ "." + cleanQuote( tableIdentifierContext.table.getText )
+    else
+      cleanQuote(tableIdentifierContext.table.getText)
   }
 
   /**

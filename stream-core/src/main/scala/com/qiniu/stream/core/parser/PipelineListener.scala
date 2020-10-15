@@ -65,14 +65,12 @@ class PipelineListener extends SqlBaseListener with Logging {
         ViewType.globalView
       } else if (ctx.K_TEMPORARY() != null) {
         ViewType.tempView
-      } else if (ctx.K_PERSISTED() != null) {
-        ViewType.persistedView
       } else {
         ViewType.tempView
       }
     }
 
-    pipeline.statements += CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ctx.tableName().getText, options, viewType)
+    pipeline.statements += CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ParserHelper.parseTableIdentifier(ctx.tableIdentifier()), options, viewType)
   }
 
 
@@ -108,7 +106,7 @@ class PipelineListener extends SqlBaseListener with Logging {
   override def enterInsertStatement(ctx: SqlParser.InsertStatementContext): Unit = {
     printStatement(ctx)
     val sql = ParserHelper.parseSql(ctx.selectStatement())
-    val tableName = ctx.tableName().getText
+    val tableName = ParserHelper.parseTableIdentifier(ctx.tableIdentifier())
     val sinkTableOption = pipeline.sinkTable(tableName)
     sinkTableOption match {
       case Some(sinkTable) => {
@@ -118,5 +116,6 @@ class PipelineListener extends SqlBaseListener with Logging {
         pipeline.statements += SqlStatement(s"insert into ${tableName} ${sql}")
     }
   }
+
 
 }

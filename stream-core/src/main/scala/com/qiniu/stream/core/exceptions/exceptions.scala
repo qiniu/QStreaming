@@ -24,3 +24,9 @@ case class SettingsValidationException(message: String, cause: Throwable)
   def this(message: String) = this(message, null)
 }
 
+case class ParsingException(message: String) extends RuntimeException(message)
+
+case class DataQualityVerificationException(private val message: String = "",
+                                            private val cause: Throwable = None.orNull)
+  extends Exception(message, cause)
+

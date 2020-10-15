@@ -26,6 +26,8 @@ import org.apache.spark.sql.{DataFrame, SparkSession, functions => F}
 
 class StreamReader extends Reader with WaterMarker with Logging {
 
+  private val kafkaRawFields = List("key", "partition", "offset", "timestamp", "timestampType", "topic")
+  private val kafkaBootstrapServers = "kafka.bootstrap.servers"
 
   private def jsonTable(table: DataFrame,sourceTable: SourceTable) = {
     val kafkaFields = table.schema.fieldNames.filterNot(_ == "value")
@@ -85,8 +87,8 @@ class StreamReader extends Reader with WaterMarker with Logging {
     sparkSession.udf.register("regex2Json", F.udf((line: String) => {
       Regex2Json.toJson(line, pattern, ddl)
     }))
-    val rawFields = List("key", "partition", "offset", "timestamp", "timestampType", "topic")
-    table.withColumn("kafkaValue", F.struct(rawFields .map(F.col): _*))
+
+    table.withColumn("kafkaValue", F.struct(kafkaRawFields .map(F.col): _*))
       .selectExpr("regex2json(CAST(value AS STRING)) as jsonValue", "kafkaValue")
       .withColumn("value", F.from_json(F.col("jsonValue"), schema = structType))
       .select("value.*", "kafkaValue")
@@ -94,7 +96,7 @@ class StreamReader extends Reader with WaterMarker with Logging {
 
   private def enableKafkaLagListener(sparkSession: SparkSession,sourceTable: SourceTable): Unit = {
     sourceTable.connector.option("group_id").foreach(groupId => {
-      val bootStrapServer = sourceTable.connector.option("kafka.bootstrap.servers")
+      val bootStrapServer = sourceTable.connector.option(kafkaBootstrapServers)
       require(bootStrapServer.isDefined)
       log.info("register streaming query listener for kafka streaming")
       sparkSession.streams.addListener(new KafkaLagListener(groupId, bootStrapServer.get))

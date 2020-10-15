@@ -48,9 +48,6 @@ case class CreateViewTranslator(statement: CreateViewStatement) extends Statemen
         table = withWaterMark(table, waterMark)
         table.createOrReplaceGlobalTempView(statement.viewName)
       }
-      case ViewType.`persistedView` => {
-        sparkSession.sql(s"create view ${statement.viewName} as ${statement.sql}")
-      }
     }
 
   }
