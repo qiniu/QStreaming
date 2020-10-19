@@ -150,10 +150,11 @@ class PipelineListener extends SqlBaseListener with Logging {
         ApproxCountDistinctConstraint(ctx.column.getText, ctx.constraintOperator().getText, ctx.value.getText.toDouble)
     }
 
-    val checkLevel = Option(ctx.testOptions()).map(_.testLevel.getText).map(CheckLevel.withName).getOrElse(CheckLevel.Error)
+    val testOptions = ctx.property().asScala.map(ParserHelper.parseProperty).toMap
+    val checkLevel = testOptions.get("testLevel") .map(CheckLevel.withName).getOrElse(CheckLevel.Error)
     val testName = ctx.testName.getText
     val testInput = ctx.testDataset.getText
-    val testOutput = Option(ctx.testOptions()).map(_.testOutput.getText).flatMap(pipeline.sinkTable)
+    val testOutput = testOptions.get("testOutput") .flatMap(pipeline.sinkTable)
     pipeline.statements += VerifyStatement(testName, testInput, testOutput, checkLevel.toString, constraints)
   }
 

@@ -63,11 +63,11 @@ dslStatement
     ;
 
 createTestStatement
-    : K_CREATE K_TEST testName=identifier ('(' testOptions ')')?  K_ON testDataset=tableIdentifier K_WITH  constraint (K_AND constraint)*
+    : K_CREATE K_TEST testName=identifier ('(' property (',' property)* ')')?  K_ON testDataset=tableIdentifier K_WITH  constraint (K_AND constraint)*
     ;
 
 testOptions
-    : 'output' K_EQ testOutput=tableIdentifier
+    : 'target' K_EQ testOutput=tableIdentifier
     | 'level' K_EQ testLevel=('Warning'|'Error')
     ;
 

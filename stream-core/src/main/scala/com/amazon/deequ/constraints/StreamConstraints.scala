@@ -20,7 +20,6 @@ object StreamConstraints {
    */
   def dateFormatConstraint(column: String,
                            formatString: String,
-                           assertion: Double => Boolean= Check.IsOne,
                            where: Option[String] = None,
                            name: Option[String] = None,
                            hint: Option[String] = None): Constraint = {
@@ -28,7 +27,7 @@ object StreamConstraints {
     val dateFormat = DateFormat(column, formatString, where)
 
     val constraint = AnalysisBasedConstraint[NumMatchesAndCount, Double, Double](
-      dateFormat, assertion, hint = hint)
+      dateFormat, Check.IsOne, hint = hint)
 
     val constraintName = name match {
       case Some(aName) => aName
