@@ -18,11 +18,8 @@
 package com.qiniu.stream.core.config
 
 import com.amazon.deequ.checks.{Check, CheckLevel}
-import com.amazon.deequ.constraints.{ConstrainableDataTypes, Constraint}
-import com.amazon.deequ.constraints.Constraint.{approxCountDistinctConstraint, approxQuantileConstraint, completenessConstraint, complianceConstraint, dataTypeConstraint, maxConstraint, maxLengthConstraint, meanConstraint, minConstraint, minLengthConstraint, patternMatchConstraint, sizeConstraint, sumConstraint, uniquenessConstraint}
 import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.core.config.ViewType.ViewType
-import com.qiniu.stream.core.exceptions.ParsingException
 import com.qiniu.stream.core.parser.SqlStructType
 import com.qiniu.stream.core.translator._
 import com.qiniu.stream.util.Logging
@@ -111,83 +108,9 @@ case class SinkTable(streaming: Boolean = true, name: String,
   override def execute(context: PipelineContext): Unit = SinkTableTranslator(this).translate(context)
 }
 
-case class VerifyStatement(name:String,input: String, output: Option[SinkTable],checkLevel: String, constraints: Seq[AssertConstraint]) extends Statement {
+
+case class VerifyStatement(name:String,input: String, output: Option[SinkTable],checkLevel: String, constraints: Seq[Constraint]) extends Statement {
   def toCheck = new Check(CheckLevel.withName(checkLevel), name, constraints map (_ toConstraint))
 
   override def execute(context: PipelineContext): Unit = VerifyStatementTranslator(this).translate(context)
-}
-
-sealed trait AssertConstraint {
-  def toConstraint: com.amazon.deequ.constraints.Constraint
-
-}
-
-object Assertion {
-
-  def apply[N](operator: String, evaluate: N)(implicit ordered: N => Ordered[N]): N => Boolean = operator match {
-    case "==" => _ == evaluate
-    case "!=" => _ != evaluate
-    case ">=" => _ >= evaluate
-    case ">" => _ > evaluate
-    case "<=" => _ <= evaluate
-    case "<" => _ < evaluate
-  }
-}
-
-case class SizeConstraint(op: String, count: Long) extends AssertConstraint {
-  override def toConstraint: Constraint = sizeConstraint(Assertion(op, count))
-}
-
-case class CompleteConstraint(column: String) extends AssertConstraint {
-  override def toConstraint: Constraint = completenessConstraint(column, Check.IsOne)
-}
-
-case class UniqueConstraint(columns: Seq[String]) extends AssertConstraint {
-  override def toConstraint: Constraint = uniquenessConstraint(columns, Check.IsOne)
-}
-
-case class SatisfyConstraint(predicate: String, constraintName: String) extends AssertConstraint {
-  override def toConstraint: Constraint = complianceConstraint(constraintName, predicate, Check.IsOne)
-}
-
-case class DataTypeConstraint(column: String, dataType: String) extends AssertConstraint {
-  override def toConstraint: Constraint = dataTypeConstraint(column, ConstrainableDataTypes.withName(dataType), Check.IsOne)
-}
-
-case class LengthConstraint(column: String, kind: String, op: String, length: Int) extends AssertConstraint {
-
-  override def toConstraint: Constraint = {
-    kind match {
-      case "hasMaxLength" => maxLengthConstraint(column, Assertion(op, length.toDouble))
-      case "hasMinLength" => minLengthConstraint(column, Assertion(op, length.toDouble))
-      case other => throw ParsingException(s"$other is not a valid lengthConstraint")
-    }
-  }
-}
-
-
-sealed trait ValueConstraint extends AssertConstraint
-
-case class DefaultValueConstraint(kind: String, column: String, op: String, value: Double) extends ValueConstraint {
-  override def toConstraint: Constraint = {
-    kind match {
-      case "hasMin" => minConstraint(column, Assertion(op, value))
-      case "hasMax" => maxConstraint(column, Assertion(op, value))
-      case "hasMean" => meanConstraint(column, Assertion(op, value))
-      case "hasSum" => sumConstraint(column, Assertion(op, value))
-      case other => throw ParsingException(s"$other is not a valid ValueConstraint")
-    }
-  }
-}
-
-case class PatternValueConstraint(column: String, pattern: String) extends ValueConstraint {
-  override def toConstraint: Constraint = patternMatchConstraint(column, pattern.r, Check.IsOne)
-}
-
-case class ApproxQuantileConstraint(column: String,  quantile: Double,op: String,value:Double) extends ValueConstraint {
-  override def toConstraint: Constraint = approxQuantileConstraint(column, quantile, Assertion(op, quantile))
-}
-
-case class ApproxCountDistinctConstraint(column: String, op: String, value: Double) extends ValueConstraint {
-  override def toConstraint: Constraint = approxCountDistinctConstraint(column, Assertion(op, value))
 }

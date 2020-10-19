@@ -17,13 +17,12 @@
  */
 package com.qiniu.stream.core.parser
 
+import com.amazon.deequ.checks.CheckLevel
 import com.qiniu.stream.core.config._
-import com.qiniu.stream.core.parser.SqlParser.{ApproxCountDistinctContext, ApproxQuantileContext, CreateTestStatementContext, SelectStatementContext, SizeConstraintContext}
+import com.qiniu.stream.core.parser.SqlParser._
 import com.qiniu.stream.util.Logging
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
-
-import scala.collection.mutable.ArrayBuffer
 
 class PipelineListener extends SqlBaseListener with Logging {
 
@@ -119,75 +118,43 @@ class PipelineListener extends SqlBaseListener with Logging {
     }
   }
 
-  /**
-   * {@inheritDoc }
-   *
-   * <p>The default implementation does nothing.</p>
-   */
-  override def enterCreateTestStatement(ctx: CreateTestStatementContext): Unit = {
+  override def enterCreateTestStatement(ctx: SqlParser.CreateTestStatementContext): Unit = {
 
     import scala.collection.JavaConverters._
-    val constraints = new ArrayBuffer[AssertConstraint]()
-    ctx.constraint().asScala.foreach { constraint =>
-
-      Option(constraint.sizeConstraint()).foreach(
-        ctx => constraints += SizeConstraint(ctx.operator().getText, ctx.value.getText.toLong)
-      )
-
-      Option(constraint.uniqueConstaint()).foreach(
-        ctx => constraints += UniqueConstraint(ctx.identifier().asScala.map(_.getText))
-      )
-
-      Option(constraint.completeConstraint()).foreach {
-        ctx => constraints += CompleteConstraint(ctx.column.getText)
-      }
-
-      Option(constraint.satisfyConstraint()).foreach {
-        ctx => constraints += SatisfyConstraint(ctx.predicate.getText, ctx.desc.getText)
-      }
-
-      Option(constraint.dataTypeConstraint()).foreach {
-        ctx => constraints += DataTypeConstraint(ctx.column.getText, ctx.dataType.getText)
-      }
-      Option(constraint.lengthConstraint()).foreach {
-        ctx => constraints += LengthConstraint(ctx.column.getText, ctx.kind.getText, "==", ctx.length.getText.toInt)
-      }
-      Option(constraint.valueConstraint()).foreach {
-        ctx => {
-          Option(ctx.defaultValueConstraint()).foreach {
-            valueConstraintCtx =>
-              constraints += DefaultValueConstraint(
-                valueConstraintCtx.kind.getText,
-                valueConstraintCtx.column.getText,
-                "==",
-                valueConstraintCtx.value.getText.toDouble
-              )
-          }
-          Option(ctx.patternValueConstraint()).foreach {
-            patternValueConstraintCtx =>
-              constraints += PatternValueConstraint(patternValueConstraintCtx.column.getText, patternValueConstraintCtx.pattern.getText)
-          }
-
-          Option(ctx.approxValueContraint()).foreach{
-            case ctx: ApproxQuantileContext=>
-              constraints += ApproxQuantileConstraint(ctx.column.getText, ctx.quantile.getText.toDouble,ctx.operator().getText,ctx.value.getText.toDouble)
-            case ctx:ApproxCountDistinctContext=>
-              constraints += ApproxCountDistinctConstraint(ctx.column.getText,ctx.operator().getText,ctx.value.getText.toDouble)
-          }
-        }
-      }
-
+    val constraints: Seq[Constraint] = ctx.constraint().asScala.map {
+      case ctx: SizeConstraintContext =>
+        SizeConstraint(ctx.constraintOperator().getText, ctx.value.getText.toLong)
+      case ctx: UniqueConstraintContext =>
+        UniqueConstraint(Seq(ctx.column.getText))
+      case ctx: CompleteConstraintContext =>
+        CompleteConstraint(ctx.column.getText)
+      case ctx: SatisfyConstraintContext =>
+        SatisfyConstraint(ctx.predicate.getText, ctx.desc.getText)
+      case ctx: DataTypeConstraintContext =>
+        DataTypeConstraint(ctx.column.getText, ctx.dataType.getText)
+      case ctx: MinMaxLengthConstraintContext =>
+        LengthConstraint(ctx.column.getText, ctx.kind.getText, "==", ctx.length.getText.toInt)
+      case ctx: MinMaxValueConstraintContext =>
+        MaxMinValueConstraint(ctx.kind.getText, ctx.column.getText, "==", ctx.value.getText.toDouble)
+      case ctx: PatternConstraintContext =>
+        PatternMatchConstraint(ctx.column.getText, ctx.pattern.getText)
+      case ctx: DateFormatConstraintContext =>
+        DateFormatConstraint(ctx.column.getText, ctx.formatString.getText)
+      case ctx: ExactlyEqualConstraintContext =>
+        ExactlyEqualConstraint(ParserHelper.parseTableIdentifier(ctx.tableName))
+      case ctx: ForeignKeyConstraintContext =>
+        ForeignKeyConstraint(ParserHelper.parseTableIdentifier(ctx.referenceTable), ctx.column.getText, ctx.referenceColumn.getText)
+      case ctx: ApproxQuantileConstraintContext =>
+        ApproxQuantileConstraint(ctx.column.getText, ctx.quantile.getText.toDouble, ctx.constraintOperator().getText, ctx.value.getText.toDouble)
+      case ctx: ApproxCountDistinctConstraintContext =>
+        ApproxCountDistinctConstraint(ctx.column.getText, ctx.constraintOperator().getText, ctx.value.getText.toDouble)
     }
 
-    val sinkTable = Option(ctx.testOptions()).map(_.testOutput).map(_.getText).flatMap(x => pipeline.sinkTable(x))
-    val checkLevel = Option(ctx.testOptions()).map(_.testLevel).map(_.getText).getOrElse("Error")
-
-    pipeline.statements += VerifyStatement(
-      name = ctx.testName.getText,
-      input = ParserHelper.parseTableIdentifier(ctx.testDataset),
-      output = sinkTable,
-      checkLevel = checkLevel,
-      constraints = constraints
-    )
+    val checkLevel = Option(ctx.testOptions()).map(_.testLevel.getText).map(CheckLevel.withName).getOrElse(CheckLevel.Error)
+    val testName = ctx.testName.getText
+    val testInput = ctx.testDataset.getText
+    val testOutput = Option(ctx.testOptions()).map(_.testOutput.getText).flatMap(pipeline.sinkTable)
+    pipeline.statements += VerifyStatement(testName, testInput, testOutput, checkLevel.toString, constraints)
   }
+
 }

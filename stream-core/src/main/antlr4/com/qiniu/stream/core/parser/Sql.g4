@@ -72,58 +72,24 @@ testOptions
     ;
 
 constraint
-    :  sizeConstraint
-    |  uniqueConstaint
-    |  completeConstraint
-    |  satisfyConstraint
-    |  dataTypeConstraint
-    |  lengthConstraint
-    |  valueConstraint
+    :  'numRows()'     constraintOperator value = INTEGER_VALUE                                                              #sizeConstraint
+    |  'isUnique'  '(' column=identifier (',' column=identifier)* ')'                                                        #uniqueConstraint
+    |  'hasDistinct''(' column=identifier ')'                                                                                #distinctConstraint
+    |  kind=('isAlwaysNull' |'isNotNull') '(' column=identifier ')'                                                          #completeConstraint
+    |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'                                                                    #satisfyConstraint
+    |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')'            #dataTypeConstraint
+    |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'                               #minMaxLengthConstraint
+    |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'                       #minMaxValueConstraint
+    |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'                                                            #patternConstraint
+    |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'                                                     #dateFormatConstraint
+    |  'isEqualTo' '(' tableName=tableIdentifier ')'                                                                         #exactlyEqualConstraint
+    |  'hasForeignKey' '(' referenceTable=tableIdentifier ',' column=identifier ',' referenceColumn=identifier ')'           #foreignKeyConstraint
+    |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ',' constraintOperator value = DECIMAL_VALUE ')'#approxQuantileConstraint
+    |  'hasApproxCountDistinct' '(' column=identifier ','  constraintOperator value = DECIMAL_VALUE ')'                      #approxCountDistinctConstraint
     ;
 
-sizeConstraint
-    :  'size()'     operator value = INTEGER_VALUE
-    ;
-completeConstraint
-    :  'isNotNull' '(' column=identifier ')'
-    ;
-uniqueConstaint
-    :  'isUnique'  '(' column=identifier (',' column=identifier)* ')'
-    ;
-satisfyConstraint
-    :  'satisfy' '(' predicate=STRING ',' desc=STRING ')'
-    ;
-
-dataTypeConstraint
-    :  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')'
-    ;
-
-lengthConstraint
-    : kind=('hasMaxLength'| 'hasMinLength') '(' column=identifier ',' length=INTEGER_VALUE ')'
-    ;
-
-valueConstraint
-    : defaultValueConstraint
-    | patternValueConstraint
-    | approxValueContraint
-    |
-    ;
-
-defaultValueConstraint
-    : kind=( 'hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'
-    ;
-patternValueConstraint
-    : 'hasPattern' '('  column=identifier ',' pattern=STRING ')'
-    ;
-
-
-operator
+constraintOperator
     : ('>'|'<'|'>='|'<='|'==' |'!=')
-    ;
-
-approxValueContraint
-    :  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ',' operator value = DECIMAL_VALUE ')'#approxQuantile
-    |  'hasApproxCountDistinct' '(' column=identifier ','  operator value = DECIMAL_VALUE ')'                      #approxCountDistinct
     ;
 
 createFunctionStatement

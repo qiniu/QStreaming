@@ -28,6 +28,7 @@ class BatchWriter extends Writer with Logging{
   }
 
   def write(dataFrame: DataFrame, batchId: Option[Long], sinkTable: SinkTable) = {
+
     if (sinkTable.connectors.size == 1)
       startOneBatch(dataFrame, sinkTable.connectors.head, batchId, sinkTable)
     else
