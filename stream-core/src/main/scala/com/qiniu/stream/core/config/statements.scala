@@ -126,7 +126,7 @@ case class Assertion(operator:String,value:String) {
   }
 
   private def apply[N](operator: String, evaluate: N)(implicit ordered: N => Ordered[N]): N => Boolean = operator match {
-    case "==" => _ == evaluate
+    case "=="|"=" => _ == evaluate
     case "!=" => _ != evaluate
     case ">=" => _ >= evaluate
     case ">" => _ > evaluate
