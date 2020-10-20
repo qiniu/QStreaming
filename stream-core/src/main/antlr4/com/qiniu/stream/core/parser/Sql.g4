@@ -67,25 +67,29 @@ createTestStatement
     ;
 
 constraint
-    :  'numRows()'     constraintOperator value = INTEGER_VALUE                                                              #sizeConstraint
-    |  'isUnique'  '(' column+=identifier (',' column+=identifier)* ')'                                                      #uniqueConstraint
-    |  'isNotNull' '(' column=identifier ')'                                                                                 #completeConstraint
-    |  'containsUrl' '(' column=identifier  ')'                                                                              #containsUrlConstraint
-    |  'containsEmail' '(' column=identifier  ')'                                                                            #containsEmailConstraint
-    |  'isContainedIn' '(' column=identifier ',' '[' value+=STRING (','  value+=STRING) ']'')'                                 #containedInConstraint
-    |  'isNonNegative'  '(' column=identifier  ')'                                                                           #isNonNegativeConstraint
-    |  'isPositive'  '(' column=identifier  ')'                                                                              #isPositiveConstraint
-    |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'                                                                    #satisfyConstraint
-    |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')'            #dataTypeConstraint
-    |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'                               #minMaxLengthConstraint
-    |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'                       #minMaxValueConstraint
-    |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'                                                            #patternConstraint
-    |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'                                                     #dateFormatConstraint
-    |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ',' constraintOperator value = DECIMAL_VALUE ')'#approxQuantileConstraint
-    |  'hasApproxCountDistinct' '(' column=identifier ','  constraintOperator value = DECIMAL_VALUE ')'                      #approxCountDistinctConstraint
+    :  'numRows()'     assertion                                                                                              #sizeConstraint
+    |  'isUnique'  '(' column+=identifier (',' column+=identifier)* ')'  assertion?                                           #uniqueConstraint
+    |  'isNotNull' '(' column=identifier ')'    assertion?                                                                    #completeConstraint
+    |  'containsUrl' '(' column=identifier  ')'   assertion?                                                                  #containsUrlConstraint
+    |  'containsEmail' '(' column=identifier  ')'  assertion?                                                                 #containsEmailConstraint
+    |  'isContainedIn' '(' column=identifier ',' '[' value+=STRING (','  value+=STRING) ']'')' assertion?                     #containedInConstraint
+    |  'isNonNegative'  '(' column=identifier  ')'    assertion?                                                              #isNonNegativeConstraint
+    |  'isPositive'  '(' column=identifier  ')'    assertion?                                                                 #isPositiveConstraint
+    |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'      assertion?                                                     #satisfyConstraint
+    |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')' assertion?  #dataTypeConstraint
+    |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'  assertion?                    #minMaxLengthConstraint
+    |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?            #minMaxValueConstraint
+    |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'     assertion?                                              #patternConstraint
+    |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'   assertion?                                         #dateFormatConstraint
+    |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ')' assertion                                    #approxQuantileConstraint
+    |  'hasApproxCountDistinct' '(' column=identifier  ')'  assertion                                                         #approxCountDistinctConstraint
     ;
 
-constraintOperator
+assertion
+    :assertionOperator value = (INTEGER_VALUE|DECIMAL_VALUE)
+    ;
+
+assertionOperator
     : ('>'|'<'|'>='|'<='|'==' |'!=')
     ;
 

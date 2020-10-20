@@ -113,3 +113,24 @@ case class VerifyStatement(name:String,input: String, output: Option[SinkTable],
 
   override def execute(context: PipelineContext): Unit = VerifyStatementTranslator(this).translate(context)
 }
+
+
+case class Assertion(operator:String,value:String) {
+
+  def longAssertion()={
+    apply(operator,value.toLong)
+  }
+
+  def doubleAssertion = {
+    apply(operator,value.toDouble)
+  }
+
+  private def apply[N](operator: String, evaluate: N)(implicit ordered: N => Ordered[N]): N => Boolean = operator match {
+    case "==" => _ == evaluate
+    case "!=" => _ != evaluate
+    case ">=" => _ >= evaluate
+    case ">" => _ > evaluate
+    case "<=" => _ <= evaluate
+    case "<" => _ < evaluate
+  }
+}
