@@ -17,7 +17,8 @@
  */
 package com.qiniu.stream.core.parser
 
-import com.amazon.deequ.checks.CheckLevel
+import com.amazon.deequ.checks.{Check, CheckLevel}
+import com.amazon.deequ.constraints.{ConstrainableDataTypes, StreamConstraints}
 import com.qiniu.stream.core.config._
 import com.qiniu.stream.core.parser.SqlParser._
 import com.qiniu.stream.util.Logging
@@ -119,43 +120,76 @@ class PipelineListener extends SqlBaseListener with Logging {
   }
 
   override def enterCreateTestStatement(ctx: SqlParser.CreateTestStatementContext): Unit = {
-
     import scala.collection.JavaConverters._
-    val constraints: Seq[Constraint] = ctx.constraint().asScala.map {
+    val testOptions = if (ctx.property() != null) ctx.property().asScala.map(ParserHelper.parseProperty).toMap else Map[String, String]()
+    val checkLevel = testOptions.get("testLevel").map(CheckLevel.withName).getOrElse(CheckLevel.Error)
+    val testName = ParserHelper.cleanQuote(ctx.testName.getText)
+    val testInput = ParserHelper.cleanQuote(ctx.testDataset.getText)
+    val testOutput = testOptions.get("testOutput").map(ParserHelper.cleanQuote).flatMap(pipeline.sinkTable)
+    var check = new Check(checkLevel, testName)
+
+
+    ctx.constraint().asScala.foreach {
       case ctx: SizeConstraintContext =>
-        SizeConstraint(ctx.constraintOperator().getText, ctx.value.getText.toLong)
+        check = check.hasSize(Assertion(ctx.constraintOperator().getText, ctx.value.getText.toLong))
       case ctx: UniqueConstraintContext =>
-        UniqueConstraint(Seq(ctx.column.getText))
+        ctx.column.asScala.map(_.getText).toList match {
+          case head :: Nil => check = check.isUnique(head)
+          case head :: tail => check = check.isPrimaryKey(head, tail: _*)
+        }
       case ctx: CompleteConstraintContext =>
-        CompleteConstraint(ctx.column.getText)
+        check = check.isComplete(ctx.column.getText)
+      case ctx: ContainsUrlConstraintContext =>
+        check = check.containsURL(ctx.column.getText)
+      case ctx: ContainsUrlConstraintContext =>
+        check = check.containsURL(ctx.column.getText)
+      case ctx: ContainsEmailConstraintContext =>
+        check = check.containsEmail(ctx.column.getText)
+      case ctx: ContainedInConstraintContext =>
+        check = check.isContainedIn(ctx.column.getText, ctx.value.asScala.map(_.getText).toArray)
+      case ctx: IsNonNegativeConstraintContext =>
+        check = check.isNonNegative(ctx.column.getText)
+      case ctx: IsPositiveConstraintContext =>
+        check = check.isPositive(ctx.column.getText)
       case ctx: SatisfyConstraintContext =>
-        SatisfyConstraint(ctx.predicate.getText, ctx.desc.getText)
+        check = check.satisfies(ctx.predicate.getText, ctx.desc.getText)
       case ctx: DataTypeConstraintContext =>
-        DataTypeConstraint(ctx.column.getText, ctx.dataType.getText)
+        check = check.hasDataType(ctx.column.getText, ConstrainableDataTypes.withName(ctx.dataType.getText))
       case ctx: MinMaxLengthConstraintContext =>
-        LengthConstraint(ctx.column.getText, ctx.kind.getText, "==", ctx.length.getText.toInt)
+        ctx.kind.getText match {
+          case "hasMinLength" => check = check.hasMinLength(ctx.column.getText, Assertion("==", ctx.length.getText.toDouble))
+          case "hasMaxLength" => check = check.hasMaxLength(ctx.column.getText, Assertion("==", ctx.length.getText.toDouble))
+        }
       case ctx: MinMaxValueConstraintContext =>
-        MaxMinValueConstraint(ctx.kind.getText, ctx.column.getText, "==", ctx.value.getText.toDouble)
+        ctx.kind.getText match {
+          case "hasMin" => check = check.hasMin(ctx.column.getText, Assertion("==", ctx.value.getText.toDouble))
+          case "hasMax" => check = check.hasMax(ctx.column.getText, Assertion("==", ctx.value.getText.toDouble))
+          case "hasSum" => check = check.hasSum(ctx.column.getText, Assertion("==", ctx.value.getText.toDouble))
+          case "hasMean" => check = check.hasMean(ctx.column.getText, Assertion("==", ctx.value.getText.toDouble))
+        }
       case ctx: PatternConstraintContext =>
-        PatternMatchConstraint(ctx.column.getText, ctx.pattern.getText)
+        check = check.hasPattern(ctx.column.getText, ctx.pattern.getText.r)
       case ctx: DateFormatConstraintContext =>
-        DateFormatConstraint(ctx.column.getText, ctx.formatString.getText)
-      case ctx: ExactlyEqualConstraintContext =>
-        ExactlyEqualConstraint(ParserHelper.parseTableIdentifier(ctx.tableName))
-      case ctx: ForeignKeyConstraintContext =>
-        ForeignKeyConstraint(ParserHelper.parseTableIdentifier(ctx.referenceTable), ctx.column.getText, ctx.referenceColumn.getText)
+        check = check.addConstraint(StreamConstraints.dateFormatConstraint(ctx.column.getText, ctx.formatString.getText))
+
       case ctx: ApproxQuantileConstraintContext =>
-        ApproxQuantileConstraint(ctx.column.getText, ctx.quantile.getText.toDouble, ctx.constraintOperator().getText, ctx.value.getText.toDouble)
+        check = check.hasApproxQuantile(ctx.column.getText, ctx.quantile.getText.toDouble, Assertion(ctx.constraintOperator().getText, ctx.value.getText.toDouble))
       case ctx: ApproxCountDistinctConstraintContext =>
-        ApproxCountDistinctConstraint(ctx.column.getText, ctx.constraintOperator().getText, ctx.value.getText.toDouble)
+        check = check.hasApproxCountDistinct(ctx.column.getText, Assertion(ctx.constraintOperator().getText, ctx.value.getText.toDouble))
     }
 
-    val testOptions = ctx.property().asScala.map(ParserHelper.parseProperty).toMap
-    val checkLevel = testOptions.get("testLevel") .map(CheckLevel.withName).getOrElse(CheckLevel.Error)
-    val testName = ctx.testName.getText
-    val testInput = ctx.testDataset.getText
-    val testOutput = testOptions.get("testOutput") .flatMap(pipeline.sinkTable)
-    pipeline.statements += VerifyStatement(testName, testInput, testOutput, checkLevel.toString, constraints)
+    pipeline.statements += VerifyStatement(testName, testInput, testOutput, check)
+  }
+
+  object Assertion {
+    def apply[N](operator: String, evaluate: N)(implicit ordered: N => Ordered[N]): N => Boolean = operator match {
+      case "==" => _ == evaluate
+      case "!=" => _ != evaluate
+      case ">=" => _ >= evaluate
+      case ">" => _ > evaluate
+      case "<=" => _ <= evaluate
+      case "<" => _ < evaluate
+    }
   }
 
 }

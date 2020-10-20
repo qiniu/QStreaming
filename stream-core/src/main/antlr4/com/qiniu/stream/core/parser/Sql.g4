@@ -66,24 +66,21 @@ createTestStatement
     : K_CREATE K_TEST testName=identifier ('(' property (',' property)* ')')?  K_ON testDataset=tableIdentifier K_WITH  constraint (K_AND constraint)*
     ;
 
-testOptions
-    : 'target' K_EQ testOutput=tableIdentifier
-    | 'level' K_EQ testLevel=('Warning'|'Error')
-    ;
-
 constraint
     :  'numRows()'     constraintOperator value = INTEGER_VALUE                                                              #sizeConstraint
-    |  'isUnique'  '(' column=identifier (',' column=identifier)* ')'                                                        #uniqueConstraint
-    |  'hasDistinct''(' column=identifier ')'                                                                                #distinctConstraint
-    |  kind=('isAlwaysNull' |'isNotNull') '(' column=identifier ')'                                                          #completeConstraint
+    |  'isUnique'  '(' column+=identifier (',' column+=identifier)* ')'                                                      #uniqueConstraint
+    |  'isNotNull' '(' column=identifier ')'                                                                                 #completeConstraint
+    |  'containsUrl' '(' column=identifier  ')'                                                                              #containsUrlConstraint
+    |  'containsEmail' '(' column=identifier  ')'                                                                            #containsEmailConstraint
+    |  'isContainedIn' '(' column=identifier ',' '[' value+=STRING (','  value+=STRING) ']'')'                                 #containedInConstraint
+    |  'isNonNegative'  '(' column=identifier  ')'                                                                           #isNonNegativeConstraint
+    |  'isPositive'  '(' column=identifier  ')'                                                                              #isPositiveConstraint
     |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'                                                                    #satisfyConstraint
     |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')'            #dataTypeConstraint
     |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'                               #minMaxLengthConstraint
     |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'                       #minMaxValueConstraint
     |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'                                                            #patternConstraint
     |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'                                                     #dateFormatConstraint
-    |  'isEqualTo' '(' tableName=tableIdentifier ')'                                                                         #exactlyEqualConstraint
-    |  'hasForeignKey' '(' referenceTable=tableIdentifier ',' column=identifier ',' referenceColumn=identifier ')'           #foreignKeyConstraint
     |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ',' constraintOperator value = DECIMAL_VALUE ')'#approxQuantileConstraint
     |  'hasApproxCountDistinct' '(' column=identifier ','  constraintOperator value = DECIMAL_VALUE ')'                      #approxCountDistinctConstraint
     ;

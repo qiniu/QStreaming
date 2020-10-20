@@ -17,7 +17,7 @@ case class VerifyStatementTranslator(verify: VerifyStatement) extends StatementT
   override def translate(pipelineContext: PipelineContext): Unit = {
     log.info(executingVerificationsMsg.format(verify.input))
     val dataset = pipelineContext.sparkSession.table(verify.input)
-    val verificationCheckResult = VerificationSuite().onData(dataset).addCheck(verify.toCheck).run()
+    val verificationCheckResult = VerificationSuite().onData(dataset).addCheck(verify.check).run()
 
     logCheckResult(verificationCheckResult)
 

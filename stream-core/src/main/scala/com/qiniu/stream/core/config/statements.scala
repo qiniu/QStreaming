@@ -109,8 +109,7 @@ case class SinkTable(streaming: Boolean = true, name: String,
 }
 
 
-case class VerifyStatement(name:String,input: String, output: Option[SinkTable],checkLevel: String, constraints: Seq[Constraint]) extends Statement {
-  def toCheck = new Check(CheckLevel.withName(checkLevel), name, constraints map (_ toConstraint))
+case class VerifyStatement(name:String,input: String, output: Option[SinkTable],  check: Check) extends Statement {
 
   override def execute(context: PipelineContext): Unit = VerifyStatementTranslator(this).translate(context)
 }
