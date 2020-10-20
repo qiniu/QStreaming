@@ -17,7 +17,9 @@
  */
 package com.qiniu.stream.core.parser
 
-import com.qiniu.stream.core.parser.SqlParser.{PropertyContext, SelectStatementContext}
+import com.amazon.deequ.checks.Check
+import com.qiniu.stream.core.config.Assertion
+import com.qiniu.stream.core.parser.SqlParser.{AssertionContext, PropertyContext, SelectStatementContext, TableIdentifierContext}
 import org.antlr.v4.runtime.misc.Interval
 
 object ParserHelper {
@@ -34,6 +36,13 @@ object ParserHelper {
 
   }
 
+  def parseTableIdentifier(tableIdentifierContext: TableIdentifierContext) = {
+    if (tableIdentifierContext.db != null)
+      cleanQuote(tableIdentifierContext.db.getText) + "." + cleanQuote(tableIdentifierContext.table.getText)
+    else
+      cleanQuote(tableIdentifierContext.table.getText)
+  }
+
   /**
    * clean quote identity
    */
@@ -46,4 +55,10 @@ object ParserHelper {
   private def isQuoted(str: String) = {
     (str.startsWith("`") || str.startsWith("\"") || str.startsWith("'")) && (str.endsWith("`") || str.endsWith("\"") || str.endsWith("'"))
   }
+
+
+  implicit def dslAssertionToAssertion(ctx: AssertionContext) = {
+    if (ctx == null) None else Some(Assertion(ctx.assertionOperator().getText,ctx.value.getText))
+  }
+
 }

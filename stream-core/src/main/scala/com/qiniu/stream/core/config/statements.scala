@@ -17,6 +17,7 @@
  */
 package com.qiniu.stream.core.config
 
+import com.amazon.deequ.checks.{Check, CheckLevel}
 import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.core.config.ViewType.ViewType
 import com.qiniu.stream.core.parser.SqlStructType
@@ -36,7 +37,7 @@ class Pipeline extends Statement {
 
   def sinkTable(tableName: String): Option[SinkTable] = statements.filter(_.isInstanceOf[SinkTable]).map(_.asInstanceOf[SinkTable]).find(_.name == tableName)
 
-  override def execute(context: PipelineContext): Unit = statements.foreach(_.execute(context))
+  override def execute(context: PipelineContext): Unit = PipelineTranslator(this).translate(context)
 }
 
 /**
@@ -55,7 +56,7 @@ trait DSLStatement extends Statement
 
 object ViewType extends Enumeration {
   type ViewType = Value
-  val persistedView, globalView, tempView = Value
+  val globalView, tempView = Value
 }
 
 case class CreateViewStatement(sql: String, viewName: String, options: Map[String, String] = Map(), viewType: ViewType = ViewType.tempView) extends DSLStatement {
@@ -107,3 +108,29 @@ case class SinkTable(streaming: Boolean = true, name: String,
   override def execute(context: PipelineContext): Unit = SinkTableTranslator(this).translate(context)
 }
 
+
+case class VerifyStatement(name:String,input: String, output: Option[SinkTable],  check: Check) extends Statement {
+
+  override def execute(context: PipelineContext): Unit = VerifyStatementTranslator(this).translate(context)
+}
+
+
+case class Assertion(operator:String,value:String) {
+
+  def longAssertion()={
+    apply(operator,value.toLong)
+  }
+
+  def doubleAssertion = {
+    apply(operator,value.toDouble)
+  }
+
+  private def apply[N](operator: String, evaluate: N)(implicit ordered: N => Ordered[N]): N => Boolean = operator match {
+    case "==" => _ == evaluate
+    case "!=" => _ != evaluate
+    case ">=" => _ >= evaluate
+    case ">" => _ > evaluate
+    case "<=" => _ <= evaluate
+    case "<" => _ < evaluate
+  }
+}

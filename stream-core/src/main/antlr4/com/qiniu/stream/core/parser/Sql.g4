@@ -16,16 +16,81 @@
  */
 grammar Sql;
 
+
+@members {
+  /**
+   * When false, INTERSECT is given the greater precedence over the other set
+   * operations (UNION, EXCEPT and MINUS) as per the SQL standard.
+   */
+  public boolean legacy_setops_precedence_enbled = false;
+
+  /**
+   * Verify whether current token is a valid decimal token (which contains dot).
+   * Returns true if the character that follows the token is not a digit or letter or underscore.
+   *
+   * For example:
+   * For char stream "2.3", "2." is not a valid decimal token, because it is followed by digit '3'.
+   * For char stream "2.3_", "2.3" is not a valid decimal token, because it is followed by '_'.
+   * For char stream "2.3W", "2.3" is not a valid decimal token, because it is followed by 'W'.
+   * For char stream "12.0D 34.E2+0.12 "  12.0D is a valid decimal token because it is followed
+   * by a space. 34.E2 is a valid decimal token because it is followed by symbol '+'
+   * which is not a digit or letter or underscore.
+   */
+  public boolean isValidDecimal() {
+    int nextChar = _input.LA(1);
+    if (nextChar >= 'A' && nextChar <= 'Z' || nextChar >= '0' && nextChar <= '9' ||
+      nextChar == '_') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
 sql
     : (dslStatement ';' )+
     ;
 
 dslStatement
-    : createSourceTableStatement |createSinkTableStatement |createFunctionStatement | createViewStatement |insertStatement |comment | sqlStatement
+    : createTestStatement
+    | createSourceTableStatement
+    | createSinkTableStatement
+    | createFunctionStatement
+    | createViewStatement
+    | insertStatement
+    | commentStatement
+    | sqlStatement
     ;
 
-sqlStatement
-    :   ~(';' )+
+createTestStatement
+    : K_CREATE K_TEST testName=identifier ('(' property (',' property)* ')')?  K_ON testDataset=tableIdentifier K_WITH  constraint (K_AND constraint)*
+    ;
+
+constraint
+    :  'numRows()'     assertion                                                                                              #sizeConstraint
+    |  'isUnique'  '(' column+=identifier (',' column+=identifier)* ')'  assertion?                                           #uniqueConstraint
+    |  'isNotNull' '(' column=identifier ')'    assertion?                                                                    #completeConstraint
+    |  'containsUrl' '(' column=identifier  ')'   assertion?                                                                  #containsUrlConstraint
+    |  'containsEmail' '(' column=identifier  ')'  assertion?                                                                 #containsEmailConstraint
+    |  'isContainedIn' '(' column=identifier ',' '[' value+=STRING (','  value+=STRING) ']'')' assertion?                     #containedInConstraint
+    |  'isNonNegative'  '(' column=identifier  ')'    assertion?                                                              #isNonNegativeConstraint
+    |  'isPositive'  '(' column=identifier  ')'    assertion?                                                                 #isPositiveConstraint
+    |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'      assertion?                                                     #satisfyConstraint
+    |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')' assertion?  #dataTypeConstraint
+    |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'  assertion?                    #minMaxLengthConstraint
+    |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?            #minMaxValueConstraint
+    |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'     assertion?                                              #patternConstraint
+    |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'   assertion?                                         #dateFormatConstraint
+    |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ')' assertion                                    #approxQuantileConstraint
+    |  'hasApproxCountDistinct' '(' column=identifier  ')'  assertion                                                         #approxCountDistinctConstraint
+    ;
+
+assertion
+    :assertionOperator value = (INTEGER_VALUE|DECIMAL_VALUE)
+    ;
+
+assertionOperator
+    : ('>'|'<'|'>='|'<='|'==' |'!=')
     ;
 
 createFunctionStatement
@@ -51,12 +116,12 @@ funcParam
     ;
 
 createSourceTableStatement
-    : K_CREATE streamTable=(K_STREAM| K_BATCH) K_INPUT K_TABLE tableName schemaSpec? K_USING connectorSpec formatSpec?  tableProperties?
+    : K_CREATE streamTable=(K_STREAM| K_BATCH) K_INPUT K_TABLE tableIdentifier schemaSpec? K_USING connectorSpec formatSpec? tableProperties?
     ;
 
 
 createSinkTableStatement
-    : K_CREATE streamTable=(K_STREAM| K_BATCH) K_OUTPUT K_TABLE tableName schemaSpec? K_USING (connectorSpec (',' connectorSpec)* ) formatSpec? partitionSpec? bucketSpec ? tableProperties?
+    : K_CREATE streamTable=(K_STREAM| K_BATCH) K_OUTPUT K_TABLE tableIdentifier schemaSpec? K_USING (connectorSpec (',' connectorSpec)* ) formatSpec? partitionSpec? bucketSpec ? tableProperties?
     ;
 
 partitionSpec
@@ -72,7 +137,7 @@ tableProperties
     ;
 
 connectorSpec
-    : connectorType=identity ('(' connectProps+=property (','  connectProps+=property)* ')' )?
+    : connectorType=qualifiedName ('(' connectProps+=property (','  connectProps+=property)* ')' )?
     ;
 
 schemaSpec
@@ -85,8 +150,8 @@ formatSpec
 
 
 timeField
-    : fieldName=identity K_AS 'PROCTIME()'                                                    #procTime
-    | eventTime=identity K_AS 'ROWTIME(' fromField=identity ',' delayThreadsHold=identity  ')' #rowTime
+    : fieldName=identifier K_AS 'PROCTIME()'                                                         #procTime
+    | eventTime=identifier K_AS 'ROWTIME(' fromField=identifier ',' delayThreadsHold=identifier  ')' #rowTime
     ;
 
 rowFormat
@@ -94,7 +159,7 @@ rowFormat
     ;
 
 schemaField
-    : fieldName=identity fieldType
+    : fieldName=identifier fieldType (K_COMMENT STRING)?
     ;
 
 fieldType
@@ -102,11 +167,11 @@ fieldType
     ;
 
 insertStatement
-    : K_INSERT K_INTO tableName  selectStatement
+    : K_INSERT K_INTO tableIdentifier  selectStatement
     ;
 
 createViewStatement
-    : K_CREATE (K_GLOBAL K_TEMPORARY | K_TEMPORARY | K_PERSISTED)?  K_VIEW tableName (K_WITH '('property ( ',' property )* ')' )? K_AS selectStatement
+    : K_CREATE (K_OR K_REPLACE)? (K_GLOBAL ? K_TEMPORARY )?  K_VIEW viewName=tableIdentifier (K_WITH '('property ( ',' property )* ')' )? K_AS selectStatement
     ;
 
 selectStatement
@@ -114,23 +179,55 @@ selectStatement
     ;
 
 property
-    : propertyKey=identity K_EQ propertyValue=identity
+    : propertyKey K_EQ propertyValue
     ;
 
-identity
-    : IDENTIFIER ('.' IDENTIFIER)*
+propertyKey
+    : identifier ('.' identifier)*
     | STRING
     ;
 
-tableName
-    : identity
+propertyValue
+    : INTEGER_VALUE
+    | DECIMAL_VALUE
+    | booleanValue
+    | STRING
     ;
+
+qualifiedName
+    : identifier ('.' identifier)*
+    ;
+
+identifier
+    : strictIdentifier
+    ;
+
+strictIdentifier
+    : IDENTIFIER             #unquotedIdentifier
+    | quotedIdentifier       #quotedIdentifierAlternative
+    ;
+
+quotedIdentifier
+    : BACKQUOTED_IDENTIFIER
+    ;
+
+tableIdentifier
+    : (db=identifier '.')? table=identifier
+    ;
+
+booleanValue
+    : ('true' |'TRUE') | ('false' | 'FALSE')
+    ;
+
 
 //comment goes here
-comment
-    : SINGLE_LINE_COMMENT| MULTILINE_COMMENT | SQL_LINE_COMMENT
+commentStatement
+    : SIMPLE_COMMENT| BRACKETED_COMMENT | BRACKETED_EMPTY_COMMENT
     ;
 
+sqlStatement
+    :   ~(';' )+
+    ;
 
 //keyword goes here
 K_CLUSTERED: C L U S T E R E D;
@@ -159,47 +256,66 @@ K_FORMAT: F O R M A T ;
 K_EQ: '=';
 K_SET: S E T;
 K_FUNCTION: F U N C T I O N;
-
-//common lexer goes here
-IDENTIFIER
-    : [a-zA-Z_0-9]+ [a-zA-Z_0-9]*
-    ;
+K_COMMENT: C O M M E N T ;
+K_TEST: T E S T;
+K_CHECK: C H E C K;
+K_OR: O R;
+K_REPLACE: R E P L A C E;
+K_AND: A N D;
+K_ON: O N;
 
 STRING
-    : '"'  ( ~'"'  | '""'   )* '"'
-    | '\'' ( ~'\'' | '\'\'' )* '\''
-    | '`'  ( ~'`'  | '``'   )* '`'
+    : '\'' ( ~('\''|'\\') | ('\\' .) )* '\''
+    | '"' ( ~('"'|'\\') | ('\\' .) )* '"'
     ;
 
-SINGLE_LINE_COMMENT
-    : '//' ~[\r\n]* -> channel(HIDDEN)
+BIGINT_LITERAL
+    : DIGIT+ 'L'
     ;
 
-SQL_LINE_COMMENT
-    : '--' ~[\r\n]* -> channel(HIDDEN)
+SMALLINT_LITERAL
+    : DIGIT+ 'S'
     ;
 
-MULTILINE_COMMENT
-    : '/*' .*? '*/' -> channel(HIDDEN)
-    ;
-
-
-WS
-    : [ \r\n\t]+ -> channel(HIDDEN)
-    ;
-
-// Catch-all for anything we can't recognize.
-// We use this to be able to ignore and recover all the text
-// when splitting statements with DelimiterLexer
-UNRECOGNIZED
-    : .
+TINYINT_LITERAL
+    : DIGIT+ 'Y'
     ;
 
 INTEGER_VALUE
     : DIGIT+
     ;
 
-fragment DIGIT : ('0'..'9');
+DECIMAL_VALUE
+    : DIGIT+ EXPONENT
+    | DECIMAL_DIGITS EXPONENT? {isValidDecimal()}?
+    ;
+
+IDENTIFIER
+    : (LETTER | DIGIT | '_')+
+    ;
+
+BACKQUOTED_IDENTIFIER
+    : '`' ( ~'`' | '``' )* '`'
+    ;
+
+fragment DECIMAL_DIGITS
+    : DIGIT+ '.' DIGIT*
+    | '.' DIGIT+
+    ;
+
+fragment EXPONENT
+    : 'E' [+-]? DIGIT+
+    ;
+
+fragment DIGIT
+    : [0-9]
+    ;
+
+fragment LETTER
+    : [a-zA-Z]
+    ;
+
+//a-z case insensitive
 fragment A : [aA];
 fragment B : [bB];
 fragment C : [cC];
@@ -226,3 +342,26 @@ fragment W : [wW];
 fragment X : [xX];
 fragment Y : [yY];
 fragment Z : [zZ];
+
+SIMPLE_COMMENT
+    : '--' ~[\r\n]* '\r'? '\n'? -> channel(HIDDEN)
+    ;
+
+BRACKETED_EMPTY_COMMENT
+    : '/**/' -> channel(HIDDEN)
+    ;
+
+BRACKETED_COMMENT
+    : '/*' ~[+] .*? '*/' -> channel(HIDDEN)
+    ;
+
+WS
+    : [ \r\n\t]+ -> channel(HIDDEN)
+    ;
+
+// Catch-all for anything we can't recognize.
+// We use this to be able to ignore and recover all the text
+// when splitting statements with DelimiterLexer
+UNRECOGNIZED
+    : .
+    ;

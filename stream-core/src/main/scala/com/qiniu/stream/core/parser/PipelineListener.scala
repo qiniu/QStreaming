@@ -17,8 +17,10 @@
  */
 package com.qiniu.stream.core.parser
 
+import com.amazon.deequ.checks.{Check, CheckLevel}
+import com.amazon.deequ.constraints.{ConstrainableDataTypes, StreamConstraints}
 import com.qiniu.stream.core.config._
-import com.qiniu.stream.core.parser.SqlParser.SelectStatementContext
+import com.qiniu.stream.core.parser.SqlParser._
 import com.qiniu.stream.util.Logging
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.misc.Interval
@@ -65,20 +67,19 @@ class PipelineListener extends SqlBaseListener with Logging {
         ViewType.globalView
       } else if (ctx.K_TEMPORARY() != null) {
         ViewType.tempView
-      } else if (ctx.K_PERSISTED() != null) {
-        ViewType.persistedView
       } else {
         ViewType.tempView
       }
     }
 
-    pipeline.statements += CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ctx.tableName().getText, options, viewType)
+    pipeline.statements += CreateViewStatement(ParserHelper.parseSql(ctx.selectStatement()), ParserHelper.parseTableIdentifier(ctx.tableIdentifier()), options, viewType)
   }
 
 
   override def enterCreateFunctionStatement(ctx: SqlParser.CreateFunctionStatementContext): Unit = {
     printStatement(ctx)
     import scala.collection.JavaConverters._
+
     val funcBody = {
       val interval = new Interval(ctx.funcBody.start.getStartIndex, ctx.funcBody.stop.getStopIndex)
       ctx.funcBody.start.getInputStream.getText(interval)
@@ -108,7 +109,7 @@ class PipelineListener extends SqlBaseListener with Logging {
   override def enterInsertStatement(ctx: SqlParser.InsertStatementContext): Unit = {
     printStatement(ctx)
     val sql = ParserHelper.parseSql(ctx.selectStatement())
-    val tableName = ctx.tableName().getText
+    val tableName = ParserHelper.parseTableIdentifier(ctx.tableIdentifier())
     val sinkTableOption = pipeline.sinkTable(tableName)
     sinkTableOption match {
       case Some(sinkTable) => {
@@ -118,5 +119,71 @@ class PipelineListener extends SqlBaseListener with Logging {
         pipeline.statements += SqlStatement(s"insert into ${tableName} ${sql}")
     }
   }
+
+  override def enterCreateTestStatement(ctx: SqlParser.CreateTestStatementContext): Unit = {
+
+    import com.qiniu.stream.core.parser.ParserHelper._
+    import scala.collection.JavaConverters._
+    val testOptions = if (ctx.property() != null) ctx.property().asScala.map(ParserHelper.parseProperty).toMap else Map[String, String]()
+    val checkLevel = testOptions.get("testLevel").map(CheckLevel.withName).getOrElse(CheckLevel.Error)
+    val testName = ParserHelper.cleanQuote(ctx.testName.getText)
+    val testInput = ParserHelper.cleanQuote(ctx.testDataset.getText)
+    val testOutput = testOptions.get("testOutput").map(ParserHelper.cleanQuote).flatMap(pipeline.sinkTable)
+    var check = new Check(checkLevel, testName)
+
+    ctx.constraint().asScala.foreach {
+      case ctx: SizeConstraintContext =>
+        require(ctx.assertion() != null)
+        check = check.hasSize(ctx.assertion().map(_.longAssertion()).get)
+      case ctx: UniqueConstraintContext =>
+        ctx.column.asScala.map(_.getText).toList match {
+          case head :: Nil => check = check.isUnique(head)
+          case head :: tail => check = check.isPrimaryKey(head, tail: _*)
+        }
+      case ctx: CompleteConstraintContext =>
+        check = check.hasCompleteness(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: ContainsUrlConstraintContext =>
+        check = check.containsURL(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: ContainsUrlConstraintContext =>
+        check = check.containsURL(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: ContainsEmailConstraintContext =>
+        check = check.containsEmail(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: ContainedInConstraintContext =>
+        check = check.isContainedIn(ctx.column.getText, ctx.value.asScala.map(_.getText).toArray, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: IsNonNegativeConstraintContext =>
+        check = check.isNonNegative(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: IsPositiveConstraintContext =>
+        check = check.isPositive(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: SatisfyConstraintContext =>
+        check = check.satisfies(ctx.predicate.getText, ctx.desc.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: DataTypeConstraintContext =>
+        check = check.hasDataType(ctx.column.getText, ConstrainableDataTypes.withName(ctx.dataType.getText), ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: MinMaxLengthConstraintContext =>
+        ctx.kind.getText match {
+          case "hasMinLength" => check = check.hasMinLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+          case "hasMaxLength" => check = check.hasMaxLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+        }
+      case ctx: MinMaxValueConstraintContext =>
+        ctx.kind.getText match {
+          case "hasMin" => check = check.hasMin(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+          case "hasMax" => check = check.hasMax(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+          case "hasSum" => check = check.hasSum(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+          case "hasMean" => check = check.hasMean(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+        }
+      case ctx: PatternConstraintContext =>
+        check = check.hasPattern(ctx.column.getText, ctx.pattern.getText.r, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: DateFormatConstraintContext =>
+        val dateFormatConstraint = StreamConstraints.dateFormatConstraint(ctx.column.getText, ctx.formatString.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+        check = check.addConstraint(dateFormatConstraint)
+
+      case ctx: ApproxQuantileConstraintContext =>
+        check = check.hasApproxQuantile(ctx.column.getText, ctx.quantile.getText.toDouble, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: ApproxCountDistinctConstraintContext =>
+        check = check.hasApproxCountDistinct(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+    }
+
+    pipeline.statements += VerifyStatement(testName, testInput, testOutput, check)
+  }
+
 
 }

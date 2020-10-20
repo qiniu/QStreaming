@@ -332,7 +332,38 @@ create stream input table user_behavior(
 );
 ```
 
+### Data Quality Check ###
+
+The purpose is to "unit-test" data to find errors early, before the data gets fed to any storage.
+
+For example, we test for the following properties of data :
+
+- there are 5 rows in total
+- values of the `id` attribute are never NULL and unique
+- values of the `productName` attribute are never NULL
+- the `priority` attribute can only contain "high" or "low" as value
+- `numViews` should not contain negative values
+- at least half of the values in `description` should contain a url
+- the median of `numViews` should be less than or equal to 10
+
+In DSL this looks as follows:
+
+```sql 
+CREATE TEST testName(testLevel=Error,testOutput=testResult) on dataset WITH 
+   numRows()=5 and 
+   isNotNull("id") and 
+   isUnique("id") and 
+   isComplete("productName") and 
+   isContainedIn("priority", ["high", "low"]) and 
+   isNonNegative("numViews")  and 
+   containsURL("description") >= 0.5 and 
+   hasApproxQuantile("numViews", 0.5) <= 10
+```
+
+
+
 ## [Contributing](https://github.com/qiniu/QStreaming/CONTRIBUTING.md)
+
 We welcome all kinds of contribution, including bug reports, feature requests, documentation improvements, UI refinements, etc.
 
 Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!

@@ -29,6 +29,10 @@
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
+            <groupId>com.amazon.deequ</groupId>
+            <artifactId>deequ</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.scopt</groupId>
             <artifactId>scopt_2.11</artifactId>
         </dependency>

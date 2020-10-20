@@ -57,7 +57,7 @@ object TableParser {
    *
    */
   def parseSourceTable(ctx: CreateSourceTableStatementContext): SourceTable = {
-    val tableName: String = ctx.tableName().getText
+    val tableName: String = ParserHelper.parseTableIdentifier( ctx.tableIdentifier())
     val connector = parseConnector(ctx.connectorSpec())
 
 
@@ -83,7 +83,7 @@ object TableParser {
    *
    */
   def parseSinkTable(ctx: CreateSinkTableStatementContext): SinkTable = {
-    val tableName: String = ctx.tableName().getText
+    val tableName: String = ParserHelper.parseTableIdentifier(ctx.tableIdentifier())
     val tableOptions: Map[String, String] = Option(ctx.tableProperties()).map(_.property().map(parseProperty).toMap).getOrElse(Map())
 
     val connectors = ctx.connectorSpec().map(parseConnector)
