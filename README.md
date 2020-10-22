@@ -351,13 +351,13 @@ In DSL this looks as follows:
 ```sql 
 CREATE TEST testName(testLevel=Error,testOutput=testResult) on dataset WITH 
    numRows()=5 and 
-   isNotNull("id") and 
-   isUnique("id") and 
-   isComplete("productName") and 
-   isContainedIn("priority", ["high", "low"]) and 
-   isNonNegative("numViews")  and 
-   containsURL("description") >= 0.5 and 
-   hasApproxQuantile("numViews", 0.5) <= 10
+   isNotNull(id) and 
+   isUnique(id) and 
+   isComplete(productName) and 
+   isContainedIn(priority, ["high", "low"]) and 
+   isNonNegative(numViews)  and 
+   containsUrl(description) >= 0.5 and 
+   hasApproxQuantile（numViews, 0.5) <= 10
 ```
 
 
