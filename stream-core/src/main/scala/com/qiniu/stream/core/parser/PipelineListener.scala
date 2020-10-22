@@ -144,8 +144,6 @@ class PipelineListener extends SqlBaseListener with Logging {
         check = check.hasCompleteness(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: ContainsUrlConstraintContext =>
         check = check.containsURL(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-      case ctx: ContainsUrlConstraintContext =>
-        check = check.containsURL(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: ContainsEmailConstraintContext =>
         check = check.containsEmail(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: ContainedInConstraintContext =>
@@ -158,24 +156,23 @@ class PipelineListener extends SqlBaseListener with Logging {
         check = check.satisfies(ctx.predicate.getText, ctx.desc.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: DataTypeConstraintContext =>
         check = check.hasDataType(ctx.column.getText, ConstrainableDataTypes.withName(ctx.dataType.getText), ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-      case ctx: MinMaxLengthConstraintContext =>
-        ctx.kind.getText match {
-          case "hasMinLength" => check = check.hasMinLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-          case "hasMaxLength" => check = check.hasMaxLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-        }
-      case ctx: MinMaxValueConstraintContext =>
-        ctx.kind.getText match {
-          case "hasMin" => check = check.hasMin(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-          case "hasMax" => check = check.hasMax(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-          case "hasSum" => check = check.hasSum(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-          case "hasMean" => check = check.hasMean(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
-        }
+      case ctx: HasMinLengthConstraintContext =>
+          check = check.hasMinLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: HasMaxLengthConstraintContext =>
+          check = check.hasMaxLength(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: HasMinConstraintContext =>
+          check = check.hasMin(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: HasMaxConstraintContext =>
+          check = check.hasMax(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: HasSumConstraintContext =>
+          check = check.hasSum(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
+      case ctx: HasMeanConstraintContext =>
+          check = check.hasMean(ctx.column.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: PatternConstraintContext =>
         check = check.hasPattern(ctx.column.getText, ctx.pattern.getText.r, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: DateFormatConstraintContext =>
         val dateFormatConstraint = StreamConstraints.dateFormatConstraint(ctx.column.getText, ctx.formatString.getText, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
         check = check.addConstraint(dateFormatConstraint)
-
       case ctx: ApproxQuantileConstraintContext =>
         check = check.hasApproxQuantile(ctx.column.getText, ctx.quantile.getText.toDouble, ctx.assertion().map(_.doubleAssertion).getOrElse(Check.IsOne))
       case ctx: ApproxCountDistinctConstraintContext =>
