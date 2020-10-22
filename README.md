@@ -4,9 +4,9 @@ QStreaming is a framework that simplifies writing and executing ETLs on top of [
 
 It is based on a simple sql-like configuration file and runs on any Spark cluster
 
-## Architect 
+## Architecture
 
-![architect](docs/image/architect.png)
+![architect](docs/image/architecture.png)
 
 QStreaming is built on top of [Apache Spark](http://spark.apache.org/) and is mainly made of following components:
 
