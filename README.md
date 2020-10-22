@@ -121,7 +121,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
-stream-standalone-0.0.2.jar \
+stream-standalone-0.0.3.jar \
 -j pipeline.dsl
 ```
 
@@ -133,7 +133,7 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
-stream-standalone-0.0.2.jar \
+stream-standalone-0.0.3.jar \
 -j pipeline.dsl
 ```
 
@@ -149,20 +149,20 @@ To use it adds the dependency to your project
   <dependency>
     <groupId>com.qiniu</groupId>
     <dependency>stream-standalone</dependency>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
   </dependency>
   ```
 
 - gradle
 
   ```
-  compile 'com.qiniu:stream-standalone:0.0.2'
+  compile 'com.qiniu:stream-standalone:0.0.3'
   ```
 
 - sbt
 
   ```
-  libraryDependencies += "com.qiniu" % "stream-standalone" % "0.0.2"
+  libraryDependencies += "com.qiniu" % "stream-standalone" % "0.0.3"
   ```
 
 ## Datasources
@@ -306,7 +306,7 @@ $SPARK_HOME/bin/spark-submit
 --master yarn \
 --deploy-mode client \
 --conf spark.executor.extraClassPath=./ \
-stream-standalone-0.0.2.jar \
+stream-standalone-0.0.3.jar \
 -j pipeline.dsl \
 -c stream.template.vars.day=theDayThatRunAJob \
 -c stream.template.vars.hour=theHourThatRunAJob
