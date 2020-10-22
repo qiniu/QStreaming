@@ -268,14 +268,14 @@ Above example define UDF with a string parameter.
 
 ```sql
     create stream output table output using hbase(
-        quorum = '192.168.0.2:2181,192.168.0.3:2181,192.168.0.4:2181',
+        quorum = 'test1:2181,test2:2181,test3:2181',
         tableName = 'buy_cnt_per_hour',
         rowKey = '<hour_of_day>',
         cf = 'cf',
         fields = '[{"qualified":"buy_cnt","value":"behavior_cnt","type":"LongType"}]',
         where = 'behavior="buy"'
     ),hbase(
-        quorum = 'jjh714:2181,jjh712:2181,jjh713:2181,jjh710:2181,jjh711:2181',
+        quorum = 'test1:2181,test2:2181,test3:2181',
         tableName = 'order_cnt_per_hour
         rowKey = '<hour_of_day>',
         cf = 'cf',
