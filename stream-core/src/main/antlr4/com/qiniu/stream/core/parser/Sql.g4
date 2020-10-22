@@ -77,8 +77,12 @@ constraint
     |  'isPositive'  '(' column=identifier  ')'    assertion?                                                                 #isPositiveConstraint
     |  'satisfy' '(' predicate=STRING ',' desc=STRING ')'      assertion?                                                     #satisfyConstraint
     |  'hasDataType' '(' column=identifier ',' dataType= ('NULL'|'INT'|'BOOL'|'FRACTIONAL'|'TEXT'|'NUMERIC')  ')' assertion?  #dataTypeConstraint
-    |  kind=('hasMinLength'|'hasMaxLength') '(' column=identifier ',' length=INTEGER_VALUE ')'  assertion?                    #minMaxLengthConstraint
-    |  kind=('hasMin'|'hasMax'|'hasSum'|'hasMean') '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?            #minMaxValueConstraint
+    |  'hasMinLength' '(' column=identifier ',' length=INTEGER_VALUE ')'  assertion?                                          #hasMinLengthConstraint
+    |  'hasMaxLength' '(' column=identifier ',' length=INTEGER_VALUE ')'  assertion?                                          #hasMaxLengthConstraint
+    |  'hasMin' '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?                                               #hasMinConstraint
+    |  'hasMax' '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?                                               #hasMaxConstraint
+    |  'hasSum' '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?                                               #hasSumConstraint
+    |  'hasMean' '(' column=identifier ',' value = DECIMAL_VALUE ')'  assertion?                                              #hasMeanConstraint
     |  'hasPattern' '('  column=identifier ',' pattern=STRING ')'     assertion?                                              #patternConstraint
     |  'hasDateFormat' '(' column=identifier ',' formatString=STRING ')'   assertion?                                         #dateFormatConstraint
     |  'hasApproxQuantile'  '(' column=identifier ',' quantile=DECIMAL_VALUE ')' assertion                                    #approxQuantileConstraint
@@ -90,7 +94,7 @@ assertion
     ;
 
 assertionOperator
-    : ('>'|'<'|'>='|'<='|'==' |'!=')
+    : ('>'|'<'|'>='|'<='|'==' |'!=' |'=')
     ;
 
 createFunctionStatement
