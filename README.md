@@ -95,24 +95,11 @@ There are only two config options  currently avaliable.
 
 #### Run QStreaming
 
-There are three options to run QStreaming
+There are three options to run QStreaming, first to get the latest released JAR from  [here](https://github.com/qiniu/QStreaming/releases)
 
 ##### Run on a yarn cluster
 
 To run on a cluster requires [Apache Spark](https://spark.apache.org/) v2.2+
-
-- get the latest JAR file
-
-  There are two options to get QStreaming Jar files
-
-  - clone project and build
-
-  ```bash
-  git clone git@github.com:qbox/QStreaming.git \
-  cd QStreaming && mvn clean install
-  ```
-
-  - Download the last released JAR from [here](https://packagecloud.io/qiniu/release)
 
 - Run the following command:
 
@@ -121,7 +108,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
-stream-standalone-0.0.3.jar \
+stream-standalone-0.0.3-jar-with-dependencies.jar  \
 -j pipeline.dsl
 ```
 
@@ -133,7 +120,7 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
-stream-standalone-0.0.3.jar \
+stream-standalone-0.0.3-jar-with-dependencies.jar \
 -j pipeline.dsl
 ```
 
@@ -148,7 +135,7 @@ To use it adds the dependency to your project
   ```
   <dependency>
     <groupId>com.qiniu</groupId>
-    <dependency>stream-standalone</dependency>
+    <dependency>stream-core</dependency>
     <version>0.0.3</version>
   </dependency>
   ```
@@ -156,13 +143,13 @@ To use it adds the dependency to your project
 - gradle
 
   ```
-  compile 'com.qiniu:stream-standalone:0.0.3'
+  compile 'com.qiniu:stream-core:0.0.3'
   ```
 
 - sbt
 
   ```
-  libraryDependencies += "com.qiniu" % "stream-standalone" % "0.0.3"
+  libraryDependencies += "com.qiniu" % "stream-core" % "0.0.3"
   ```
 
 ## Datasources
@@ -306,7 +293,7 @@ $SPARK_HOME/bin/spark-submit
 --master yarn \
 --deploy-mode client \
 --conf spark.executor.extraClassPath=./ \
-stream-standalone-0.0.3.jar \
+stream-standalone-0.0.3-jar-with-dependencies.jar \
 -j pipeline.dsl \
 -c stream.template.vars.day=theDayThatRunAJob \
 -c stream.template.vars.hour=theHourThatRunAJob
