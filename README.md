@@ -32,7 +32,7 @@ QStreaming is built on top of [Apache Spark](http://spark.apache.org/) and is ma
 
 ## Getting started
 
-To run QStreaming you must first define 2 files.
+To run QStreaming you first only need to  define pipeline DSL file as below.
 
 ##### Pipeline DSL
 
@@ -77,7 +77,7 @@ GROUP BY
   behavior;
 
 
---  persist result to kafka
+--  persist metric to kafka
 insert into behavior_cnt_per_hour
 select
    from_unixtime(cast(window.start as LONG)/1000,'yyyy-MM-dd HH:mm') as time,
@@ -86,12 +86,6 @@ select
 from
   v_behavior_cnt_per_hour;
 ```
-
-##### Application configuration properties
-
-There are only two config options  currently avaliable.
-
-
 
 #### Run QStreaming
 
