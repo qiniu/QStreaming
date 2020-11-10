@@ -355,7 +355,7 @@ See the [LICENSE file](https://github.com/qiniu/QStreaming/LICENSE) for license 
 
 
 
-## Join QStreaming WeChat Group
+## Join QStreaming 
 
 Join [Gitter room](https://gitter.im/qiniu-streaming/community)
 
