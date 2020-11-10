@@ -77,7 +77,7 @@ GROUP BY
   behavior;
 
 
---  persist result to kafka
+--  persist metric to kafka
 insert into behavior_cnt_per_hour
 select
    from_unixtime(cast(window.start as LONG)/1000,'yyyy-MM-dd HH:mm') as time,
