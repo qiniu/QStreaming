@@ -32,7 +32,7 @@ QStreaming is built on top of [Apache Spark](http://spark.apache.org/) and is ma
 
 ## Getting started
 
-To run QStreaming you must first define 2 files.
+To run QStreaming you must first define Pipeline DSL file as below.
 
 ##### Pipeline DSL
 
@@ -86,12 +86,6 @@ select
 from
   v_behavior_cnt_per_hour;
 ```
-
-##### Application configuration properties
-
-There are only two config options  currently avaliable.
-
-
 
 #### Run QStreaming
 
@@ -193,7 +187,7 @@ create stream input table user_behavior(
 
 Above DDL statement define an input which connect to a kafka topic.
 
-For detail information  please refer to [CreateSourceTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L38)  for how to define an input and [CreateSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43) for how to define an output.
+For detail information  please refer to [CreateSourceTableStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L122)  for how to define an input and [CreateSinkTableStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127) for how to define an output.
 
 ### Watermark support in sql
 
@@ -247,7 +241,7 @@ def hello(name:String) = {
 
 ```
 
-QStreaming allow to define a dynamic UDF inside job.dsl, for more detail information please refer to [createFunctionStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L16)
+QStreaming allow to define a dynamic UDF inside job.dsl, for more detail information please refer to [createFunctionStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L100)
 
 Above example define UDF with a string parameter.
 
@@ -273,7 +267,7 @@ Above example define UDF with a string parameter.
 
 QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
 
-Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qbox/QStreaming/blob/master/stream-spark/src/main/antlr4/com/qiniu/stream/spark/parser/Sql.g4#L43)
+Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127)
 
 ### Variable interpolation
 
@@ -365,6 +359,3 @@ See the [LICENSE file](https://github.com/qiniu/QStreaming/LICENSE) for license 
 
 Join [Gitter room](https://gitter.im/qiniu-streaming/community)
 
-Join We-Chat Group
-
-![image-20200924173745117](docs/image/wechat.png)
