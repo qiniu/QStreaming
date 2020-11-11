@@ -391,7 +391,7 @@ Above example define UDF with a string parameter.
 
 QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
 
-Below example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](
+Below example will sink the behavior count metric to two hbase table
 
 ```sql
     create stream output table output using hbase(
@@ -411,7 +411,7 @@ Below example will sink the behavior count metric to two hbase table, for more i
     ) TBLPROPERTIES (outputMode = update,checkpointLocation = "behavior_output");
 ```
 
-https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127)
+ For more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127)
 
 ### Variable interpolation
 
