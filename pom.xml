@@ -89,6 +89,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.mongodb.spark</groupId>
+                <artifactId>mongo-spark-connector_2.11</artifactId>
+                <version>2.4.1</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.phoenix</groupId>
                 <artifactId>phoenix-spark</artifactId>
                 <version>${dep.phoenix.version}</version>
