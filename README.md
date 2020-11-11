@@ -389,6 +389,10 @@ Above example define UDF with a string parameter.
 
 ### Multiple sink
 
+QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
+
+Below example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](
+
 ```sql
     create stream output table output using hbase(
         quorum = 'test1:2181,test2:2181,test3:2181',
@@ -407,18 +411,11 @@ Above example define UDF with a string parameter.
     ) TBLPROPERTIES (outputMode = update,checkpointLocation = "behavior_output");
 ```
 
-QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
-
-Above example will sink the behavior count metric to two hbase table, for more information about how to create multiple sink please refer to [createSinkTableStatement](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127)
+https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L127)
 
 ### Variable interpolation
 
-```sql
-create batch input table raw_log
-USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
-```
-
-job.dsl file support variable interpolation from command line arguments , this  is  useful  for running QStreaming as a periodic job.
+QStreaming  support variable interpolation from command line arguments , this  is  useful  for running QStreaming as a periodic job, and referece them in sql file .
 
 For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRunAJob` from an  [Airflow](http://airflow.apache.org/) DAG
 
@@ -434,6 +431,15 @@ stream-standalone-0.0.3-jar-with-dependencies.jar \
 -c stream.template.vars.day=theDayThatRunAJob \
 -c stream.template.vars.hour=theHourThatRunAJob
 ```
+
+and the pipeline dsl file 
+
+````sql
+create batch input table raw_log
+USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
+````
+
+
 
 ### Monitor
 
