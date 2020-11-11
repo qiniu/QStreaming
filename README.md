@@ -136,7 +136,7 @@ To use it adds the dependency to your project
 
 Sytax: 
 
-```SQL
+```sql
 CREATE STREAM input table table_identifier (col_name: col_type, ...) using kafka (kafkaOptions) [ROW FORMAT rowFormat];
 ```
 
@@ -226,7 +226,7 @@ CREATE BATCH INPUT TABLE raw_log USING jdbc(url="jdbcUrl",user="jdbcUser",passwo
 
 Syntax
 
-```SQL
+```sql
 CREATE BATCH INPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>);
 ```
 
@@ -239,7 +239,7 @@ Parameters:
 
 Examples:
 
-```
+```sql
 CREATE BATCH INPUT TABLE raw_log USING mongo(uri="yourMongoUri",database="yourDatabaseName",collection="yourCollectionName")
 ```
 
@@ -375,9 +375,9 @@ Above  example  define a watermark use `eventTime` field with 1 minute threshold
 
 ### Dynamic user define function
 
-```
+```scala
 -- define UDF named hello
-def hello(name:String) = {
+create function hello(name:String) = {
    s"hello ${name}"
 };
 
