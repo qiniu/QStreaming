@@ -20,7 +20,6 @@ package com.qiniu.stream.core.translator
 import com.qiniu.stream.core.{PipelineContext, config}
 import com.qiniu.stream.core.config.{CreateViewStatement, RowTime, ViewType}
 import com.qiniu.stream.core.source.WaterMarker
-import com.qiniu.stream.core.util.DatasetUtils
 import com.qiniu.stream.util.Logging
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
