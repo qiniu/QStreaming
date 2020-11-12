@@ -137,15 +137,16 @@ To use it adds the dependency to your project
 Sytax: 
 
 ```sql
-CREATE STREAM input table table_identifier (col_name: col_type, ...) using kafka (kafkaOptions) [ROW FORMAT rowFormat];
+CREATE STREAM input table table_identifier (col_name: col_type, ...) using kafka (kafkaOptions, "group-id"=<groupId>) [ROW FORMAT rowFormat];
 ```
 
 Parameters:
 
- - table_identifier -  is  the table name of input stream.
- - [col_type](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169) - is  struct type  of kafka value, the possible value can be found [here](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169)
+ - table_identifier -   table name of input stream.
+ - [col_type](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169) -   struct type  of kafka value, the possible value can be found [here](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169)
  - [kafkaOptions](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L143)  - are options indicate how to connect to a kafka topic, please refer to [Structed Streaming + Kafka Integration Guide](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html) for the  detail of connector configurations.
  - [rowFormat](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L161)  - the row format of kafka value, which could be text/json/csv/avro/regex( e.g. ROW FORMAT [JSON/CSV/TEXT/REGEX/AVRO] ), 
+ - groupId -  consumer group id that used to monitor the consumer lag
 
 Examples:
 
@@ -188,7 +189,7 @@ CREATE BATCH INPUT TABLE table_identifier USING format(path=<a_full_path_in_hdf_
 
 Parameters:
 
-- table_identifier - is  the table name of input table.
+- table_identifier -  table name of input table.
 - format - could be (parquet/csv/text/avro)
 
 Examples:
@@ -207,7 +208,7 @@ CREATE BATCH INPUT TABLE table_identifier USING jdbc(url=<jdbcUrl>,user=<jdbcUse
 
 Parameters:
 
-- table_identifier - is  the table name of input table.
+- table_identifier -  table name of input table.
 - jdbcUrl - jdbc url
 - jdbcUser - jdbc user
 - jdbcPassword - jdbc password
@@ -232,7 +233,7 @@ CREATE BATCH INPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<
 
 Parameters:
 
-- table_identifier -  is  the table name of input table.
+- table_identifier -   table name of input table.
 - [mongoUri](https://docs.mongodb.com/manual/reference/connection-string/#connection-string-formats) - uri of mongo database
 - database - database name of mongodb
 - collection - collection name of mongodb
@@ -247,17 +248,98 @@ CREATE BATCH INPUT TABLE raw_log USING mongo(uri="yourMongoUri",database="yourDa
 
 #### HBase
 
-TBD
+Syntax
+
+```sql
+CREATE BATCH INPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>);
+```
+
+
+
+Parameters:
+
+- table_identifier - name of the input table
+- catalog:  catalog of the hbase table
+
+Example:
+
+```sql
+CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=`{
+	"table":{"namespace":"default", "name":"HBaseSourceExampleTable"},
+	"rowkey":"key",
+	"columns":{
+		"col0":{"cf":"rowkey", "col":"key", "type":"string"},
+		"col1":{"cf":"cf1", "col":"col1", "type":"boolean"},
+		"col2":{"cf":"cf2", "col":"col2", "type":"double"},
+		"col3":{"cf":"cf3", "col":"col3", "type":"float"},
+		"col4":{"cf":"cf4", "col":"col4", "type":"int"},
+		"col5":{"cf":"cf5", "col":"col5", "type":"bigint"},
+		"col6":{"cf":"cf6", "col":"col6", "type":"smallint"},
+		"col7":{"cf":"cf7", "col":"col7", "type":"string"},
+		"col8":{"cf":"cf8", "col":"col8", "type":"tinyint"}
+	}
+}`);
+```
+
+
 
 #### Elasticsearch
 
-TBD
+Syntax:
+
+```sql
+//QStreaming SQL
+CREATE BATCH INPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+
+```
+
+Parameters:
+
+- esport - port of es cluster
+- esNodes - url of es cluster
+- esIndex - name of es index
+
+Examples:
+
+```sql
+create batch input table dogs
+using org.elasticsearch.spark.sql
+(path='index/dogs', 
+  es.nodes= '<my>.elasticsearch.com',
+  'es.port'='443');
+```
 
 ### Outpus
 
 #### Kafka
 
-TBD
+Syntax:
+
+```sql
+create stream output table table_identifier using kafka(
+   kafka.bootstrap.servers=<kafkaBootStrapServers>,
+   topic=<kafkaTopic> 
+ ) TBLPROPERTIES(outputMode=<sparkOuputMode>, checkpointLocation=<checkpointLocation>);
+
+```
+
+Parameters:
+
+- table_identifier - table name of output table
+- kafkaBootStrapServers - bootstrap server url of kafka cluster
+- kafkaTopic - topic name of kafka
+- sparkOuputMode -  output mode (e.g. append/update/complete)
+
+Examples:
+
+```sql
+create stream output table kafkaExampleTopic using kafka(
+   kafka.bootstrap.servers="host1:port1,host2:port2",
+   topic="topic1"
+) TBLPROPERTIES(outputMode="update", checkpointLocation="/pathToYourHdfsLocation");
+```
+
+
 
 #### HDFS/S3
 

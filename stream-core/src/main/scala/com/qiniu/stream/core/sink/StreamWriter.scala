@@ -75,6 +75,7 @@ class StreamWriter extends Writer with Logging {
 
   private def newStreamWriter(dataFrame: DataFrame,sinkTable: SinkTable): DataStreamWriter[Row] = {
     val writer = dataFrame.writeStream
+    writer.outputMode()
     sinkTable.updateMode.foreach(writer.outputMode)
     sinkTable.partitions.foreach(writer.partitionBy(_: _*))
     withStreamOption(writer,sinkTable)
