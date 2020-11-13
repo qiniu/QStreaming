@@ -144,8 +144,8 @@ Parameters:
 
  - table_identifier -   table name of input stream.
  - [col_type](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169) -   struct type  of kafka value, the possible value can be found [here](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L169)
- - [kafkaOptions](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L143)  - are options indicate how to connect to a kafka topic, please refer to [Structed Streaming + Kafka Integration Guide](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html) for the  detail of connector configurations.
- - [rowFormat](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L161)  - the row format of kafka value, which could be text/json/csv/avro/regex( e.g. ROW FORMAT [JSON/CSV/TEXT/REGEX/AVRO] ), 
+ - [kafkaOptions](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L143)  - are options indicate how to connect to a kafka topic, please refer to [Structed Streaming + Kafka Integration Guide](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html) for the  detail of connector configurations
+ - [rowFormat](https://github.com/qiniu/QStreaming/blob/master/stream-core/src/main/antlr4/com/qiniu/stream/core/parser/Sql.g4#L161)  - the row format of kafka value, which could be text/json/csv/avro/regex format 
  - groupId -  consumer group id that used to monitor the consumer lag
 
 Examples:
@@ -184,7 +184,7 @@ create stream input table user_behavior(
 Syntax
 
 ```sql
-CREATE BATCH INPUT TABLE table_identifier USING format(path=<a_full_path_in_hdf_or_s3>);
+CREATE BATCH INPUT TABLE table_identifier USING format(path=<a_full_path_in_hdfs_or_s3>);
 ```
 
 Parameters:
@@ -254,8 +254,6 @@ Syntax
 CREATE BATCH INPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>);
 ```
 
-
-
 Parameters:
 
 - table_identifier - name of the input table
@@ -280,8 +278,6 @@ CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=
 	}
 }`);
 ```
-
-
 
 #### Elasticsearch
 
@@ -346,7 +342,11 @@ create stream output table kafkaExampleTopic using kafka(
 Syntax：
 
 ```sql
+#batch
 create batch output table table_identifier USING parquet(path=<path>) TBLPROPERTIES(saveMode=<saveMode>);
+
+#streaming
+create batch output table table_identifier USING parquet(path=<path>) TBLPROPERTIES(saveMode=<saveMode>, batchWrite="true");
 ```
 
 Parameters:
@@ -374,6 +374,10 @@ Parameters:
 Syntax:
 
 ```sql
+#batch
+create batch output table table_identifier USING jdbc(url=<url>, dbTable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(saveMode=<saveMode>);
+
+#streaming
 create batch output table table_identifier USING jdbc(url=<url>, dbTable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(saveMode=<saveMode>);
 ```
 
@@ -389,20 +393,119 @@ Parameters:
 Examples:
 
 ```sql
+#batch
 create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", dbTable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(saveMode="overwrite");
+
+#streaming
+create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", dbTable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(saveMode="overwrite", batchWrite="true");
 ```
 
 #### MongoDB
 
-TBD
+Syntax
+
+```sql
+#batch 
+CREATE BATCH OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>);
+
+#streaming
+CREATE STREAM OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>) TBLPROPERTIES(batchWrite="true");
+
+```
+
+Parameters:
+
+- table_identifier -   table name of input table.
+- [mongoUri](https://docs.mongodb.com/manual/reference/connection-string/#connection-string-formats) - uri of mongo database
+- database - database name of mongodb
+- collection - collection name of mongodb
+
+Examples:
+
+```sql
+CREATE BATCH OUTPUT TABLE raw_log USING mongo(uri="yourMongoUri",database="yourDatabaseName",collection="yourCollectionName");
+```
+
+
 
 #### HBase
 
-TBD
+Syntax
+
+```sql
+#batch
+CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>);
+
+#streaming
+CREATE STREAM OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>) TBLPROPERTIES(batchWrite="true");
+
+```
+
+Parameters:
+
+- table_identifier - name of the input table
+- catalog:  catalog of the hbase table
+
+Example:
+
+```sql
+CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=`{
+  "table":{
+  	"namespace":"default", 
+  	"name":"htable"},
+    "rowkey":"key1:key2",
+    "columns":{
+       "col1":{"cf":"rowkey", "col":"key1", "type":"string"},
+       "col2":{"cf":"rowkey", "col":"key2", "type":"double"},
+       "col3":{"cf":"cf1", "col":"col2", "type":"binary"},
+       "col4":{"cf":"cf1", "col":"col3", "type":"timestamp"},
+       "col5":{"cf":"cf1", "col":"col4", "type":"double", "serdes":"${classOf[DoubleSerDes].getName}"},
+       "col6":{"cf":"cf1", "col":"col5", "type":"$map"},
+       "col7":{"cf":"cf1", "col":"col6", "type":"$array"},
+       "col8":{"cf":"cf1", "col":"col7", "type":"$arrayMap"}
+    }
+}`);
+```
+
+#### 
 
 #### Elasticsearch
 
-TBD
+Syntax:
+
+```sql
+//streaming
+CREATE STREAM OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+
+#batch
+CREATE BATCH OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+```
+
+Parameters:
+
+- esport - port of es cluster
+- esNodes - url of es cluster
+- esIndex - name of es index
+
+Examples:
+
+```sql
+#batch
+create batch output table dogs
+using org.elasticsearch.spark.sql
+(path='index/dogs', 
+  es.nodes= '<my>.elasticsearch.com',
+  'es.port'='443');
+  
+#streaming  
+create stream output table dogs
+using org.elasticsearch.spark.sql
+(path='index/dogs', 
+  es.nodes= '<my>.elasticsearch.com',
+  'es.port'='443');
+```
+
+### 
 
 ## Architecture
 
