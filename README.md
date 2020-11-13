@@ -343,11 +343,54 @@ create stream output table kafkaExampleTopic using kafka(
 
 #### HDFS/S3
 
-TBD
+Syntax：
+
+```sql
+create batch output table table_identifier USING parquet(path=<path>) TBLPROPERTIES(saveMode=<saveMode>);
+```
+
+Parameters:
+
+- table_identifier -  table name of output table
+
+- path - hdfs path 
+
+- saveMode - saveMode is used to specify the expected behavior of saving a reslt to a data source ( e.g. append|error|ignore|overwrite). 
+
+  please refer to [here](https://spark.apache.org/docs/2.2.0/api/java/index.html?org/apache/spark/sql/SaveMode.html) for detail information of saveMode
+
+  
+
+  Examples:
+
+  ```sql
+  create batch output table test USING parquet(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
+  ```
+
+  
 
 #### JDBC
 
-TBD
+Syntax:
+
+```sql
+create batch output table table_identifier USING jdbc(url=<url>, dbTable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(saveMode=<saveMode>);
+```
+
+Parameters:
+
+- table_identifier -  table name of output table
+- url - jdbc url
+- dbTable - table name 
+- user - jdbc user 
+- password - jdbc password
+- driver - class name of jdbc driver
+
+Examples:
+
+```sql
+create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", dbTable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(saveMode="overwrite");
+```
 
 #### MongoDB
 

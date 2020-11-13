@@ -1,10 +1,8 @@
 package com.amazon.deequ.constraints
 
 import com.amazon.deequ.analyzer.DateFormat
-import com.amazon.deequ.analyzers.{NumMatchesAndCount, PatternMatch}
+import com.amazon.deequ.analyzers.NumMatchesAndCount
 import com.amazon.deequ.checks.Check
-
-import scala.util.matching.Regex
 
 object StreamConstraints {
 
