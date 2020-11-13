@@ -23,7 +23,6 @@ import com.qiniu.stream.core.parser.{BooleanDataType, ByteDataType, DateDataType
 import com.qiniu.stream.core.source.WaterMarker
 import com.qiniu.stream.core.udf.ScalaDynamicUDF
 import com.qiniu.stream.util.Logging
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.catalyst.FunctionIdentifier
 import org.apache.spark.sql.catalyst.expressions.{Expression, ScalaUDF}
 import org.apache.spark.sql.types.{DataType, DataTypes, StructField, StructType}

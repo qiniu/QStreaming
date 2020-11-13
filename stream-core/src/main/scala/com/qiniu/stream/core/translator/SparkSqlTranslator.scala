@@ -20,7 +20,6 @@ package com.qiniu.stream.core.translator
 import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.core.config.SqlStatement
 import com.qiniu.stream.util.Logging
-import org.apache.spark.sql.SparkSession
 
 case class SparkSqlTranslator(sqlStatement: SqlStatement) extends StatementTranslator with Logging {
   override def translate(context: PipelineContext): Unit = {

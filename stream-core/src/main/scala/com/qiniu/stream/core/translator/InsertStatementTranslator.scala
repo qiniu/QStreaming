@@ -20,7 +20,6 @@ package com.qiniu.stream.core.translator
 import com.qiniu.stream.core.PipelineContext
 import com.qiniu.stream.core.config.{InsertStatement, SinkTable}
 import com.qiniu.stream.core.sink.{BatchWriter, StreamWriter}
-import com.qiniu.stream.core.util.DatasetUtils
 import com.qiniu.stream.util.Logging
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
