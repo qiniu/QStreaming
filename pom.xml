@@ -75,8 +75,8 @@
         <dep.spark.version>2.4.5</dep.spark.version>
         <dep.fastjson.version>1.2.73</dep.fastjson.version>
         <dep.hbase.version>2.1.7</dep.hbase.version>
-        <dep.phoenix.version>5.0.0-HBase-2.0</dep.phoenix.version>
         <dep.hbase.connector.version>1.0.0</dep.hbase.connector.version>
+        <dep.hudi.version>0.6.0</dep.hudi.version>
         <dep.deequ.version>1.0.5</dep.deequ.version>
         <dep.embedded-elasticsearch.version>2.7.0</dep.embedded-elasticsearch.version>
         <dep.hadoop-minicluster.version>2.7.3</dep.hadoop-minicluster.version>
@@ -89,6 +89,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.hudi</groupId>
+                <artifactId>hudi-spark-bundle_2.11</artifactId>
+                <version>${dep.hudi.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.hbase.connectors.spark</groupId>
                 <artifactId>hbase-spark</artifactId>
