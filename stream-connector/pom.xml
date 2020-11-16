@@ -45,5 +45,10 @@
             <artifactId>elasticsearch-hadoop</artifactId>
             <version>${dep.elasticsearch.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark-bundle_2.11</artifactId>
+            <version>${dep.hudi.version}</version>
+        </dependency>
     </dependencies>
 </project>

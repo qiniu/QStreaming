@@ -195,7 +195,14 @@ Parameters:
 Examples:
 
 ```sql
+#parquet 
 CREATE BATCH INPUT TABLE raw_log USING parquet(path="<yourHdfsFullPath>");
+#csv
+CREATE BATCH INPUT TABLE raw_log USING csv(path="<yourHdfsFullPath>");
+#text 
+CREATE BATCH INPUT TABLE raw_log USING text(path="<yourHdfsFullPath>");
+#avro 
+CREATE BATCH INPUT TABLE raw_log USING avro(path="<yourHdfsFullPath>");
 ```
 
 #### JDBC
@@ -344,9 +351,6 @@ Syntax：
 ```sql
 #batch
 create batch output table table_identifier USING parquet(path=<path>) TBLPROPERTIES(saveMode=<saveMode>);
-
-#streaming
-create batch output table table_identifier USING parquet(path=<path>) TBLPROPERTIES(saveMode=<saveMode>, batchWrite="true");
 ```
 
 Parameters:
@@ -359,15 +363,43 @@ Parameters:
 
   please refer to [here](https://spark.apache.org/docs/2.2.0/api/java/index.html?org/apache/spark/sql/SaveMode.html) for detail information of saveMode
 
-  
+Examples:
 
-  Examples:
+```sql
+#parquet
+create batch output table test USING parquet(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
+#csv
+create batch output table test USING csv(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
+#avro
+create batch output table test USING avro(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
+#text
+create batch output table test USING text(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
+```
 
-  ```sql
-  create batch output table test USING parquet(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
-  ```
+#### Hudi
 
-  
+Syntax：
+
+```sql
+create batch output table table_identifier USING hudi( 
+                                                      hoodie.datasource.write.table.name=<hudiTableName>,
+                                                      hoodie.datasource.hive_sync.table=<tableName>,...
+                                                     ) TBLPROPERTIES(saveMode=<saveMode>);
+```
+
+Parameters:
+
+- table_identifier -  table name of output table
+- hudiTableName - table name that will be used for registering with Hive. Needs to be same across runs
+- tableName - table to sync to
+
+For more information about the hudi options please refer to [here](https://hudi.apache.org/docs/configurations.html#write-options)
+
+Examples:
+
+```sql
+create batch output table test USING hudi(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite"); 
+```
 
 #### JDBC
 
