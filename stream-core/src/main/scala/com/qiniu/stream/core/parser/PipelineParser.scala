@@ -17,6 +17,8 @@
  */
 package com.qiniu.stream.core.parser
 
+import java.io.InputStream
+
 import com.qiniu.stream.core.config._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.{CharStream, CharStreams, CommonTokenStream}
@@ -33,6 +35,15 @@ class PipelineParser(settings: Settings) {
 
   def parseFromFile(file: String): Pipeline = {
     val dslFile = Source.fromFile(file)
+    try {
+      parseFromString(dslFile.mkString)
+    } finally {
+      dslFile.close()
+    }
+  }
+
+  def parseFromInputStream(stream:InputStream):Pipeline ={
+    val dslFile = Source.fromInputStream(stream)
     try {
       parseFromString(dslFile.mkString)
     } finally {

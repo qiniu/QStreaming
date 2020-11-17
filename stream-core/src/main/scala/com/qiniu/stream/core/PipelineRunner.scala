@@ -16,13 +16,13 @@
  */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.{DebugEnable, Pipeline, Settings}
+import com.qiniu.stream.core.config.{DebugEnable, FilePipelineConfig, Pipeline, PipelineConfig, ResourcePipelineConfig, Settings}
 import com.qiniu.stream.core.parser.PipelineParser
 import com.qiniu.stream.util.Logging
 
-case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
+case class PipelineRunner(pipelineConfig: PipelineConfig, pipelineSettings: Option[Settings] = None) extends Logging {
 
-  val settings: Settings = {
+  val settings: Settings = pipelineSettings getOrElse {
     val value = Settings.load()
     //args will take highest order
     pipelineConfig.args.foreach {
@@ -34,7 +34,10 @@ case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
   lazy val pipelineContext: PipelineContext = PipelineContext(settings)
 
   def run(): Unit = {
-    val pipeline = new PipelineParser(settings).parseFromFile(pipelineConfig.jobDsl)
+    val pipeline = pipelineConfig match {
+      case FilePipelineConfig(jobDsl, _) => new PipelineParser(settings).parseFromFile(jobDsl)
+      case ResourcePipelineConfig(resource, _) => new PipelineParser(settings).parseFromInputStream(this.getClass.getClassLoader.getResourceAsStream(resource))
+    }
     run(pipeline)
   }
 
@@ -50,6 +53,7 @@ case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
         }
       }
     }
+
     pipeline.execute(pipelineContext)
     awaitTermination()
   }

@@ -16,13 +16,13 @@
  */
 package com.qiniu.stream.core
 
+import com.qiniu.stream.core.config.{FilePipelineConfig}
 import scopt.OptionParser
 
-case class PipelineConfig(jobDsl: String = "job.dsl", args: Map[String, String] = Map())
 
 object Streaming extends App {
 
-  val cliParser: OptionParser[PipelineConfig] = new OptionParser[PipelineConfig]("QStreaming") {
+  val cliParser: OptionParser[FilePipelineConfig] = new OptionParser[FilePipelineConfig]("QStreaming") {
     head("QStreaming")
 
     opt[String]('j', "job")
@@ -38,6 +38,6 @@ object Streaming extends App {
     help("help") text "use command line arguments to specify the configuration file path or content"
   }
 
-  val config = cliParser.parse(args, PipelineConfig()).getOrElse(PipelineConfig())
+  val config = cliParser.parse(args, FilePipelineConfig()).getOrElse(FilePipelineConfig())
   PipelineRunner(config).run()
 }

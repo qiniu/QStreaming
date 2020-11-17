@@ -38,7 +38,7 @@ class Settings(val config: Config) {
 
 
   def withValue(key: String, value: AnyRef): Settings =
-    Settings(config.withValue(key, ConfigValueFactory.fromAnyRef(value)))
+    new Settings(config.withValue(key, ConfigValueFactory.fromAnyRef(value)))
 
   def withValue[T](key: Key[T], value: T): Settings =
     withValue(key.name, value.asInstanceOf[AnyRef])
