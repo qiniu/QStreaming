@@ -41,7 +41,8 @@ case object JdbcWriterCommitMessage extends WriterCommitMessage
  * A [[org.apache.spark.sql.sources.v2.writer.streaming.StreamWriter]] for jdbc writing.
  * Responsible for generating the writer factory.
  */
-class JdbcStreamWriter(
+class JdbcStreamWriter
+(
   schema: StructType,
   options: Map[String, String]
 ) extends StreamWriter with Logging {

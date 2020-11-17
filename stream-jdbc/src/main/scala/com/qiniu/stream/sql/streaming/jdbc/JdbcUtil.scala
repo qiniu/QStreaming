@@ -25,7 +25,6 @@ import org.apache.spark.sql.execution.datasources.jdbc.JdbcUtils
 import org.apache.spark.sql.jdbc.{JdbcDialect, JdbcType}
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
-
 /**
  * Util functions for JDBC tables.
  * As the access privilege of `JdbcUtils.makeSetter` and `JdbcUtils.getJdbcType`is private,

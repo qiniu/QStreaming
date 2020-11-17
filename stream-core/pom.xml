@@ -57,6 +57,7 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql-kafka-0-10_${scala.major.version}</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -87,8 +88,6 @@
             <artifactId>scalatest_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
     <build>
         <plugins>

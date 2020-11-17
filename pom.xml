@@ -53,9 +53,13 @@
     <modules>
         <module>stream-utils</module>
         <module>stream-core</module>
-        <module>stream-connector</module>
+        <module>stream-jdbc</module>
+        <module>stream-mongo</module>
+        <module>stream-hbase</module>
+        <module>stream-hudi</module>
+        <module>stream-elasticsearch</module>
         <module>stream-standalone</module>
-        <module>docker</module>
+        <module>stream-docker</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>

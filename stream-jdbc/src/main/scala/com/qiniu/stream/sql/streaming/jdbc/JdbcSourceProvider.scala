@@ -25,7 +25,6 @@ import org.apache.spark.sql.sources.v2.{DataSourceOptions, StreamWriteSupport}
 import org.apache.spark.sql.sources.v2.writer.streaming.StreamWriter
 import org.apache.spark.sql.streaming.OutputMode
 import org.apache.spark.sql.types.StructType
-
 class JdbcSourceProvider extends StreamWriteSupport with DataSourceRegister{
   override def createStreamWriter(queryId: String, schema: StructType,
     mode: OutputMode, options: DataSourceOptions): StreamWriter = {
