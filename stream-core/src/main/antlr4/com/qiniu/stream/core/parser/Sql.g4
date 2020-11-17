@@ -141,7 +141,7 @@ tableProperties
     ;
 
 connectorSpec
-    : connectorType=qualifiedName ('(' connectProps+=property (','  connectProps+=property)* ')' )?
+    : connectorType=tableProvider ('(' connectProps+=property (','  connectProps+=property)* ')' )?
     ;
 
 schemaSpec
@@ -231,6 +231,27 @@ commentStatement
 
 sqlStatement
     :   ~(';' )+
+    ;
+
+tableProvider
+    : multipartIdentifier
+    ;
+
+multipartIdentifier
+    : parts+=errorCapturingIdentifier ('.' parts+=errorCapturingIdentifier)*
+    ;
+
+// this rule is used for explicitly capturing wrong identifiers such as test-table, which should actually be `test-table`
+// replace identifier with errorCapturingIdentifier where the immediate follow symbol is not an expression, otherwise
+// valid expressions such as "a-b" can be recognized as an identifier
+errorCapturingIdentifier
+    : identifier errorCapturingIdentifierExtra
+    ;
+
+// extra left-factoring grammar
+errorCapturingIdentifierExtra
+    : ('-' identifier)+    #errorIdent
+    |                        #realIdent
     ;
 
 //keyword goes here

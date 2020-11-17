@@ -2,9 +2,9 @@ package com.qiniu.stream.core.parser
 
 import com.amazon.deequ.checks.CheckLevel
 import com.qiniu.stream.core.config.{CreateFunctionStatement, CreateViewStatement, InsertStatement, RowFormat, Settings, SinkTable, SourceTable, VerifyStatement, ViewType}
-import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.FunSuite
 
-class PipelineParserTest extends AnyFunSuite{
+class PipelineParserTest extends FunSuite{
   val createSourceTableStatement =
     """  create stream input table user_behavior(
       |  user_id LONG,

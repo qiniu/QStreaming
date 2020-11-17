@@ -416,7 +416,7 @@ Syntax:
 create batch output table table_identifier USING jdbc(url=<url>, dbTable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(saveMode=<saveMode>);
 
 #streaming
-create batch output table table_identifier USING jdbc(url=<url>, dbTable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(saveMode=<saveMode>);
+create stream output table table_identifier USING streaming-jdbc(url=<url>, dbtable=<dbTable>, user=<user>, password=<password>, driver=<driver>) TBLPROPERTIES(outputMode=<saveMode>,checkpointLocation=<checkPointLocation>);
 ```
 
 Parameters:
@@ -427,6 +427,8 @@ Parameters:
 - user - jdbc user 
 - password - jdbc password
 - driver - class name of jdbc driver
+- saveMode (batch used only) 
+- outputMode(streaming used only)
 
 Examples:
 
@@ -435,7 +437,7 @@ Examples:
 create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", dbTable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(saveMode="overwrite");
 
 #streaming
-create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", dbTable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(saveMode="overwrite", batchWrite="true");
+create stream output table test USING streaming-jdbc(url="jdbc:mysql://localhost/test?", dbtable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(outputMode="update",checkpointLocation="/tmp/spark/checkpoint-jdbc");
 ```
 
 #### MongoDB
