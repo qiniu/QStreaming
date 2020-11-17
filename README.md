@@ -113,25 +113,18 @@ To use it adds the dependency to your project
     <dependency>stream-core</dependency>
     <version>0.0.3</version>
   </dependency>
-  <dependency>
-    <groupId>com.qiniu</groupId>
-    <dependency>stream-connector</dependency>
-    <version>0.0.3</version>
-  </dependency>
   ```
-
+  
 - gradle
 
   ```
   compile 'com.qiniu:stream-core:0.0.3'
-  compile 'com.qiniu:stream-connector:0.0.3'
   ```
-
+  
 - sbt
 
   ```
   libraryDependencies += "com.qiniu" % "stream-core" % "0.0.3"
-  libraryDependencies += "com.qiniu" % "stream-connector" % "0.0.3"
   ```
 
 ## Datasources
