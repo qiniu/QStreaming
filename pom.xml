@@ -73,7 +73,6 @@
         <dep.assertj.version>3.6.2</dep.assertj.version>
         <dep.antlr.version>4.7</dep.antlr.version>
         <dep.typesafe_config.version>1.4.0</dep.typesafe_config.version>
-        <dep.antlr.stringtemplate.version>4.0.2</dep.antlr.stringtemplate.version>
         <dep.slf4j.api.version>1.7.30</dep.slf4j.api.version>
         <dep.groupon.spark-metrics.version>1.0</dep.groupon.spark-metrics.version>
         <dep.spark.version>2.4.5</dep.spark.version>
@@ -183,11 +182,7 @@
                 <artifactId>config</artifactId>
                 <version>${dep.typesafe_config.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>stringtemplate</artifactId>
-                <version>${dep.antlr.stringtemplate.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>

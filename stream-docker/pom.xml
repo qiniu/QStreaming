@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>stream-docker</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <stream-standalone.jar>stream-standalone-${project.version}-jar-with-dependencies.jar</stream-standalone.jar>
@@ -21,6 +22,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.0.0</version>
                         <executions>
                             <execution>
                                 <id>copy-stream-standalone</id>
