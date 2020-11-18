@@ -1,10 +1,20 @@
 package com.qiniu.stream.core.config
 
-sealed trait PipelineConfig {
-  def args: Map[String,String]
+import scala.io.Source
+
+case class PipelineConfig(pipeline: Source, settings: Settings = Settings.load(), jobVariables: Map[String, String] = Map())
+
+object PipelineConfig {
+
+  val DEFAULT: PipelineConfig ={
+    val resourceIs = PipelineConfig.getClass.getClassLoader.getResourceAsStream("job.dsl")
+    PipelineConfig(Source.fromInputStream(resourceIs))
+  }
+
+  def fromClassPath(resource: String, settings: Settings, jobVariables: Map[String, String]): PipelineConfig = {
+    val resourceIs = PipelineConfig.getClass.getClassLoader.getResourceAsStream(resource)
+    PipelineConfig(Source.fromInputStream(resourceIs), settings, jobVariables)
+  }
 }
 
-case class FilePipelineConfig(jobDsl: String = "job.dsl", args: Map[String, String] = Map()) extends PipelineConfig
-
-case class ResourcePipelineConfig(jobResource: String , args: Map[String, String] = Map()) extends PipelineConfig
 

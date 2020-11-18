@@ -84,7 +84,7 @@ $SPARK_HOME/bin/spark-submit
 --master yarn \
 --deploy-mode client \
 stream-standalone-0.0.3-jar-with-dependencies.jar  \
--j pipeline.dsl
+-j pathToYourPipeline.dsl 
 ```
 
 ##### Run on a standalone cluster
@@ -96,7 +96,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 stream-standalone-0.0.3-jar-with-dependencies.jar \
--j pipeline.dsl
+-j pathToYourPipeline.dsl 
 ```
 
 ##### Run as a library
@@ -648,22 +648,19 @@ For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRun
 
 ```bash
 $SPARK_HOME/bin/spark-submit
---name {{.dir}} \
+--name yourAppName \
 --class com.qiniu.stream.core.Streaming \
---master yarn \
---deploy-mode client \
---conf spark.executor.extraClassPath=./ \
 stream-standalone-0.0.3-jar-with-dependencies.jar \
--j pipeline.dsl \
--c stream.template.vars.day=theDayThatRunAJob \
--c stream.template.vars.hour=theHourThatRunAJob
+-j pathToYourPipeline.dsl \
+-v day=theDayThatRunAJob \
+-v hour=theHourThatRunAJob
 ```
 
 and the pipeline dsl file 
 
 ````sql
 create batch input table raw_log
-USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
+USING parquet(path="hdfs://cluster1/logs/day=${day}/hour=${hourt");
 ````
 
 

@@ -20,11 +20,9 @@ package org.apache.spark.sql.elasticsearch
 
 import java.util.concurrent.TimeUnit
 
-import com.alibaba.fastjson.JSON
 import com.qiniu.stream.core.PipelineRunner
-import com.qiniu.stream.core.config.{ResourcePipelineConfig, Settings}
+import com.qiniu.stream.core.config.{PipelineConfig, Settings}
 import de.flapdoodle.embed.process.runtime.Network
-import org.apache.http.HttpHost
 import org.apache.spark.sql.streaming.StreamTest
 import org.scalatest.BeforeAndAfter
 import pl.allegro.tech.embeddedelasticsearch.{EmbeddedElastic, PopularProperties}
@@ -58,14 +56,12 @@ class ESStreamWriteSuite extends StreamTest with BeforeAndAfter {
 
   test("Basic Write ElasticSearch") {
     withTempDir { checkpointDir => {
-      val pipeline = PipelineRunner(ResourcePipelineConfig("write/es.dsl"), Some(Settings.empty
-        .withValue("stream.debug", "true")
-        .withValue("stream.template.vars.port", port.toString)
-        .withValue("stream.template.vars.checkPointDir", checkpointDir.getCanonicalPath)))
-      pipeline.run()
 
+      val pipeLineConfig = PipelineConfig.fromClassPath("write/es.dsl",
+        Settings.load().withValue("stream.debug", "true"),
+        Map("port" -> port.toString, "checkPointDir" -> checkpointDir.getCanonicalPath))
+      PipelineRunner(pipeLineConfig).run()
       val indexDocuments = embeddedElastic.fetchAllDocuments("test")
-
       assert(indexDocuments.size() == 10)
     }
     }

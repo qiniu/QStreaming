@@ -26,31 +26,16 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.{CharStream, CharStreams, CommonTokenStream}
 
 import scala.collection.JavaConverters._
-import scala.io.Source
 
-class PipelineParser(settings: Settings) {
+class PipelineParser(pipelineConfig: PipelineConfig) {
+
+  def parse(): Pipeline = {
+    parseFromString(pipelineConfig.pipeline.mkString)
+  }
 
   def parseFromString(string: String): Pipeline = {
     val charStream = CharStreams.fromString(template(string))
     parse(charStream)
-  }
-
-  def parseFromFile(file: String): Pipeline = {
-    val dslFile = Source.fromFile(file)
-    try {
-      parseFromString(dslFile.mkString)
-    } finally {
-      dslFile.close()
-    }
-  }
-
-  def parseFromInputStream(stream: InputStream): Pipeline = {
-    val dslFile = Source.fromInputStream(stream)
-    try {
-      parseFromString(dslFile.mkString)
-    } finally {
-      dslFile.close()
-    }
   }
 
   private def parse(charStream: CharStream): Pipeline = {
@@ -62,15 +47,6 @@ class PipelineParser(settings: Settings) {
 
 
   private def template(template: String) = {
-    def dataModels: Map[String, String] = {
-      val variableKey = "stream.template.vars"
-      if (settings.config.hasPath(variableKey)) {
-
-        settings.config.getConfig(variableKey).root().keySet().asScala.map(key => key ->
-          settings.config.getString(variableKey + "." + key)).toMap
-      } else Map()
-    }
-
     val cfg = new Configuration(Configuration.VERSION_2_3_23)
     cfg.setDefaultEncoding("UTF-8")
     val stringLoader = new StringTemplateLoader
@@ -79,7 +55,7 @@ class PipelineParser(settings: Settings) {
     cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
     val freeMarkTemplate = cfg.getTemplate("pipeline")
     val writer = new StringWriter()
-    freeMarkTemplate.process(dataModels.asJava, writer)
+    freeMarkTemplate.process(pipelineConfig.jobVariables.asJava, writer)
     writer.getBuffer.toString
   }
 
