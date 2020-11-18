@@ -517,7 +517,7 @@ Syntax:
 
 ```sql
 //streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-es(port=<esport>,nodes=<esNodes>,resource="<index>/<type>");
 
 #batch
 CREATE BATCH OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
@@ -525,9 +525,10 @@ CREATE BATCH OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.
 
 Parameters:
 
-- esport - port of es cluster
-- esNodes - url of es cluster
-- esIndex - name of es index
+- port - port of es cluster
+- nodes - host of es cluster
+- index - name of es index
+- type - type of es index
 
 Examples:
 
@@ -541,10 +542,10 @@ using org.elasticsearch.spark.sql
   
 #streaming  
 create stream output table dogs
-using org.elasticsearch.spark.sql
+using streaming-es
 (path='index/dogs', 
-  es.nodes= '<my>.elasticsearch.com',
-  'es.port'='443');
+  nodes= 'localhost',
+  port='9999');
 ```
 
 ## Features
