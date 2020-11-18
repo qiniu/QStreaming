@@ -89,6 +89,8 @@
         <dep.commons-lang3.version>3.10</dep.commons-lang3.version>
         <dep.scopt.version>3.3.0</dep.scopt.version>
         <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -229,6 +231,12 @@
                 <artifactId>scalatest_${scala.major.version}</artifactId>
                 <version>3.0.1</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.23</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -305,6 +313,7 @@
                         <jvmArg>-Xms512m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
+                    <addScalacArgs>-target:jvm-1.8</addScalacArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -389,6 +398,7 @@
                                 <jvmArg>-Xms512m</jvmArg>
                                 <jvmArg>-Xmx1024m</jvmArg>
                             </jvmArgs>
+                            <addScalacArgs>-target:jvm-1.8</addScalacArgs>
                         </configuration>
                     </plugin>
                     <plugin>

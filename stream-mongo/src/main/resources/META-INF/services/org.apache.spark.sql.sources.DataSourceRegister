@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-com.qiniu.stream.sql.jdbc.JdbcSourceProvider
+com.qiniu.stream.sql.mongo.MongoSourceProvider

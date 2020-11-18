@@ -4,6 +4,6 @@ create stream output table outputTable using streaming-jdbc(
    url="jdbc:h2:mem:testdb",
    dbtable="stream_test_table",
    driver="org.h2.Driver"
- ) TBLPROPERTIES(checkpointLocation="/tmp/checkpoint/behavior_cnt_per_hour");
+ ) TBLPROPERTIES(checkpointLocation="${checkPointDir}");
 
 insert into  outputTable SELECT name from  inputTable;

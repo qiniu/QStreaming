@@ -442,7 +442,7 @@ Syntax
 CREATE BATCH OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>);
 
 #streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>) TBLPROPERTIES(batchWrite="true");
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-mongo(uri=<mongoUri>, database=<database>,collection=<collection>) TBLPROPERTIES(checkPointLocation=<checkPointLocation>);
 
 ```
 
@@ -456,7 +456,16 @@ Parameters:
 Examples:
 
 ```sql
+#batch 
 CREATE BATCH OUTPUT TABLE raw_log USING mongo(uri="yourMongoUri",database="yourDatabaseName",collection="yourCollectionName");
+
+#streaming
+create stream output table outputTable using streaming-mongo(
+   uri="mongodb://host:port",
+   database="test",
+   collection="testCol"
+ ) TBLPROPERTIES(checkpointLocation="/checkPointDir");
+
 ```
 
 

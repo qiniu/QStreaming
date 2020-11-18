@@ -61,6 +61,7 @@ class StreamWriter extends Writer with Logging {
   }
 
   private def startOneStreamQuery(dataFrame: DataFrame, connector: Connector,sinkTable: SinkTable): StreamingQuery = {
+
     val writer: DataStreamWriter[Row] = newStreamWriter(dataFrame,sinkTable)
     val batchWrite = sinkTable.option(StreamOptions.batchWrite).exists(_.toBoolean)
     if (batchWrite) {

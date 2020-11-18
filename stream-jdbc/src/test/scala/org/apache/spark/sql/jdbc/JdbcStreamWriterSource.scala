@@ -17,16 +17,22 @@
 
 package org.apache.spark.sql.jdbc
 
+import java.io.StringWriter
 import java.sql.DriverManager
 
 import com.qiniu.stream.core.PipelineRunner
 import com.qiniu.stream.core.config.{ResourcePipelineConfig, Settings}
+import freemarker.template.{Configuration, Template}
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.execution.streaming.MemoryStream
 import org.apache.spark.sql.streaming.StreamTest
 import org.apache.spark.util.Utils
 import org.scalatest.BeforeAndAfter
 
+import scala.collection.JavaConverters.asJavaIterableConverter
 
-class JdbcStreamWriteSuite extends  StreamTest with BeforeAndAfter  {
+
+class JdbcStreamWriteSuite extends StreamTest with BeforeAndAfter {
 
   val url = "jdbc:h2:mem:testdb"
   val jdbcTableName = "stream_test_table"
@@ -57,14 +63,19 @@ class JdbcStreamWriteSuite extends  StreamTest with BeforeAndAfter  {
     conn.close()
   }
 
-  test("Basic Write") {
-    val pipeline = PipelineRunner(ResourcePipelineConfig("write/jdbc.dsl"),Some(Settings.empty.withValue("stream.debug","true")))
-    pipeline.run()
-    val result = conn
-      .prepareStatement(s"select count(*) as count from $jdbcTableName")
-      .executeQuery()
-    assert(result.next())
-    assert(result.getInt("count") == 10)
+  test("Basic Write Jdbc") {
+    withTempDir { checkpointDir => {
+      val pipeline = PipelineRunner(ResourcePipelineConfig("write/jdbc.dsl"), Some(Settings.empty
+        .withValue("stream.debug", "true")
+        .withValue("stream.template.vars.checkPointDir",checkpointDir.getCanonicalPath)))
+      pipeline.run()
+      val result = conn
+        .prepareStatement(s"select count(*) as count from $jdbcTableName")
+        .executeQuery()
+      assert(result.next())
+      assert(result.getInt("count") == 10)
+    }}
+
   }
 
 

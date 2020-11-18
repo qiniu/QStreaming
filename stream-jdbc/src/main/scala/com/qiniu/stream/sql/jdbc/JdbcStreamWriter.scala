@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.qiniu.stream.sql.streaming.jdbc
+package com.qiniu.stream.sql.jdbc
 
 import java.sql.{Connection, PreparedStatement, SQLException}
 import java.util.Locale
