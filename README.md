@@ -291,24 +291,22 @@ Syntax:
 
 ```sql
 //QStreaming SQL
-CREATE BATCH INPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+CREATE BATCH INPUT TABLE table_identifier USING es(port=<port>,nodes=<nodes>,resource="<index>/<type>");
 
 ```
 
 Parameters:
 
-- esport - port of es cluster
-- esNodes - url of es cluster
-- esIndex - name of es index
+- port - port of es cluster
+- nodes - host of es cluster
+- index - name of es index
+- type - type of es index
 
 Examples:
 
 ```sql
-create batch input table dogs
-using org.elasticsearch.spark.sql
-(path='index/dogs', 
-  es.nodes= '<my>.elasticsearch.com',
-  'es.port'='443');
+create batch input table dogs using es
+(resource='index/dogs',  nodes= 'localhost',port='9999');
 ```
 
 ### Outpus
@@ -516,35 +514,30 @@ CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog
 Syntax:
 
 ```sql
-//streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
-
 #batch
-CREATE BATCH OUTPUT TABLE table_identifier USING org.elasticsearch.spark.sql(es.port=<esport>,es.nodes=<esNodes>,path="<esIndex>");
+CREATE BATCH OUTPUT TABLE table_identifier USING es(port=<port>,nodes=<nodes>,
+                                                    resource="<index>/<type>");
+//streaming
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-es(port=<port>,nodes=<nodes>,resource="<index>/<type>");
 ```
 
 Parameters:
 
-- esport - port of es cluster
-- esNodes - url of es cluster
-- esIndex - name of es index
+- port - port of es cluster
+- nodes - host of es cluster
+- index - name of es index
+- type - type of es index
 
 Examples:
 
 ```sql
 #batch
 create batch output table dogs
-using org.elasticsearch.spark.sql
-(path='index/dogs', 
-  es.nodes= '<my>.elasticsearch.com',
-  'es.port'='443');
+using es (resource='index/dogs', nodes= 'localhost', port='9999');
   
 #streaming  
 create stream output table dogs
-using org.elasticsearch.spark.sql
-(path='index/dogs', 
-  es.nodes= '<my>.elasticsearch.com',
-  'es.port'='443');
+using streaming-es (resource='index/dogs', nodes= 'localhost',port='9999');
 ```
 
 ## Features
