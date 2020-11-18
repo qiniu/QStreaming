@@ -113,25 +113,18 @@ To use it adds the dependency to your project
     <dependency>stream-core</dependency>
     <version>0.0.3</version>
   </dependency>
-  <dependency>
-    <groupId>com.qiniu</groupId>
-    <dependency>stream-connector</dependency>
-    <version>0.0.3</version>
-  </dependency>
   ```
-
+  
 - gradle
 
   ```
   compile 'com.qiniu:stream-core:0.0.3'
-  compile 'com.qiniu:stream-connector:0.0.3'
   ```
-
+  
 - sbt
 
   ```
   libraryDependencies += "com.qiniu" % "stream-core" % "0.0.3"
-  libraryDependencies += "com.qiniu" % "stream-connector" % "0.0.3"
   ```
 
 ## Datasources
@@ -449,7 +442,7 @@ Syntax
 CREATE BATCH OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>);
 
 #streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING mongo(uri=<mongoUri>, database=<database>,collection=<collection>) TBLPROPERTIES(batchWrite="true");
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-mongo(uri=<mongoUri>, database=<database>,collection=<collection>) TBLPROPERTIES(checkPointLocation=<checkPointLocation>);
 
 ```
 
@@ -463,7 +456,16 @@ Parameters:
 Examples:
 
 ```sql
+#batch 
 CREATE BATCH OUTPUT TABLE raw_log USING mongo(uri="yourMongoUri",database="yourDatabaseName",collection="yourCollectionName");
+
+#streaming
+create stream output table outputTable using streaming-mongo(
+   uri="mongodb://host:port",
+   database="test",
+   collection="testCol"
+ ) TBLPROPERTIES(checkpointLocation="/checkPointDir");
+
 ```
 
 

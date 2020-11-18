@@ -14,11 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>com.qiniu</groupId>
-            <artifactId>stream-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qiniu</groupId>
             <artifactId>stream-core</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -17,13 +17,15 @@
  */
 package com.qiniu.stream.core.parser
 
-import java.io.InputStream
+import java.io.{InputStream, StringWriter}
 
 import com.qiniu.stream.core.config._
+import freemarker.cache.StringTemplateLoader
+import freemarker.template.{Configuration, TemplateExceptionHandler}
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.{CharStream, CharStreams, CommonTokenStream}
-import org.stringtemplate.v4.ST
 
+import scala.collection.JavaConverters._
 import scala.io.Source
 
 class PipelineParser(settings: Settings) {
@@ -42,7 +44,7 @@ class PipelineParser(settings: Settings) {
     }
   }
 
-  def parseFromInputStream(stream:InputStream):Pipeline ={
+  def parseFromInputStream(stream: InputStream): Pipeline = {
     val dslFile = Source.fromInputStream(stream)
     try {
       parseFromString(dslFile.mkString)
@@ -60,34 +62,25 @@ class PipelineParser(settings: Settings) {
 
 
   private def template(template: String) = {
-    def templateVariables: Map[String, String] = {
+    def dataModels: Map[String, String] = {
       val variableKey = "stream.template.vars"
       if (settings.config.hasPath(variableKey)) {
-        val templateVariables = settings.config.atKey(variableKey)
-        import scala.collection.JavaConverters._
-        templateVariables.root().keySet().asScala.map(key => key -> templateVariables.getString(key)).toMap
+
+        settings.config.getConfig(variableKey).root().keySet().asScala.map(key => key ->
+          settings.config.getString(variableKey + "." + key)).toMap
       } else Map()
     }
 
-    def isJobTemplateEnable = {
-      settings.config.hasPath(JobTemplateEnable.name) && settings(JobTemplateEnable)
-    }
-
-    def templateChar = {
-      if (!settings.config.hasPath(JobTemplateStartChar.name) || !settings.config.hasPath(JobTemplateStopChar.name) ){
-        ('[',']')
-      }else (settings(JobTemplateStartChar), settings(JobTemplateStopChar))
-    }
-
-    if (isJobTemplateEnable) {
-      val stTemplate = new ST(template, templateChar._1, templateChar._2)
-      templateVariables.foreach {
-        case (k, v) => stTemplate.add(k, v)
-      }
-      stTemplate.render()
-    } else {
-      template
-    }
+    val cfg = new Configuration(Configuration.VERSION_2_3_23)
+    cfg.setDefaultEncoding("UTF-8")
+    val stringLoader = new StringTemplateLoader
+    stringLoader.putTemplate("pipeline", template)
+    cfg.setTemplateLoader(stringLoader)
+    cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
+    val freeMarkTemplate = cfg.getTemplate("pipeline")
+    val writer = new StringWriter()
+    freeMarkTemplate.process(dataModels.asJava, writer)
+    writer.getBuffer.toString
   }
 
 }
