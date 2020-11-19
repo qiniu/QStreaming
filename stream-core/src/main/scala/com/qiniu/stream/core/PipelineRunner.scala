@@ -16,28 +16,18 @@
  */
 package com.qiniu.stream.core
 
-import com.qiniu.stream.core.config.{DebugEnable, FilePipelineConfig, Pipeline, PipelineConfig, ResourcePipelineConfig, Settings}
+import com.qiniu.stream.core.config.{DebugEnable, Pipeline, PipelineConfig, Settings}
 import com.qiniu.stream.core.parser.PipelineParser
 import com.qiniu.stream.util.Logging
 
-case class PipelineRunner(pipelineConfig: PipelineConfig, pipelineSettings: Option[Settings] = None) extends Logging {
+case class PipelineRunner(pipelineConfig: PipelineConfig) extends Logging {
 
-  val settings: Settings = pipelineSettings getOrElse {
-    val value = Settings.load()
-    //args will take highest order
-    pipelineConfig.args.foreach {
-      case (k, v) => value.withValue(k, v)
-    }
-    value
-  }
+  var settings: Settings = pipelineConfig.settings
 
   lazy val pipelineContext: PipelineContext = PipelineContext(settings)
 
   def run(): Unit = {
-    val pipeline = pipelineConfig match {
-      case FilePipelineConfig(jobDsl, _) => new PipelineParser(settings).parseFromFile(jobDsl)
-      case ResourcePipelineConfig(resource, _) => new PipelineParser(settings).parseFromInputStream(this.getClass.getClassLoader.getResourceAsStream(resource))
-    }
+    val pipeline = new PipelineParser(pipelineConfig).parse()
     run(pipeline)
   }
 

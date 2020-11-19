@@ -8,6 +8,11 @@ import org.apache.spark.sql.SparkSession
 import scala.util.{Failure, Success, Try}
 
 case class PipelineContext(settings: Settings) extends Logging {
+  val master = if (settings.config.hasPath("spark.master")) {
+    settings.config.getString("spark.master")
+  } else {
+    "local"
+  }
 
   lazy val sparkSession: SparkSession = {
     val sparkConf: SparkConf = {
@@ -20,7 +25,8 @@ case class PipelineContext(settings: Settings) extends Logging {
       }
       sparkConf
     }
-    val builder = SparkSession.builder().config(sparkConf)
+
+    val builder = SparkSession.builder().config(sparkConf).master(master)
     if (settings.config.hasPath(HiveEnable.name) && settings(HiveEnable)) builder.enableHiveSupport()
     builder.getOrCreate()
   }

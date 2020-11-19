@@ -1,7 +1,7 @@
 package com.qiniu.stream.core.parser
 
 import com.amazon.deequ.checks.CheckLevel
-import com.qiniu.stream.core.config.{CreateFunctionStatement, CreateViewStatement, InsertStatement, RowFormat, Settings, SinkTable, SourceTable, VerifyStatement, ViewType}
+import com.qiniu.stream.core.config.{CreateFunctionStatement, CreateViewStatement, InsertStatement, PipelineConfig, RowFormat, Settings, SinkTable, SourceTable, VerifyStatement, ViewType}
 import org.scalatest.FunSuite
 
 class PipelineParserTest extends FunSuite{
@@ -68,8 +68,8 @@ class PipelineParserTest extends FunSuite{
 
   test("parse createSourceTableStatement"){
 
-    val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createSourceTableStatement)
+
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createSourceTableStatement)
     val sourceTable = pipeline.statements.find(_.isInstanceOf[SourceTable]).map(_.asInstanceOf[SourceTable])
     assert(sourceTable.isDefined)
     sourceTable.foreach(it =>{
@@ -87,7 +87,7 @@ class PipelineParserTest extends FunSuite{
 
   test("Parse createSinkTableStatement"){
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createSinkTableStatement)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createSinkTableStatement)
     val sinkTable = pipeline.statements.find(_.isInstanceOf[SinkTable]).map(_.asInstanceOf[SinkTable])
     assert(sinkTable.isDefined)
     sinkTable.foreach(it =>{
@@ -106,7 +106,7 @@ class PipelineParserTest extends FunSuite{
   test("Parse createViewStatement"){
 
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createViewStatement)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createViewStatement)
     val createViewStmt = pipeline.statements.find(_.isInstanceOf[CreateViewStatement]).map(_.asInstanceOf[CreateViewStatement])
     assert(createViewStmt.isDefined)
     createViewStmt.foreach{
@@ -120,7 +120,7 @@ class PipelineParserTest extends FunSuite{
   test("Parse InsertIntoStatement"){
 
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createSinkTableStatement + insertIntoStatement)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createSinkTableStatement + insertIntoStatement)
     val insertStatement = pipeline.statements.find(_.isInstanceOf[InsertStatement]).map(_.asInstanceOf[InsertStatement])
     assert(insertStatement.isDefined)
     insertStatement.foreach{
@@ -134,7 +134,7 @@ class PipelineParserTest extends FunSuite{
 
 
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createFunctionStatement)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createFunctionStatement)
     val createFunStatement = pipeline.statements.find(_.isInstanceOf[CreateFunctionStatement]).map(_.asInstanceOf[CreateFunctionStatement])
     assert(createFunStatement.isDefined)
     createFunStatement foreach{
@@ -149,7 +149,7 @@ class PipelineParserTest extends FunSuite{
   test("parse createTestStatement"){
 
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(createTestStatement)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(createTestStatement)
 
     val verifyStatement = pipeline.statements.find(_.isInstanceOf[VerifyStatement]).map(_.asInstanceOf[VerifyStatement])
     assert(verifyStatement.isDefined)
@@ -172,7 +172,7 @@ class PipelineParserTest extends FunSuite{
          | $createTestStatement
          | $insertIntoStatement """.stripMargin
     val settings = Settings.load()
-    val pipeline = new PipelineParser(settings).parseFromString(jobContent)
+    val pipeline = new PipelineParser( PipelineConfig.DEFAULT).parseFromString(jobContent)
 
     assert(pipeline.statements.size==6)
 

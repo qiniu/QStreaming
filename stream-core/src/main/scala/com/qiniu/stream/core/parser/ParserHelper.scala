@@ -53,12 +53,12 @@ object ParserHelper {
   }
 
   private def isQuoted(str: String) = {
-    (str.startsWith("`") || str.startsWith("\"") || str.startsWith("'")) && (str.endsWith("`") || str.endsWith("\"") || str.endsWith("'"))
+    (str.startsWith("`") && str.endsWith("`")) || (str.startsWith("\"") && str.endsWith("\"")) || (str.startsWith("'") && str.endsWith("'"))
   }
 
 
   implicit def dslAssertionToAssertion(ctx: AssertionContext) = {
-    if (ctx == null) None else Some(Assertion(ctx.assertionOperator().getText,ctx.value.getText))
+    if (ctx == null) None else Some(Assertion(ctx.assertionOperator().getText, ctx.value.getText))
   }
 
 }

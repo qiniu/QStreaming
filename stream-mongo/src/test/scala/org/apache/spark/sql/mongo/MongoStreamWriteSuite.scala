@@ -17,14 +17,11 @@
 
 package org.apache.spark.sql.mongo
 
-import java.util
-import java.util.OptionalLong
-
 import com.mongodb.{BasicDBObject, MongoClient}
 import com.qiniu.stream.core.PipelineRunner
-import com.qiniu.stream.core.config.{ResourcePipelineConfig, Settings}
+import com.qiniu.stream.core.config.{PipelineConfig, Settings}
 import de.flapdoodle.embed.mongo.config.{ImmutableMongodConfig, MongodConfig, Net}
-import de.flapdoodle.embed.mongo.distribution.{IFeatureAwareVersion, Version}
+import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.{MongodExecutable, MongodProcess, MongodStarter}
 import de.flapdoodle.embed.process.runtime.Network
 import org.apache.spark.sql.streaming.StreamTest
@@ -62,13 +59,13 @@ class MongoStreamWriteSuite extends StreamTest with BeforeAndAfter {
     withTempDir { checkpointDir => {
       val db = mongo.getDB("test")
       db.createCollection("testCol", new BasicDBObject)
-      val pipeline = PipelineRunner(ResourcePipelineConfig("write/mongo.dsl"), Some(Settings.empty
-        .withValue("stream.debug", "true")
-        .withValue("stream.template.vars.port",port.toString)
-        .withValue("stream.template.vars.checkPointDir", checkpointDir.getCanonicalPath)))
-      pipeline.run()
+      val pipeLineConfig = PipelineConfig.fromClassPath("write/mongo.dsl",
+        Settings.load().withValue("stream.debug", "true"),
+        Map("port" -> port.toString, "checkPointDir" -> checkpointDir.getCanonicalPath))
+      PipelineRunner(pipeLineConfig).run()
       assert(db.getCollection("testCol").count() == 10)
-    }}
+    }
+    }
   }
 
 

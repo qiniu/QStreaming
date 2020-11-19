@@ -84,7 +84,7 @@ $SPARK_HOME/bin/spark-submit
 --master yarn \
 --deploy-mode client \
 stream-standalone-0.0.3-jar-with-dependencies.jar  \
--j pipeline.dsl
+-j pathToYourPipeline.dsl 
 ```
 
 ##### Run on a standalone cluster
@@ -96,7 +96,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 stream-standalone-0.0.3-jar-with-dependencies.jar \
--j pipeline.dsl
+-j pathToYourPipeline.dsl 
 ```
 
 ##### Run as a library
@@ -473,11 +473,11 @@ create stream output table outputTable using streaming-mongo(
 Syntax
 
 ```sql
-#batch
-CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>);
+,#batch
+CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>,hbase.spark.config.location=<hbaseSiteXmlLocation>);
 
 #streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>) TBLPROPERTIES(batchWrite="true");
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-hbase(catalog=<catalog>,hbase.zookeeper.quorum=<zkQuorum>, hbase.zookeeper.property.clientPort=<zkClientPort>,,hbase.spark.config.location=<hbaseSiteXmlLocation>) TBLPROPERTIES(checkpointLocation="/tmp/checkpoint/hbase");
 
 ```
 
@@ -485,6 +485,9 @@ Parameters:
 
 - table_identifier - name of the input table
 - catalog:  catalog of the hbase table
+- zkQuorum - zookeeper quorum host ( only used in streaming)
+- zkClientPort - zookeeper client port  ( only used in streaming)
+- hbaseSiteXmlLocation - location of hbase site xml ( optional for streaming)
 
 Example:
 
@@ -505,6 +508,21 @@ CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog
        "col8":{"cf":"cf1", "col":"col7", "type":"$arrayMap"}
     }
 }`);
+
+#streaming
+create stream output table outputTable using streaming-hbase(
+  catalog='{
+      "table":{
+    	"namespace":"default",
+    	"name":"test"
+      },
+      "rowkey":"key1",
+      "columns":{
+         "name":{"cf":"rowkey", "col":"key1", "type":"string"},
+         "value":{"cf":"cf", "col":"value", "type":"int"}
+      }
+  }', hbase.zookeeper.quorum="localhost", hbase.zookeeper.property.clientPort="2181"
+ ) TBLPROPERTIES(checkpointLocation="/tmp/checkpoint/hbase");
 ```
 
 #### 
@@ -648,22 +666,19 @@ For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRun
 
 ```bash
 $SPARK_HOME/bin/spark-submit
---name {{.dir}} \
+--name yourAppName \
 --class com.qiniu.stream.core.Streaming \
---master yarn \
---deploy-mode client \
---conf spark.executor.extraClassPath=./ \
 stream-standalone-0.0.3-jar-with-dependencies.jar \
--j pipeline.dsl \
--c stream.template.vars.day=theDayThatRunAJob \
--c stream.template.vars.hour=theHourThatRunAJob
+-j pathToYourPipeline.dsl \
+-v day=theDayThatRunAJob \
+-v hour=theHourThatRunAJob
 ```
 
 and the pipeline dsl file 
 
 ````sql
 create batch input table raw_log
-USING parquet(path="hdfs://cluster1/logs/day=<day>/hour=<hour>");
+USING parquet(path="hdfs://cluster1/logs/day=${day}/hour=${hourt");
 ````
 
 
