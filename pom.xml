@@ -76,15 +76,10 @@
         <dep.slf4j.api.version>1.7.30</dep.slf4j.api.version>
         <dep.groupon.spark-metrics.version>1.0</dep.groupon.spark-metrics.version>
         <dep.spark.version>2.4.5</dep.spark.version>
+        <dep.hadoop.version>2.7.3</dep.hadoop.version>
         <dep.fastjson.version>1.2.73</dep.fastjson.version>
         <dep.hbase.version>2.1.7</dep.hbase.version>
-        <dep.hbase.connector.version>1.0.0</dep.hbase.connector.version>
-        <dep.hudi.version>0.6.0</dep.hudi.version>
         <dep.deequ.version>1.0.5</dep.deequ.version>
-        <dep.embedded-elasticsearch.version>2.7.0</dep.embedded-elasticsearch.version>
-        <dep.hadoop-minicluster.version>2.7.3</dep.hadoop-minicluster.version>
-        <dep.spark-testing-base_2.11.version>2.4.3_0.12.0</dep.spark-testing-base_2.11.version>
-        <dep.scalatest-embedded-kafka_2.11.version>2.0.0</dep.scalatest-embedded-kafka_2.11.version>
         <dep.commons-lang3.version>3.10</dep.commons-lang3.version>
         <dep.scopt.version>3.3.0</dep.scopt.version>
         <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>
@@ -94,37 +89,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.apache.hudi</groupId>
-                <artifactId>hudi-spark-bundle_${scala.major.version}</artifactId>
-                <version>${dep.hudi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase.connectors.spark</groupId>
-                <artifactId>hbase-spark</artifactId>
-                <version>${dep.hbase.connector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mongodb.spark</groupId>
-                <artifactId>mongo-spark-connector_${scala.major.version}</artifactId>
-                <version>2.4.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.spark</groupId>
-                        <artifactId>spark-sql_${scala.major.version}</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.spark</groupId>
-                        <artifactId>spark-tags_${scala.major.version}</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.phoenix</groupId>
-                <artifactId>phoenix-spark</artifactId>
-                <version>${dep.phoenix.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-mapreduce</artifactId>
@@ -209,8 +173,6 @@
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${dep.antlr.version}</version>
             </dependency>
-
-
             <dependency>
                 <groupId>com.amazon.deequ</groupId>
                 <artifactId>deequ</artifactId>

@@ -7,7 +7,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 case class TestData(name: String, value: Long)
 
-class MongoWriteTestSource extends com.qiniu.stream.core.source.Reader {
+class ESWriteTestSource extends com.qiniu.stream.core.source.Reader {
 
   override def read(sparkSession: SparkSession, sourceTable: SourceTable): DataFrame = {
 

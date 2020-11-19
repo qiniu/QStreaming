@@ -35,13 +35,14 @@ class ESStreamWriteSuite extends StreamTest with BeforeAndAfter {
   before {
     embeddedElastic = EmbeddedElastic.builder()
       .withElasticVersion("6.8.13")
-      .withSetting(PopularProperties.HTTP_PORT, port)
-      .withSetting(PopularProperties.TRANSPORT_TCP_PORT, port + 1)
+      .withSetting(PopularProperties.TRANSPORT_TCP_PORT, port )
       .withSetting(PopularProperties.CLUSTER_NAME, "test-cluster")
       .withIndex("test")
-      .withStartTimeout(2, TimeUnit.MINUTES)
+      .withStartTimeout(10, TimeUnit.MINUTES)
       .build()
       .start()
+
+    println("es started")
 
     embeddedElastic.createIndex("test")
 
@@ -56,14 +57,13 @@ class ESStreamWriteSuite extends StreamTest with BeforeAndAfter {
 
   test("Basic Write ElasticSearch") {
     withTempDir { checkpointDir => {
-
-      val pipeLineConfig = PipelineConfig.fromClassPath("write/es.dsl",
-        Settings.load().withValue("stream.debug", "true"),
-        Map("port" -> port.toString, "checkPointDir" -> checkpointDir.getCanonicalPath))
-      PipelineRunner(pipeLineConfig).run()
-      val indexDocuments = embeddedElastic.fetchAllDocuments("test")
-      assert(indexDocuments.size() == 10)
-    }
+        val pipeLineConfig = PipelineConfig.fromClassPath("write/es.dsl",
+          Settings.load().withValue("stream.debug", "true"),
+          Map("port" -> port.toString, "checkPointDir" -> checkpointDir.getCanonicalPath))
+        PipelineRunner(pipeLineConfig).run()
+        val indexDocuments = embeddedElastic.fetchAllDocuments("test")
+        assert(indexDocuments.size() == 10)
+      }
     }
 
   }

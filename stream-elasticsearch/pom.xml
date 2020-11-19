@@ -30,13 +30,13 @@
 
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-network-shuffle_2.11</artifactId>
+            <artifactId>spark-network-shuffle_${scala.major.version}</artifactId>
             <version>${dep.spark.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.11</artifactId>
+            <artifactId>spark-sql_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
