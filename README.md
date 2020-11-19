@@ -83,7 +83,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master yarn \
 --deploy-mode client \
-stream-standalone-0.0.4-jar-with-dependencies.jar  \
+stream-standalone-0.1.0-jar-with-dependencies.jar  \
 -j pathToYourPipeline.dsl 
 ```
 
@@ -95,7 +95,7 @@ To run on a standalone cluster you must first [start a spark standalone cluster]
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 
@@ -111,19 +111,19 @@ To use it adds the dependency to your project
   <dependency>
     <groupId>com.qiniu</groupId>
     <dependency>stream-core</dependency>
-    <version>0.0.4</version>
+    <version>0.1.0</version>
   </dependency>
   ```
   
 - gradle
 
   ```
-  compile 'com.qiniu:stream-core:0.0.4'
+  compile 'com.qiniu:stream-core:0.1.0'
   ```
   
 - sbt
 
-  libraryDependencies += "com.qiniu" % "stream-core" % "0.0.4"
+  libraryDependencies += "com.qiniu" % "stream-core" % "0.1.0"
 
 ## Datasources
 
@@ -666,7 +666,7 @@ For example, you can pass the value for  `theDayThatRunAJob` and `theHourThatRun
 $SPARK_HOME/bin/spark-submit
 --name yourAppName \
 --class com.qiniu.stream.core.Streaming \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl \
 -v day=theDayThatRunAJob \
 -v hour=theHourThatRunAJob
