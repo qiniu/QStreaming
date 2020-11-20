@@ -37,6 +37,7 @@ class ESStreamWriteSuite extends StreamTest with BeforeAndAfter {
       .withElasticVersion("6.8.13")
       .withSetting(PopularProperties.TRANSPORT_TCP_PORT, port )
       .withSetting(PopularProperties.CLUSTER_NAME, "test-cluster")
+      .withPlugin("analysis-stempel")
       .withIndex("test")
       .withStartTimeout(10, TimeUnit.MINUTES)
       .build()
