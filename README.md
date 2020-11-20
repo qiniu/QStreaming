@@ -266,7 +266,7 @@ Parameters:
 Example:
 
 ```sql
-CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=`{
+CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog='{
 	"table":{"namespace":"default", "name":"HBaseSourceExampleTable"},
 	"rowkey":"key",
 	"columns":{
@@ -280,7 +280,28 @@ CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=
 		"col7":{"cf":"cf7", "col":"col7", "type":"string"},
 		"col8":{"cf":"cf8", "col":"col8", "type":"tinyint"}
 	}
-}`);
+}');
+```
+
+#### Cassandra
+
+Syntax
+
+```sql
+CREATE BATCH INPUT TABLE table_identifier USING org.apache.spark.sql.cassandra(table=<table>, keyspace=<keyspace>, cluster=<cluster>);
+```
+
+Parameters:
+
+- table_identifier - name of the input table
+- table:  table name of cassandra
+- Keyspace - key space of cassandra
+- cluster - cluster of cassandra
+
+Example:
+
+```sql
+CREATE BATCH INPUT TABLE hbaseTable USING org.apache.spark.sql.cassandra(table="user",keyspace="test", cluster="cluster_A");
 ```
 
 #### Elasticsearch
@@ -475,7 +496,7 @@ Syntax
 CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>,hbase.spark.config.location=<hbaseSiteXmlLocation>);
 
 #streaming
-CREATE STREAM OUTPUT TABLE table_identifier USING streaming-hbase(catalog=<catalog>,hbase.zookeeper.quorum=<zkQuorum>, hbase.zookeeper.property.clientPort=<zkClientPort>,,hbase.spark.config.location=<hbaseSiteXmlLocation>) TBLPROPERTIES(checkpointLocation="/tmp/checkpoint/hbase");
+CREATE STREAM OUTPUT TABLE table_identifier USING streaming-hbase(catalog=<catalog>,hbase.zookeeper.quorum=<zkQuorum>, hbase.zookeeper.property.clientPort=<zkClientPort>,,hbase.spark.config.location=<hbaseSiteXmlLocation>) TBLPROPERTIES(checkpointLocation=<checkPointLocation>);
 
 ```
 
@@ -490,7 +511,7 @@ Parameters:
 Example:
 
 ```sql
-CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=`{
+CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog='{
   "table":{
   	"namespace":"default", 
   	"name":"htable"},
@@ -505,7 +526,7 @@ CREATE BATCH OUTPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog
        "col7":{"cf":"cf1", "col":"col6", "type":"$array"},
        "col8":{"cf":"cf1", "col":"col7", "type":"$arrayMap"}
     }
-}`);
+}');
 
 #streaming
 create stream output table outputTable using streaming-hbase(
@@ -523,7 +544,35 @@ create stream output table outputTable using streaming-hbase(
  ) TBLPROPERTIES(checkpointLocation="/tmp/checkpoint/hbase");
 ```
 
-#### 
+#### Cassandra
+
+Syntax:
+
+```sql
+#batch
+CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.spark.sql.cassandra(table=<table>,keyspace=<keyspace>,cluster=<cluster>);
+
+//streaming
+CREATE STREAM OUTPUT TABLE table_identifier USING org.apache.spark.sql.cassandra(table=<table>,keyspace=<keyspace>,cluster=<cluster>) TBLPROPERTIES(checkpointLocation=<checkPointLocation>);
+```
+
+Parameters:
+
+- table - table name of cassandra 
+- keyspace - key space of cassandra
+- cluster - cluster name of es cassandra
+
+Examples:
+
+```sql
+#batch
+create batch output table dogs using
+org.apache.spark.sql.cassandra(table="user",keyspace="test",cluster="cluster_a");
+  
+#streaming  
+create stream output table dogs using
+org.apache.spark.sql.cassandra(table="user",keyspace="test",cluster="cluster_a") TBLPROPERTIES(checkpointLocation=<checkPointLocation>);
+```
 
 #### Elasticsearch
 
