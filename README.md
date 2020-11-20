@@ -127,21 +127,21 @@ To use it adds the dependency to your project
 
 ## Datasources
 
-### [kafka](docs/datasources/kafka.md)
+- [Kafka](docs/datasources/kafka.md)
 
-### [HDFS/S3](https://github.com/qiniu/QStreaming/blob/master/docs/datasources/hdfs.md)
+- [HDFS/S3](https://github.com/qiniu/QStreaming/blob/master/docs/datasources/hdfs.md)
 
-### [Jdbc](docs/datasources/jdbc.md)
+- [Jdbc](docs/datasources/jdbc.md)
 
-### [MongoDB](docs/datasources/mongo.md)
+- [MongoDB](docs/datasources/mongo.md)
 
-### [HBase](docs/datasources/hbase.md)
+- [HBase](docs/datasources/hbase.md)
 
-### [Cassandra](docs/datasources/cassandra.md)
+- [Cassandra](docs/datasources/cassandra.md)
 
-### [Elasticsearch](docs/datasources/elasticsearch.md)
+- [Elasticsearch](docs/datasources/elasticsearch.md)
 
-### [Hudi](docs/datasources/hudi.md)
+- [Hudi](docs/datasources/hudi.md)
 
 ## Features
 
@@ -319,12 +319,6 @@ CREATE TEST testName(testLevel=Error,testOutput=testResult) on dataset WITH
 ```
 
 ## [Architecture](docs/architecture.md)
-
-## [Contributing](https://github.com/qiniu/QStreaming/CONTRIBUTING.md)
-
-We welcome all kinds of contribution, including bug reports, feature requests, documentation improvements, UI refinements, etc.
-
-Thanks to all [contributors](https://github.com/qiniu/QStreaming/graphs/contributors)!!
 
 
 ## License
