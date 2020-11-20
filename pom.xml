@@ -56,8 +56,9 @@
         <module>stream-jdbc</module>
         <module>stream-mongo</module>
         <module>stream-hbase</module>
-        <module>stream-hudi</module>
+        <module>stream-cassandra</module>
         <module>stream-elasticsearch</module>
+        <module>stream-hudi</module>
         <module>stream-standalone</module>
         <module>stream-docker</module>
     </modules>
