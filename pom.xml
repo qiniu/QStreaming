@@ -57,7 +57,8 @@
         <module>stream-mongo</module>
         <module>stream-hbase</module>
         <module>stream-cassandra</module>
-        <module>stream-elasticsearch</module>
+        <module>stream-elasticsearch6</module>
+        <module>stream-elasticsearch7</module>
         <module>stream-hudi</module>
         <module>stream-standalone</module>
         <module>stream-docker</module>
