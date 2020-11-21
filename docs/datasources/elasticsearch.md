@@ -2,7 +2,7 @@
 Syntax:
 
 ```sql
-//QStreaming SQL
+#batch
 CREATE BATCH INPUT TABLE table_identifier USING es(port=<port>,nodes=<nodes>,resource="<index>/<type>");
 
 ```
@@ -17,6 +17,7 @@ Parameters:
 Examples:
 
 ```sql
+#batch
 create batch input table dogs using es
 (resource='index/dogs',  nodes= 'localhost',port='9999');
 ```
@@ -51,3 +52,15 @@ using es (resource='index/dogs', nodes= 'localhost', port='9999');
 create stream output table dogs
 using streaming-es (resource='index/dogs', nodes= 'localhost',port='9999');
 ```
+
+### spark-submit
+
+```shell
+$SPARK_HOME/bin/spark-submit
+--class com.qiniu.stream.core.Streaming \
+--master spark://IP:PORT \
+--packages com.qiniu:stream-elasticsearch6:0.0.4  \
+stream-standalone-0.0.4-jar-with-dependencies.jar \
+-j pathToYourPipeline.dsl 
+```
+
