@@ -1,5 +1,5 @@
 ### Architecture
-![architect](docs/image/architecture.png)
+![architect](image/architecture.png)
 
 QStreaming is built on top of [Apache Spark](http://spark.apache.org/) and is mainly made of following components:
 
