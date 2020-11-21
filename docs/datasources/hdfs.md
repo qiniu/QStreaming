@@ -53,3 +53,4 @@ create batch output table test USING avro(path=<yourHdfsPath>) TBLPROPERTIES(sav
 #text
 create batch output table test USING text(path=<yourHdfsPath>) TBLPROPERTIES(saveMode="overwrite");
 ```
+

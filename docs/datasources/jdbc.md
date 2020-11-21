@@ -53,3 +53,26 @@ create batch output table test USING jdbc(url="jdbc:mysql://localhost/test?", db
 #streaming
 create stream output table test USING streaming-jdbc(url="jdbc:mysql://localhost/test?", dbtable="table1", user="test" password="password", driver="com.mysql.jdbc.Driver") TBLPROPERTIES(outputMode="update",checkpointLocation="/tmp/spark/checkpoint-jdbc");
 ```
+
+### spark-submit
+
+```shell
+$SPARK_HOME/bin/spark-submit
+--class com.qiniu.stream.core.Streaming \
+--master spark://IP:PORT \
+--packages com.qiniu:stream-jdbc:0.0.4, ${driverDependencies} \
+stream-standalone-0.0.4-jar-with-dependencies.jar \
+-j pathToYourPipeline.dsl 
+```
+
+where ${driverDependencies} is the database driver dependency, for example if you would like to connect to mysql, your spark-submit should be as follow:
+
+```shell
+$SPARK_HOME/bin/spark-submit
+--class com.qiniu.stream.core.Streaming \
+--master spark://IP:PORT \
+--packages com.qiniu:stream-jdbc:0.0.4,mysql:mysql-connector-java:jar:6.0.6 \
+stream-standalone-0.0.4-jar-with-dependencies.jar \
+-j pathToYourPipeline.dsl 
+```
+

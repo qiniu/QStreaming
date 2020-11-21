@@ -76,7 +76,7 @@
         <dep.typesafe_config.version>1.4.0</dep.typesafe_config.version>
         <dep.slf4j.api.version>1.7.30</dep.slf4j.api.version>
         <dep.groupon.spark-metrics.version>1.0</dep.groupon.spark-metrics.version>
-        <dep.spark.version>2.4.5</dep.spark.version>
+        <dep.spark.version>2.4.7</dep.spark.version>
         <dep.hadoop.version>2.7.3</dep.hadoop.version>
         <dep.fastjson.version>1.2.73</dep.fastjson.version>
         <dep.hbase.version>2.1.7</dep.hbase.version>

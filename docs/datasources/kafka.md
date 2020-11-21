@@ -73,3 +73,14 @@ create stream output table kafkaExampleTopic using kafka(
 ) TBLPROPERTIES(outputMode="update", checkpointLocation="/pathToYourHdfsLocation");
 ```
 
+### spark-submit
+
+~~~shell
+$SPARK_HOME/bin/spark-submit
+--class com.qiniu.stream.core.Streaming \
+--master spark://IP:PORT \
+--packages org.apache.spark:spark-sql-kafka-0-10_2.11:jar:2.4.7 \
+stream-standalone-0.0.4-jar-with-dependencies.jar \
+-j pathToYourPipeline.dsl 
+```
+~~~
