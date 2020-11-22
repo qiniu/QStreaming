@@ -223,9 +223,9 @@ Above example define UDF with a string parameter.
 
 ### Multiple sink
 
-QStreaming allow you to define multiple output for streaming/batch process engine by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
+QStreaming allow you to define multiple output for streaming process  by leavarage  [foreEachBatch](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#using-foreach-and-foreachbatch) mode (only avaliable in spark>=2.4.0)
 
-Below example will sink the behavior count metric to two kafka  topic
+Below example will sink the behavior count metric to two kafka  topics
 
 ```sql
     create stream output table output using kafka(
