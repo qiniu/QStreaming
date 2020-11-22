@@ -80,7 +80,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 --packages org.apache.spark:spark-sql-kafka-0-10_2.11:jar:2.4.7 \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 ~~~

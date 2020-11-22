@@ -21,7 +21,7 @@
     <groupId>com.qiniu</groupId>
     <artifactId>stream-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>Stream Project Parent Pom</name>
     <description>
         QStreaming is a framework that simplifies writing and executing ETLs on top of Apache Spark

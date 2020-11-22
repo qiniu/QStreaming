@@ -60,8 +60,8 @@ create stream output table test USING streaming-jdbc(url="jdbc:mysql://localhost
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
---packages com.qiniu:stream-jdbc:0.0.4, ${driverDependencies} \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+--packages com.qiniu:stream-jdbc:0.1.0, ${driverDependencies} \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 
@@ -71,8 +71,8 @@ where ${driverDependencies} is the database driver dependency, for example if yo
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
---packages com.qiniu:stream-jdbc:0.0.4,mysql:mysql-connector-java:jar:6.0.6 \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+--packages com.qiniu:stream-jdbc:0.1.0,mysql:mysql-connector-java:jar:6.0.6 \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 

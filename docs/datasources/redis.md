@@ -85,8 +85,8 @@ $SPARK_HOME/bin/spark-submit
 --master spark://IP:PORT \
 --conf spark.redis.host localhost
 --conf spark.redis.port 6379
---packages com.qiniu:stream-redis:0.0.4  \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+--packages com.qiniu:stream-redis:0.1.0  \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 
