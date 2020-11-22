@@ -35,7 +35,7 @@ CREATE BATCH INPUT TABLE hbaseTable USING org.apache.hadoop.hbase.spark(catalog=
 Syntax
 
 ```sql
-,#batch
+#batch
 CREATE BATCH OUTPUT TABLE table_identifier USING org.apache.hadoop.hbase.spark(catalog=<catalog>,hbase.spark.config.location=<hbaseSiteXmlLocation>);
 
 #streaming

@@ -124,20 +124,14 @@ To use it adds the dependency to your project
 ## Datasources
 
 - [Kafka](docs/datasources/kafka.md)
-
 - [HDFS/S3](https://github.com/qiniu/QStreaming/blob/master/docs/datasources/hdfs.md)
-
 - [Jdbc](docs/datasources/jdbc.md)
-
 - [MongoDB](docs/datasources/mongo.md)
-
 - [HBase](docs/datasources/hbase.md)
-
 - [Cassandra](docs/datasources/cassandra.md)
-
 - [Elasticsearch](docs/datasources/elasticsearch.md)
-
 - [Hudi](docs/datasources/hudi.md)
+- [Redis](doc/redis.md)
 
 ## Features
 

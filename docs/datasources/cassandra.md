@@ -15,7 +15,7 @@ Parameters:
 Example:
 
 ```sql
-CREATE BATCH INPUT TABLE hbaseTable USING org.apache.spark.sql.cassandra(table="user",keyspace="test", cluster="cluster_A");
+CREATE BATCH INPUT TABLE cassandraTable USING org.apache.spark.sql.cassandra(table="user",keyspace="test", cluster="cluster_A");
 ```
 
 ### Output
