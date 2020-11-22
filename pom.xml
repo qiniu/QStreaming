@@ -61,6 +61,7 @@
         <module>stream-hudi</module>
         <module>stream-standalone</module>
         <module>stream-docker</module>
+        <module>stream-redis</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
