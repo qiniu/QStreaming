@@ -59,8 +59,8 @@ using streaming-es (resource='index/dogs', nodes= 'localhost',port='9999');
 $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
---packages com.qiniu:stream-elasticsearch6:0.0.4  \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+--packages com.qiniu:stream-elasticsearch6:0.1.0  \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 

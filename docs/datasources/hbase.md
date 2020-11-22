@@ -94,7 +94,7 @@ $SPARK_HOME/bin/spark-submit
 --class com.qiniu.stream.core.Streaming \
 --master spark://IP:PORT \
 --packages com.qiniu-stream-hbase:0.1.0 \
-stream-standalone-0.0.4-jar-with-dependencies.jar \
+stream-standalone-0.1.0-jar-with-dependencies.jar \
 -j pathToYourPipeline.dsl 
 ```
 
