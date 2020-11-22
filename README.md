@@ -6,10 +6,6 @@ QStreaming is a framework that simplifies writing and executing ETLs on top of [
 
 It is based on a simple sql-like configuration file and runs on any Spark cluster
 
-### Blogs
-
-[QStreaming-轻量级ETL开发框架](https://shimo.im/docs/1HmY7UeXX0UYjTUL)
-
 ## Getting started
 
 #### Configurations
@@ -327,4 +323,8 @@ See the [LICENSE file](https://github.com/qiniu/QStreaming/LICENSE) for license 
 ## Join QStreaming 
 
 Join [Gitter room](https://gitter.im/qiniu-streaming/community)
+
+### Blogs
+
+[QStreaming-轻量级ETL开发框架](https://shimo.im/docs/1HmY7UeXX0UYjTUL)
 
