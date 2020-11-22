@@ -310,15 +310,13 @@ CREATE TEST testName(testLevel=Error,testOutput=testResult) on dataset WITH
 
 ## [Architecture](docs/architecture.md)
 
+### Blogs
+
+- [QStreaming-轻量级ETL开发框架](https://shimo.im/docs/1HmY7UeXX0UYjTUL)
+
 
 ## License
 See the [LICENSE file](https://github.com/qiniu/QStreaming/LICENSE) for license rights and limitations (Apache License).
 
-## Join QStreaming 
 
-Join [Gitter room](https://gitter.im/qiniu-streaming/community)
-
-### Blogs
-
-[QStreaming-轻量级ETL开发框架](https://shimo.im/docs/1HmY7UeXX0UYjTUL)
 
