@@ -139,7 +139,6 @@ case class HBaseStreamDataWriter(
   }
 
 
-  // batch write to jdbc, retry for SQLException
   private def doWriteAndResetBuffer(): Unit = {
     val size = localBuffer.size
     try {
